@@ -1,0 +1,2009 @@
+{
+  "numTokens": 105,
+  "attributes": {
+    "Background": {
+      "count": 105,
+      "traitType": "Background",
+      "traits": {
+        "Turquoise Vintage": {
+          "count": 2,
+          "traitValue": "Turquoise Vintage",
+          "ids": [
+            7357,
+            7371
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Blue argyle": {
+          "count": 4,
+          "traitValue": "Blue argyle",
+          "ids": [
+            6673,
+            7369,
+            7366,
+            6553
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Orange and blue stars and squares": {
+          "count": 5,
+          "traitValue": "Orange and blue stars and squares",
+          "ids": [
+            7279,
+            9476,
+            6560,
+            3759,
+            3098
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Orange and yellow lemons": {
+          "count": 1,
+          "traitValue": "Orange and yellow lemons",
+          "ids": [
+            7381
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Green amoeba": {
+          "count": 2,
+          "traitValue": "Green amoeba",
+          "ids": [
+            6569,
+            9563
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Paper Vintage": {
+          "count": 3,
+          "traitValue": "Paper Vintage",
+          "ids": [
+            7429,
+            6570,
+            5223
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Spicy Mustard Vintage": {
+          "count": 6,
+          "traitValue": "Spicy Mustard Vintage",
+          "ids": [
+            6722,
+            9296,
+            6552,
+            9742,
+            9884,
+            7358
+          ],
+          "rate": 0.05714285714285714
+        },
+        "Orange vintage": {
+          "count": 1,
+          "traitValue": "Orange vintage",
+          "ids": [
+            3449
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Lilac stacks": {
+          "count": 1,
+          "traitValue": "Lilac stacks",
+          "ids": [
+            7298
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Mustard eyes": {
+          "count": 4,
+          "traitValue": "Mustard eyes",
+          "ids": [
+            6277,
+            3528,
+            6272,
+            6554
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Deep Blue Vintage": {
+          "count": 7,
+          "traitValue": "Deep Blue Vintage",
+          "ids": [
+            7392,
+            9880,
+            6286,
+            7364,
+            6551,
+            1626,
+            6561
+          ],
+          "rate": 0.06666666666666667
+        },
+        "Blue lemons": {
+          "count": 3,
+          "traitValue": "Blue lemons",
+          "ids": [
+            1805,
+            9374,
+            7533
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Rocket Red Vintage": {
+          "count": 3,
+          "traitValue": "Rocket Red Vintage",
+          "ids": [
+            8095,
+            6274,
+            6327
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Dark Vintage": {
+          "count": 6,
+          "traitValue": "Dark Vintage",
+          "ids": [
+            9478,
+            8422,
+            6287,
+            7603,
+            7230,
+            8158
+          ],
+          "rate": 0.05714285714285714
+        },
+        "Green eyes": {
+          "count": 2,
+          "traitValue": "Green eyes",
+          "ids": [
+            6559,
+            7355
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Burnt Orange Vintage": {
+          "count": 2,
+          "traitValue": "Burnt Orange Vintage",
+          "ids": [
+            2750,
+            8099
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Tan and gray square stars": {
+          "count": 2,
+          "traitValue": "Tan and gray square stars",
+          "ids": [
+            7356,
+            5940
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Green circle stars": {
+          "count": 4,
+          "traitValue": "Green circle stars",
+          "ids": [
+            7439,
+            3798,
+            4047,
+            9609
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Mustard vintage": {
+          "count": 5,
+          "traitValue": "Mustard vintage",
+          "ids": [
+            6159,
+            5918,
+            8233,
+            5810,
+            6564
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Olive argyle": {
+          "count": 6,
+          "traitValue": "Olive argyle",
+          "ids": [
+            3799,
+            6269,
+            8534,
+            6565,
+            7478,
+            2556
+          ],
+          "rate": 0.05714285714285714
+        },
+        "Teal waves": {
+          "count": 2,
+          "traitValue": "Teal waves",
+          "ids": [
+            5081,
+            2673
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Teal picnic": {
+          "count": 3,
+          "traitValue": "Teal picnic",
+          "ids": [
+            7278,
+            9589,
+            5941
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Blush vintage": {
+          "count": 3,
+          "traitValue": "Blush vintage",
+          "ids": [
+            7373,
+            6201,
+            7401
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Blue eyes": {
+          "count": 2,
+          "traitValue": "Blue eyes",
+          "ids": [
+            7440,
+            6284
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Olive picnic": {
+          "count": 3,
+          "traitValue": "Olive picnic",
+          "ids": [
+            1135,
+            6425,
+            7237
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Pink waves": {
+          "count": 1,
+          "traitValue": "Pink waves",
+          "ids": [
+            8096
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Teal vintage": {
+          "count": 1,
+          "traitValue": "Teal vintage",
+          "ids": [
+            7424
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Colorful stacks": {
+          "count": 2,
+          "traitValue": "Colorful stacks",
+          "ids": [
+            5942,
+            9477
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Purple amoeba": {
+          "count": 1,
+          "traitValue": "Purple amoeba",
+          "ids": [
+            3665
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Blue stars and squares": {
+          "count": 3,
+          "traitValue": "Blue stars and squares",
+          "ids": [
+            8098,
+            6567,
+            7466
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Olive vintage": {
+          "count": 8,
+          "traitValue": "Olive vintage",
+          "ids": [
+            6566,
+            5947,
+            8773,
+            6616,
+            6674,
+            8097,
+            7372,
+            6562
+          ],
+          "rate": 0.0761904761904762
+        },
+        "Green lemons": {
+          "count": 2,
+          "traitValue": "Green lemons",
+          "ids": [
+            7354,
+            3194
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Rust stacks": {
+          "count": 1,
+          "traitValue": "Rust stacks",
+          "ids": [
+            3781
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Teal argyle": {
+          "count": 1,
+          "traitValue": "Teal argyle",
+          "ids": [
+            6285
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Pink picnic": {
+          "count": 1,
+          "traitValue": "Pink picnic",
+          "ids": [
+            8931
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Pink eyes": {
+          "count": 2,
+          "traitValue": "Pink eyes",
+          "ids": [
+            7072,
+            6568
+          ],
+          "rate": 0.01904761904761905
+        }
+      }
+    },
+    "Body": {
+      "count": 105,
+      "traitType": "Body",
+      "traits": {
+        "Himiko": {
+          "count": 5,
+          "traitValue": "Himiko",
+          "ids": [
+            7357,
+            5081,
+            8099,
+            8534,
+            1626
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Hurrem": {
+          "count": 6,
+          "traitValue": "Hurrem",
+          "ids": [
+            6673,
+            6560,
+            3528,
+            7355,
+            8158,
+            6568
+          ],
+          "rate": 0.05714285714285714
+        },
+        "Gensho": {
+          "count": 6,
+          "traitValue": "Gensho",
+          "ids": [
+            7279,
+            9476,
+            7364,
+            3798,
+            6567,
+            3098
+          ],
+          "rate": 0.05714285714285714
+        },
+        "Mumtaz": {
+          "count": 5,
+          "traitValue": "Mumtaz",
+          "ids": [
+            7381,
+            7298,
+            7373,
+            7533,
+            6425
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Nandi": {
+          "count": 7,
+          "traitValue": "Nandi",
+          "ids": [
+            6569,
+            7439,
+            8422,
+            5918,
+            7354,
+            7230,
+            7237
+          ],
+          "rate": 0.06666666666666667
+        },
+        "Kandake": {
+          "count": 4,
+          "traitValue": "Kandake",
+          "ids": [
+            7429,
+            6722,
+            6565,
+            8931
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Grace": {
+          "count": 1,
+          "traitValue": "Grace",
+          "ids": [
+            3449
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Catherine": {
+          "count": 5,
+          "traitValue": "Catherine",
+          "ids": [
+            6277,
+            6287,
+            7424,
+            8098,
+            3781
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Amina": {
+          "count": 4,
+          "traitValue": "Amina",
+          "ids": [
+            7392,
+            6274,
+            8773,
+            7466
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Maharani": {
+          "count": 3,
+          "traitValue": "Maharani",
+          "ids": [
+            1805,
+            7440,
+            6201
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Nefertari": {
+          "count": 2,
+          "traitValue": "Nefertari",
+          "ids": [
+            8095,
+            7366
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Isabella": {
+          "count": 9,
+          "traitValue": "Isabella",
+          "ids": [
+            9296,
+            2750,
+            7356,
+            3759,
+            8096,
+            6570,
+            7603,
+            8233,
+            7369
+          ],
+          "rate": 0.08571428571428572
+        },
+        "Arsinoe": {
+          "count": 4,
+          "traitValue": "Arsinoe",
+          "ids": [
+            9478,
+            7278,
+            6272,
+            6561
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Lozen": {
+          "count": 3,
+          "traitValue": "Lozen",
+          "ids": [
+            6559,
+            5942,
+            6564
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Joan": {
+          "count": 8,
+          "traitValue": "Joan",
+          "ids": [
+            6159,
+            9880,
+            6286,
+            9742,
+            6284,
+            9884,
+            6616,
+            2556
+          ],
+          "rate": 0.0761904761904762
+        },
+        "Gozen": {
+          "count": 6,
+          "traitValue": "Gozen",
+          "ids": [
+            3799,
+            5940,
+            8097,
+            9609,
+            7358,
+            7372
+          ],
+          "rate": 0.05714285714285714
+        },
+        "Artemisia": {
+          "count": 3,
+          "traitValue": "Artemisia",
+          "ids": [
+            9374,
+            6551,
+            2673
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Chalchiuhnenetzin": {
+          "count": 1,
+          "traitValue": "Chalchiuhnenetzin",
+          "ids": [
+            9589
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Hervor": {
+          "count": 2,
+          "traitValue": "Hervor",
+          "ids": [
+            6269,
+            6566
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Makeda": {
+          "count": 3,
+          "traitValue": "Makeda",
+          "ids": [
+            5941,
+            1135,
+            6552
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Boudicca": {
+          "count": 1,
+          "traitValue": "Boudicca",
+          "ids": [
+            9563
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Llancueitl": {
+          "count": 2,
+          "traitValue": "Llancueitl",
+          "ids": [
+            3665,
+            5223
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Zenobia": {
+          "count": 1,
+          "traitValue": "Zenobia",
+          "ids": [
+            4047
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Liliuokalani": {
+          "count": 3,
+          "traitValue": "Liliuokalani",
+          "ids": [
+            5947,
+            6674,
+            7401
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Nefertiti": {
+          "count": 1,
+          "traitValue": "Nefertiti",
+          "ids": [
+            6554
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Suiko": {
+          "count": 4,
+          "traitValue": "Suiko",
+          "ids": [
+            6327,
+            5810,
+            7072,
+            7371
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Cleopatra": {
+          "count": 1,
+          "traitValue": "Cleopatra",
+          "ids": [
+            7478
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Victoria": {
+          "count": 2,
+          "traitValue": "Victoria",
+          "ids": [
+            6562,
+            6553
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Sparky": {
+          "count": 2,
+          "traitValue": "Sparky",
+          "ids": [
+            3194,
+            9477
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Yaa Asentewa": {
+          "count": 1,
+          "traitValue": "Yaa Asentewa",
+          "ids": [
+            6285
+          ],
+          "rate": 0.009523809523809525
+        }
+      }
+    },
+    "Clothes": {
+      "count": 105,
+      "traitType": "Clothes",
+      "traits": {
+        "Yellow WAW logo tee": {
+          "count": 6,
+          "traitValue": "Yellow WAW logo tee",
+          "ids": [
+            7357,
+            3098,
+            8233,
+            5810,
+            7237,
+            7371
+          ],
+          "rate": 0.05714285714285714
+        },
+        "Olive ruffle top": {
+          "count": 6,
+          "traitValue": "Olive ruffle top",
+          "ids": [
+            6673,
+            7279,
+            3528,
+            9374,
+            9589,
+            6425
+          ],
+          "rate": 0.05714285714285714
+        },
+        "Blue stars blouse": {
+          "count": 4,
+          "traitValue": "Blue stars blouse",
+          "ids": [
+            7381,
+            5081,
+            3781,
+            6285
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Keep NFTs weird tee": {
+          "count": 5,
+          "traitValue": "Keep NFTs weird tee",
+          "ids": [
+            6569,
+            7356,
+            8158,
+            2673,
+            8931
+          ],
+          "rate": 0.047619047619047616
+        },
+        "White ruffle top": {
+          "count": 4,
+          "traitValue": "White ruffle top",
+          "ids": [
+            7429,
+            8534,
+            8097,
+            7478
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Blue polo": {
+          "count": 5,
+          "traitValue": "Blue polo",
+          "ids": [
+            6722,
+            7373,
+            6554,
+            9609,
+            6562
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Occupy Mars tee": {
+          "count": 5,
+          "traitValue": "Occupy Mars tee",
+          "ids": [
+            3449,
+            6274,
+            1135,
+            8098,
+            7230
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Salmon polo": {
+          "count": 5,
+          "traitValue": "Salmon polo",
+          "ids": [
+            9476,
+            6272,
+            3798,
+            6201,
+            7072
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Yellow polo": {
+          "count": 5,
+          "traitValue": "Yellow polo",
+          "ids": [
+            7298,
+            8095,
+            6284,
+            7603,
+            5223
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Polka dot tank": {
+          "count": 8,
+          "traitValue": "Polka dot tank",
+          "ids": [
+            6277,
+            3799,
+            7278,
+            9880,
+            6551,
+            3759,
+            1626,
+            6674
+          ],
+          "rate": 0.0761904761904762
+        },
+        "Blue blazer": {
+          "count": 2,
+          "traitValue": "Blue blazer",
+          "ids": [
+            7392,
+            7364
+          ],
+          "rate": 0.01904761904761905
+        },
+        "WAW logo tee": {
+          "count": 4,
+          "traitValue": "WAW logo tee",
+          "ids": [
+            1805,
+            7354,
+            7358,
+            9477
+          ],
+          "rate": 0.0380952380952381
+        },
+        "White sleeveless blouse": {
+          "count": 1,
+          "traitValue": "White sleeveless blouse",
+          "ids": [
+            9296
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Game over tee": {
+          "count": 4,
+          "traitValue": "Game over tee",
+          "ids": [
+            9478,
+            7440,
+            9563,
+            6566
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Red and white polka dot": {
+          "count": 4,
+          "traitValue": "Red and white polka dot",
+          "ids": [
+            6559,
+            7439,
+            6560,
+            8773
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Red leather jacket": {
+          "count": 1,
+          "traitValue": "Red leather jacket",
+          "ids": [
+            2750
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Black leather jacket": {
+          "count": 2,
+          "traitValue": "Black leather jacket",
+          "ids": [
+            6159,
+            7372
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Red tattoo top": {
+          "count": 3,
+          "traitValue": "Red tattoo top",
+          "ids": [
+            8422,
+            5941,
+            7466
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Overalls": {
+          "count": 3,
+          "traitValue": "Overalls",
+          "ids": [
+            6286,
+            8096,
+            6568
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Halftone tank": {
+          "count": 3,
+          "traitValue": "Halftone tank",
+          "ids": [
+            8099,
+            6616,
+            7533
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Red sequin blouse": {
+          "count": 2,
+          "traitValue": "Red sequin blouse",
+          "ids": [
+            6269,
+            5940
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Olive blazer": {
+          "count": 2,
+          "traitValue": "Olive blazer",
+          "ids": [
+            6287,
+            4047
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Blue leather jacket": {
+          "count": 2,
+          "traitValue": "Blue leather jacket",
+          "ids": [
+            5918,
+            6552
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Red ruffle top": {
+          "count": 3,
+          "traitValue": "Red ruffle top",
+          "ids": [
+            7424,
+            6327,
+            6553
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Teal sequin blouse": {
+          "count": 5,
+          "traitValue": "Teal sequin blouse",
+          "ids": [
+            5942,
+            6570,
+            6561,
+            6567,
+            6564
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Smiley tee": {
+          "count": 3,
+          "traitValue": "Smiley tee",
+          "ids": [
+            9742,
+            6565,
+            2556
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Blue and teal polka dot": {
+          "count": 2,
+          "traitValue": "Blue and teal polka dot",
+          "ids": [
+            3665,
+            7366
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Red and black polka dot": {
+          "count": 2,
+          "traitValue": "Red and black polka dot",
+          "ids": [
+            5947,
+            9884
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Green polo": {
+          "count": 3,
+          "traitValue": "Green polo",
+          "ids": [
+            7355,
+            7401,
+            3194
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Pink lace blouse": {
+          "count": 1,
+          "traitValue": "Pink lace blouse",
+          "ids": [
+            7369
+          ],
+          "rate": 0.009523809523809525
+        }
+      }
+    },
+    "Hair": {
+      "count": 105,
+      "traitType": "Hair",
+      "traits": {
+        "Silver wavy bob": {
+          "count": 2,
+          "traitValue": "Silver wavy bob",
+          "ids": [
+            7357,
+            8097
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Blue headphones": {
+          "count": 2,
+          "traitValue": "Blue headphones",
+          "ids": [
+            6673,
+            6565
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Purple floral crown": {
+          "count": 2,
+          "traitValue": "Purple floral crown",
+          "ids": [
+            7279,
+            7439
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Red bun": {
+          "count": 7,
+          "traitValue": "Red bun",
+          "ids": [
+            7381,
+            3449,
+            9374,
+            9609,
+            7358,
+            8158,
+            7072
+          ],
+          "rate": 0.06666666666666667
+        },
+        "Green bob": {
+          "count": 2,
+          "traitValue": "Green bob",
+          "ids": [
+            6569,
+            8534
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Blonde braids": {
+          "count": 2,
+          "traitValue": "Blonde braids",
+          "ids": [
+            7429,
+            6562
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Dark blue long hair": {
+          "count": 5,
+          "traitValue": "Dark blue long hair",
+          "ids": [
+            6722,
+            3759,
+            7533,
+            7369,
+            3194
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Blonde in the wind hair": {
+          "count": 5,
+          "traitValue": "Blonde in the wind hair",
+          "ids": [
+            9476,
+            7392,
+            2750,
+            6159,
+            1626
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Red long hair": {
+          "count": 3,
+          "traitValue": "Red long hair",
+          "ids": [
+            7298,
+            7356,
+            7478
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Teal wavy bob": {
+          "count": 3,
+          "traitValue": "Teal wavy bob",
+          "ids": [
+            6277,
+            6561,
+            6327
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Black flower crown": {
+          "count": 5,
+          "traitValue": "Black flower crown",
+          "ids": [
+            1805,
+            9478,
+            6559,
+            6674,
+            7371
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Sparkle braids": {
+          "count": 1,
+          "traitValue": "Sparkle braids",
+          "ids": [
+            8095
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Black bob": {
+          "count": 3,
+          "traitValue": "Black bob",
+          "ids": [
+            9296,
+            6554,
+            6201
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Light blue bob": {
+          "count": 2,
+          "traitValue": "Light blue bob",
+          "ids": [
+            3799,
+            7230
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Long red hair and handkerchief": {
+          "count": 3,
+          "traitValue": "Long red hair and handkerchief",
+          "ids": [
+            5081,
+            8098,
+            8233
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Red cat ears": {
+          "count": 5,
+          "traitValue": "Red cat ears",
+          "ids": [
+            7278,
+            1135,
+            6272,
+            7603,
+            5810
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Yellow headphones": {
+          "count": 1,
+          "traitValue": "Yellow headphones",
+          "ids": [
+            7373
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Olive scarf": {
+          "count": 6,
+          "traitValue": "Olive scarf",
+          "ids": [
+            8422,
+            6551,
+            6269,
+            7424,
+            7466,
+            8931
+          ],
+          "rate": 0.05714285714285714
+        },
+        "Brunette bob and handkerchief": {
+          "count": 1,
+          "traitValue": "Brunette bob and handkerchief",
+          "ids": [
+            9880
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Black cat ears": {
+          "count": 1,
+          "traitValue": "Black cat ears",
+          "ids": [
+            6560
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Yellow headphones and handkerchief": {
+          "count": 3,
+          "traitValue": "Yellow headphones and handkerchief",
+          "ids": [
+            3528,
+            6568,
+            2556
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Gold Angel hair": {
+          "count": 3,
+          "traitValue": "Gold Angel hair",
+          "ids": [
+            7440,
+            5942,
+            9884
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Red flower crown": {
+          "count": 1,
+          "traitValue": "Red flower crown",
+          "ids": [
+            6286
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Blonde wavy bob": {
+          "count": 2,
+          "traitValue": "Blonde wavy bob",
+          "ids": [
+            7364,
+            6553
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Red bob": {
+          "count": 1,
+          "traitValue": "Red bob",
+          "ids": [
+            8099
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Brown side ponytail": {
+          "count": 2,
+          "traitValue": "Brown side ponytail",
+          "ids": [
+            6274,
+            5947
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Blonde flower crown": {
+          "count": 2,
+          "traitValue": "Blonde flower crown",
+          "ids": [
+            9589,
+            7354
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Blonde bob": {
+          "count": 3,
+          "traitValue": "Blonde bob",
+          "ids": [
+            6287,
+            6566,
+            7372
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Red side ponytail": {
+          "count": 4,
+          "traitValue": "Red side ponytail",
+          "ids": [
+            5941,
+            5940,
+            6552,
+            6567
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Teal bob": {
+          "count": 2,
+          "traitValue": "Teal bob",
+          "ids": [
+            5918,
+            3098
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Blue highlight Angel hair": {
+          "count": 1,
+          "traitValue": "Blue highlight Angel hair",
+          "ids": [
+            8096
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Red bun and handkerchief": {
+          "count": 1,
+          "traitValue": "Red bun and handkerchief",
+          "ids": [
+            9742
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Teal long hair": {
+          "count": 2,
+          "traitValue": "Teal long hair",
+          "ids": [
+            6284,
+            2673
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Teal bun and kandkerchief": {
+          "count": 1,
+          "traitValue": "Teal bun and kandkerchief",
+          "ids": [
+            9563
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Black bun": {
+          "count": 2,
+          "traitValue": "Black bun",
+          "ids": [
+            3665,
+            9477
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Black bob and handkerchief": {
+          "count": 2,
+          "traitValue": "Black bob and handkerchief",
+          "ids": [
+            3798,
+            6425
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Purple braids": {
+          "count": 1,
+          "traitValue": "Purple braids",
+          "ids": [
+            4047
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Black bob with horns": {
+          "count": 3,
+          "traitValue": "Black bob with horns",
+          "ids": [
+            6570,
+            3781,
+            7366
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Black wavy bob": {
+          "count": 2,
+          "traitValue": "Black wavy bob",
+          "ids": [
+            8773,
+            7355
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Teal long hair and handkerchief": {
+          "count": 1,
+          "traitValue": "Teal long hair and handkerchief",
+          "ids": [
+            6616
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Pink bob": {
+          "count": 1,
+          "traitValue": "Pink bob",
+          "ids": [
+            5223
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Red wavy bob": {
+          "count": 1,
+          "traitValue": "Red wavy bob",
+          "ids": [
+            7401
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Pink Scarf": {
+          "count": 1,
+          "traitValue": "Pink Scarf",
+          "ids": [
+            6285
+          ],
+          "rate": 0.009523809523809525
+        },
+        "White bob": {
+          "count": 1,
+          "traitValue": "White bob",
+          "ids": [
+            7237
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Orange Scarf": {
+          "count": 1,
+          "traitValue": "Orange Scarf",
+          "ids": [
+            6564
+          ],
+          "rate": 0.009523809523809525
+        }
+      }
+    },
+    "Accessories": {
+      "count": 105,
+      "traitType": "Accessories",
+      "traits": {
+        "None": {
+          "count": 74,
+          "traitValue": "None",
+          "ids": [
+            7357,
+            6673,
+            7279,
+            6569,
+            3449,
+            7298,
+            7392,
+            1805,
+            8095,
+            9296,
+            6559,
+            2750,
+            7356,
+            7439,
+            3799,
+            5081,
+            7278,
+            8422,
+            9880,
+            6560,
+            3528,
+            7440,
+            9374,
+            6286,
+            7364,
+            6274,
+            6551,
+            6269,
+            6287,
+            5941,
+            3759,
+            1135,
+            5940,
+            8096,
+            6552,
+            6565,
+            6284,
+            9563,
+            3665,
+            8098,
+            4047,
+            6566,
+            6570,
+            7354,
+            6567,
+            7603,
+            7230,
+            5947,
+            8773,
+            9884,
+            6554,
+            7355,
+            7466,
+            6201,
+            6674,
+            8097,
+            7478,
+            7358,
+            7401,
+            6425,
+            3781,
+            6562,
+            8158,
+            7366,
+            3194,
+            2673,
+            6553,
+            6285,
+            5810,
+            8931,
+            7237,
+            6568,
+            2556,
+            7371
+          ],
+          "rate": 0.7047619047619048
+        },
+        "Blue cateye glasses": {
+          "count": 4,
+          "traitValue": "Blue cateye glasses",
+          "ids": [
+            7381,
+            7373,
+            5223,
+            6564
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Aviator glasses": {
+          "count": 5,
+          "traitValue": "Aviator glasses",
+          "ids": [
+            7429,
+            6159,
+            6327,
+            7533,
+            9609
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Round rose colored glasses": {
+          "count": 3,
+          "traitValue": "Round rose colored glasses",
+          "ids": [
+            6722,
+            5942,
+            6561
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Black Cateye glasses": {
+          "count": 4,
+          "traitValue": "Black Cateye glasses",
+          "ids": [
+            9476,
+            9478,
+            6272,
+            3098
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Red laser eyes": {
+          "count": 2,
+          "traitValue": "Red laser eyes",
+          "ids": [
+            6277,
+            8099
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Round sunglasses": {
+          "count": 5,
+          "traitValue": "Round sunglasses",
+          "ids": [
+            9589,
+            9742,
+            6616,
+            7372,
+            7072
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Pixel glasses": {
+          "count": 1,
+          "traitValue": "Pixel glasses",
+          "ids": [
+            5918
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Purple aviators": {
+          "count": 2,
+          "traitValue": "Purple aviators",
+          "ids": [
+            8534,
+            7424
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Red cat eye glasses": {
+          "count": 1,
+          "traitValue": "Red cat eye glasses",
+          "ids": [
+            1626
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Gold aviators": {
+          "count": 1,
+          "traitValue": "Gold aviators",
+          "ids": [
+            3798
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Round spectacles": {
+          "count": 3,
+          "traitValue": "Round spectacles",
+          "ids": [
+            8233,
+            7369,
+            9477
+          ],
+          "rate": 0.02857142857142857
+        }
+      }
+    },
+    "Weapons": {
+      "count": 105,
+      "traitType": "Weapons",
+      "traits": {
+        "Wood nunchucks": {
+          "count": 7,
+          "traitValue": "Wood nunchucks",
+          "ids": [
+            7357,
+            5081,
+            5940,
+            6554,
+            7355,
+            3194,
+            2673
+          ],
+          "rate": 0.06666666666666667
+        },
+        "Silver brass knuckles": {
+          "count": 1,
+          "traitValue": "Silver brass knuckles",
+          "ids": [
+            6673
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Tekko kagi silver": {
+          "count": 2,
+          "traitValue": "Tekko kagi silver",
+          "ids": [
+            7279,
+            1135
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Gold spiked club": {
+          "count": 4,
+          "traitValue": "Gold spiked club",
+          "ids": [
+            7381,
+            5947,
+            6564,
+            9477
+          ],
+          "rate": 0.0380952380952381
+        },
+        "Wood spiked club": {
+          "count": 9,
+          "traitValue": "Wood spiked club",
+          "ids": [
+            6569,
+            7373,
+            8099,
+            6552,
+            7424,
+            6567,
+            7230,
+            7366,
+            8931
+          ],
+          "rate": 0.08571428571428572
+        },
+        "Gold hilt long daggers": {
+          "count": 3,
+          "traitValue": "Gold hilt long daggers",
+          "ids": [
+            7429,
+            7440,
+            8773
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Light pink spiked clubs": {
+          "count": 3,
+          "traitValue": "Light pink spiked clubs",
+          "ids": [
+            6722,
+            6274,
+            6674
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Gold dagger brass knuckles": {
+          "count": 5,
+          "traitValue": "Gold dagger brass knuckles",
+          "ids": [
+            3449,
+            7298,
+            6551,
+            6566,
+            7533
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Pink spiked clubs": {
+          "count": 3,
+          "traitValue": "Pink spiked clubs",
+          "ids": [
+            9476,
+            8534,
+            7354
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Silver dagger brass knuckles": {
+          "count": 6,
+          "traitValue": "Silver dagger brass knuckles",
+          "ids": [
+            6277,
+            8095,
+            9563,
+            6561,
+            3098,
+            6285
+          ],
+          "rate": 0.05714285714285714
+        },
+        "Black throwing stars": {
+          "count": 3,
+          "traitValue": "Black throwing stars",
+          "ids": [
+            7392,
+            3799,
+            9374
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Bloody wrap hands": {
+          "count": 1,
+          "traitValue": "Bloody wrap hands",
+          "ids": [
+            1805
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Gray spiked clubs": {
+          "count": 5,
+          "traitValue": "Gray spiked clubs",
+          "ids": [
+            9296,
+            6570,
+            6616,
+            9609,
+            7358
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Silver long daggers": {
+          "count": 5,
+          "traitValue": "Silver long daggers",
+          "ids": [
+            9478,
+            8422,
+            5918,
+            8158,
+            7371
+          ],
+          "rate": 0.047619047619047616
+        },
+        "Gold small daggers": {
+          "count": 3,
+          "traitValue": "Gold small daggers",
+          "ids": [
+            6559,
+            2750,
+            6269
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Black long daggers": {
+          "count": 3,
+          "traitValue": "Black long daggers",
+          "ids": [
+            7356,
+            6327,
+            6568
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Blue nunchucks": {
+          "count": 3,
+          "traitValue": "Blue nunchucks",
+          "ids": [
+            7439,
+            6287,
+            7401
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Pink nunchucks": {
+          "count": 1,
+          "traitValue": "Pink nunchucks",
+          "ids": [
+            6159
+          ],
+          "rate": 0.009523809523809525
+        },
+        "White boxers wrap": {
+          "count": 3,
+          "traitValue": "White boxers wrap",
+          "ids": [
+            7278,
+            9589,
+            3798
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Tekko Kagi silver blood": {
+          "count": 1,
+          "traitValue": "Tekko Kagi silver blood",
+          "ids": [
+            9880
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Feather hatchet": {
+          "count": 2,
+          "traitValue": "Feather hatchet",
+          "ids": [
+            6560,
+            7372
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Pink brass knuckles": {
+          "count": 3,
+          "traitValue": "Pink brass knuckles",
+          "ids": [
+            3528,
+            6425,
+            2556
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Black boxers wrap": {
+          "count": 1,
+          "traitValue": "Black boxers wrap",
+          "ids": [
+            6286
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Purple boxers wrap": {
+          "count": 2,
+          "traitValue": "Purple boxers wrap",
+          "ids": [
+            7364,
+            7237
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Gold dagger brass knuckles 2": {
+          "count": 2,
+          "traitValue": "Gold dagger brass knuckles 2",
+          "ids": [
+            5941,
+            6565
+          ],
+          "rate": 0.01904761904761905
+        },
+        "WAW baseball bat": {
+          "count": 1,
+          "traitValue": "WAW baseball bat",
+          "ids": [
+            3759
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Hatchet": {
+          "count": 3,
+          "traitValue": "Hatchet",
+          "ids": [
+            6272,
+            8098,
+            6562
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Tekko Kagi pink": {
+          "count": 3,
+          "traitValue": "Tekko Kagi pink",
+          "ids": [
+            8096,
+            7603,
+            7466
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Gold throwing stars": {
+          "count": 2,
+          "traitValue": "Gold throwing stars",
+          "ids": [
+            5942,
+            9742
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Gold tipped  black brass knuckles": {
+          "count": 3,
+          "traitValue": "Gold tipped  black brass knuckles",
+          "ids": [
+            6284,
+            7369,
+            5810
+          ],
+          "rate": 0.02857142857142857
+        },
+        "Rainbow brass knuckles": {
+          "count": 1,
+          "traitValue": "Rainbow brass knuckles",
+          "ids": [
+            1626
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Tekko kagi gold": {
+          "count": 2,
+          "traitValue": "Tekko kagi gold",
+          "ids": [
+            3665,
+            9884
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Gold brass knuckles": {
+          "count": 1,
+          "traitValue": "Gold brass knuckles",
+          "ids": [
+            4047
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Red boxers wrap": {
+          "count": 1,
+          "traitValue": "Red boxers wrap",
+          "ids": [
+            8233
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Black brass knuckles": {
+          "count": 1,
+          "traitValue": "Black brass knuckles",
+          "ids": [
+            6201
+          ],
+          "rate": 0.009523809523809525
+        },
+        "Silver throwing stars": {
+          "count": 2,
+          "traitValue": "Silver throwing stars",
+          "ids": [
+            5223,
+            6553
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Bloom silver small daggers": {
+          "count": 2,
+          "traitValue": "Bloom silver small daggers",
+          "ids": [
+            8097,
+            3781
+          ],
+          "rate": 0.01904761904761905
+        },
+        "Pink throwing stars": {
+          "count": 2,
+          "traitValue": "Pink throwing stars",
+          "ids": [
+            7478,
+            7072
+          ],
+          "rate": 0.01904761904761905
+        }
+      }
+    },
+    "numTraitTypes": 6
+  }
+}

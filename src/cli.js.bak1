@@ -1,0 +1,399 @@
+/**
+ * Copyright (c) 2021
+ * FILE DESCRIPTION
+ */
+
+import { exec } from 'child_process';
+
+import program from 'commander';
+import fetch from 'node-fetch';
+import { Curl, curly } from 'node-libcurl';
+
+import * as projectlib from './project.js';
+import * as utilslib from './lib/utilslib.js';
+import * as jsonutil from './jsonutil.js';
+import { createLogger } from './lib/loggerlib.js';
+
+import { getTokenURIFromEtherscanURIOnly } from "./tokenURI.js";
+import fs from "fs";
+import * as fileutil from "./fileutil.js";
+
+const globalConfig = jsonutil.importFile('../config/config.json');
+const log = createLogger();
+
+const DEFAULT_FETCH_HEADERS = {
+  'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36',
+  "accept": "*/*",
+};
+
+const BASE_URL = 'https://womenandweapons.mypinata.cloud/ipfs/QmVhxYgURKVnLWBm1aXH6BqKqFgmj7j1K5MWAFTkf9xm8N/';
+// const BASE_URL = 'https://womenandweapons.mypinata.cloud/ipfs/QmXop5fAJmfhdhUzzaG6PXWkcQ7eRh8BbzYNN1syQJSSw9/';
+const BASE_URL2 = 'https://ipfs.io/ipfs/QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq/';
+
+const ASSET_URL = 'https://opensea.io/assets/0x338866f8ba75bb9d7a00502e11b099a2636c2c18/';
+
+const CONTRACT_ADDRESS = '0x338866F8ba75bb9D7a00502E11b099a2636C2C18';
+const CONTRACT_ADDRESS2 = '0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D';
+
+const SIGNATUR = '0xc87b56dd';
+const ETHERSCAN_URL = 'http://node1.web3api.com/';
+
+const globalData = {
+  numTokens: 0,
+  attributes: {}
+};
+
+const globalItems = {};
+
+let sortedItems = [];
+
+let lock = false;
+
+const data = {
+  items: {}
+};
+
+// RUNTIME ----------------------------------------------------------------------------------
+
+// yarn cli crawlCollection --id bearseum
+program.option('--id <value>', 'Project ID', '');
+program.parse();
+
+runProgram();
+
+// MAIN FUNCTIONS ----------------------------------------------------------------------------------
+
+// Sequence generator function (commonly referred to as "range", e.g. Clojure, PHP etc)
+function range(start, stop, step) {
+  return Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + (i * step));
+}
+
+async function runProgram() {
+  console.log('run program');
+  const options = program.opts();
+  const cmd = program.args[0];
+  switch (cmd) {
+    case 'pollForReveal':
+      await pollForReveal();
+      break;
+    case 'fetchCollection':
+      await fetchCollection();
+      break;
+    default:
+      log.error(`Unknown command: ${cmd}`);
+  }
+  console.log('Done!');
+}
+
+async function fetchCollection() {
+  const source = range(1, 10000, 1);
+  // source.push(9742, 8096);
+  source.forEach((id) => {
+    data.items[id] = { tokenId: id, price: 0 };
+  });
+  while (true) {
+    const nextIds = source.splice(0, 500);
+    console.log('nextIds.length:', nextIds.length);
+    if (nextIds.length < 1) {
+      break;
+    }
+    const itemList = nextIds.map((obj) => {
+      return { tokenId: obj, price: 0 };
+    });
+    await fetchCollection2(itemList);
+  }
+  lock = true;
+  saveResult();
+  buildWebPage();
+  console.log('Finished fetching collection!');
+}
+
+async function fetchCollection2(itemList) {
+  const firstId = itemList[0].tokenId;
+  const lastId = itemList[itemList.length - 1].tokenId;
+
+  while (true) {
+    itemList.forEach(async (item) => {
+      if (item.done) {
+        return;
+      }
+      processTokenItem(item);
+      // await utilslib.sleep(100);
+    });
+    let numFinished = 0;
+    for (const item of itemList) {
+      numFinished = numFinished + (item.done ? 1 : 0);
+    }
+    const numNotFinished = itemList.length - numFinished;
+    console.log(`ID:s ${firstId}-${lastId}: Finished / Not Finished: ${numFinished} / ${numNotFinished}`);
+    // console.log('Sleep 2000ms...');
+    await utilslib.sleep(2000);
+    if (numNotFinished > 0) {
+      // console.log('NOT FINISHED');
+    } else {
+      // console.log('FINISHED');
+      saveResult();
+      buildWebPage();
+      break;
+    }
+  }
+  return true;
+}
+
+async function pollForReveal() {
+  const jsonData = jsonutil.importFile('../config/waw-buynow.json');
+  var merged = jsonData.data.flat(1);
+  const assetsForSale = [];
+  merged.forEach((baseNode) => {
+    const item = {
+      contract: baseNode.node.asset.assetContract.address,
+      tokenId: parseInt(baseNode.node.asset.tokenId),
+      price: baseNode.node.asset.orderData.bestAsk.paymentAssetQuantity.quantityInEth / Math.pow(10, baseNode.node.asset.orderData.bestAsk.paymentAssetQuantity.asset.decimals),
+    };
+    assetsForSale.push(item);
+  });
+  const uniqueAssetsForSaleObj = {};
+  assetsForSale.forEach((obj) => {
+    uniqueAssetsForSaleObj[obj.tokenId] = obj;
+  });
+  // console.log(uniqueAssetsForSaleObj);
+  const finalList = Object.values(uniqueAssetsForSaleObj).sort(comparePrice);
+  await pingReveal(finalList);
+  console.log('REVEALED!');
+  console.log('finalList.length', finalList.length);
+
+  while (true) {
+    finalList.forEach(async (item) => {
+      processTokenItem(item);
+      await utilslib.sleep(10);
+    });
+    await utilslib.sleep(1500);
+    saveResult();
+    buildWebPage();
+    let hasFinished = true;
+    for (const item of finalList) {
+      hasFinished = hasFinished && item.done;
+    }
+    if (hasFinished) {
+      console.log('FINISHED');
+      break;
+    }
+  }
+}
+
+function buildWebPage() {
+  if (lock) {
+    console.log('Locked, do not save result!');
+    return;
+  }
+
+  const filePath = fileutil.toAbsoluteFilePath(`../config/rarity.html`);
+  let s = '<html><head></head><body>';
+
+  s = s + `<span>Num of items: ${sortedItems.length}</span>`;
+
+  let rank = 0;
+  s = s + '<table>';
+  for (const item of sortedItems) {
+    rank++;
+    const link = ASSET_URL + item.tokenId;
+    const image = convertTokenURI(item.image);
+    const score = Math.round(item.rarityScore);
+    s = s + `<tr><td>Rank: <b>${rank}</b>, Score:<b>${score}</b>, ID: ${item.tokenId}, Price: ${item.price}, <a href="${link}">OpenSea</a></td><td><img style="border: 1px" height="120" width="120" src="${image}"></img></td></tr>`;
+  }
+  s = s + '</table>';
+
+  fs.writeFileSync(filePath, s);
+}
+
+function convertTokenURI(uri) {
+  const IPFS_URL = 'ipfs://';
+  let normalizedURI = uri;
+  if (uri.startsWith(IPFS_URL)) {
+    normalizedURI = uri.replace(IPFS_URL, 'https://ipfs.io/ipfs/');
+  }
+  return normalizedURI;
+}
+
+function saveResult() {
+  if (lock) {
+    console.log('Locked, do not save result!');
+    return;
+  }
+  calcStats();
+  const filePath = fileutil.toAbsoluteFilePath(`../config/traits.json`);
+  fs.writeFileSync(filePath, JSON.stringify(globalData, null, 2));
+  calcRarity();
+
+  const items = [];
+  for (const [key, value] of Object.entries(globalItems)) {
+    items.push(globalItems[key]);
+  }
+  sortedItems = items.sort(raritySorter);
+  const filePath2 = fileutil.toAbsoluteFilePath(`../config/items.json`);
+  fs.writeFileSync(filePath2, JSON.stringify({ items: sortedItems }, null, 2));
+}
+
+async function processTokenItem(item) {
+  // console.log(tokenId);
+  const tokenData = await fetchExternalJson(`${BASE_URL}${item.tokenId}`, item);
+  if (tokenData?.attributes) {
+    addTokenData(tokenData, item);
+    item.done = true;
+  } else {
+    item.done = false;
+  }
+}
+
+function addTokenData(data, item) {
+  // log.info(data);
+  globalData.numTokens++;
+  item.image = data.image;
+  item.data = data;
+  try {
+    for (const attr of data.attributes) {
+      const thisTraitType = attr.trait_type;
+      const thisTraitValue = attr.value;
+      if (!globalData.attributes[thisTraitType]) {
+        globalData.attributes[thisTraitType] = {};
+        globalData.attributes[thisTraitType].count = 0;
+        globalData.attributes[thisTraitType].traitType = thisTraitType;
+        globalData.attributes[thisTraitType].traits = {};
+      }
+      globalData.attributes[thisTraitType].count++;
+
+      if (!globalData.attributes[thisTraitType].traits[thisTraitValue]) {
+        globalData.attributes[thisTraitType].traits[thisTraitValue] = {};
+        globalData.attributes[thisTraitType].traits[thisTraitValue].count = 0;
+        globalData.attributes[thisTraitType].traits[thisTraitValue].traitValue = thisTraitValue;
+        globalData.attributes[thisTraitType].traits[thisTraitValue].ids = [];
+      }
+      globalData.attributes[thisTraitType].traits[thisTraitValue].count++;
+      globalData.attributes[thisTraitType].traits[thisTraitValue].ids.push(item.tokenId);
+    }
+  } catch (error) {
+    log.info('data', data, error);
+  }
+  // globalItems[item.tokenId] = item;
+}
+
+function calcRarity() {
+  for (const [key, value] of Object.entries(globalItems)) {
+    if (!globalItems[key].done) {
+      continue;
+    }
+    for (const [key2, value2] of Object.entries(globalItems[key].data.attributes)) {
+
+      const obj = globalItems[key].data.attributes;
+      const traitType = globalItems[key].data.attributes[key2].trait_type;
+      const traitValue = globalItems[key].data.attributes[key2].value;
+      const rate = globalData.attributes[traitType].traits[traitValue].rate;
+      const rateVal = 1 / rate;
+      globalItems[key].data.attributes[key2].rate = rate;
+      globalItems[key].data.attributes[key2].rateVal = rateVal;
+    }
+  }
+
+  for (const [key, value] of Object.entries(globalItems)) {
+    if (!globalItems[key].done) {
+      continue;
+    }
+    let rarityScore = 0;
+    for (const [key2, value2] of Object.entries(globalItems[key].data.attributes)) {
+      rarityScore = rarityScore + globalItems[key].data.attributes[key2].rateVal;
+    }
+    globalItems[key].rarityScore = rarityScore;
+  }
+
+}
+
+function calcStats() {
+  let numTraitTypes = 0;
+  for (const [key, value] of Object.entries(globalData.attributes)) {
+    numTraitTypes++;
+    if (typeof value !== 'object') {
+      continue;
+    }
+    for (const [key2, value2] of Object.entries(globalData.attributes[key].traits)) {
+      // console.log('2:', globalAttributes[key][key2]);
+      const rate = globalData.attributes[key].traits[key2].count / globalData.numTokens;
+      globalData.attributes[key].traits[key2].rate = rate;
+    }
+    continue;
+  }
+  globalData.attributes.numTraitTypes = numTraitTypes;
+}
+
+async function pingReveal(assetList) {
+  const tokenId = assetList[0].tokenId;
+  const externalUrl = `${BASE_URL}${tokenId}`;
+  while (true) {
+    let data;
+    console.log('externalUrl', externalUrl);
+    data = await fetchExternalJson(externalUrl);
+    console.log(data);
+    if (data === {} || data.attributes === undefined) {
+      // if (data === {}) {
+      const newExternalUrl = await getTokenURIFromEtherscanURIOnly(tokenId, CONTRACT_ADDRESS, SIGNATUR, ETHERSCAN_URL);
+      console.log('newExternalUrl', newExternalUrl);
+      if (newExternalUrl !== '') {
+        data = fetchExternalJson(newExternalUrl);
+      }
+    }
+    if (data && data.attributes && data.attributes.length > 0) {
+      return true;
+    }
+    console.log('Wait for reveal...');
+    await utilslib.sleep(700);
+  }
+}
+
+async function fetchExternalJson(uri, item, method = 'GET') {
+  try {
+    item.status = "fetch-begin";
+    const response = await fetch(uri, {
+      "headers": DEFAULT_FETCH_HEADERS,
+      "method": method
+    });
+    if (response.ok) {
+      const jsonData = await response.json();
+      item.status = "fetch-ok";
+      return jsonData;
+    }
+    item.status = "fetch-error";
+    return {};
+  } catch (error) {
+    // log.error('Error:', error);
+    item.status = "fetch-error";
+    return {};
+  }
+}
+
+function comparePrice(a, b) {
+  if (a.price < b.price) {
+    return -1;
+  }
+  if (a.price > b.price) {
+    return 1;
+  }
+  return 0;
+}
+
+function raritySorter(a, b) {
+  if (a.rarityScore < b.rarityScore) {
+    return 1;
+  }
+  if (a.rarityScore > b.rarityScore) {
+    return -1;
+  }
+  return 0;
+}
+
+/*
+
+async function crawlAsset(project, asset) {
+  log.info('Crawl asset ID:', asset.id);
+  await setTokenURI(project, asset);
+  await setTokenData(project, asset);
+}
+ */

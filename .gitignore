@@ -1,0 +1,10 @@
+/node_modules
+/.yalc
+yalc.lock
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+data/result/*
+!data/result/README.md
+logs/**/*
