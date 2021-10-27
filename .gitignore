@@ -8,3 +8,5 @@ yarn-error.log*
 data/result/*
 !data/result/README.md
 logs/**/*
+
+.idea
