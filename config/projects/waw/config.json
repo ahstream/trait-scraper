@@ -3,7 +3,7 @@
   "maxSupply": 10000,
   "contractAddress": "0x338866F8ba75bb9D7a00502E11b099a2636C2C18",
   "threshold": {
-    "buynow": true,
+    "buynow": false,
     "level": 0.10,
     "image": 0.10,
     "level1": 0.02,

@@ -75,13 +75,23 @@ export function createLogger(logLevel = '', dir = 'logs', options = {}) {
     winston.format.timestamp({ format: timestampFormatVal }),
     utilFormatter(),
     winston.format.colorize(),
-    winston.format.printf(({ level, message, label, timestamp }) => `${timestamp} ${label || '-'} ${level}: ${message}`)
+    winston.format.printf(({
+                             level,
+                             message,
+                             label,
+                             timestamp
+                           }) => `${timestamp} ${label || '-'} ${level}: ${message}`)
   );
 
   const noColorFormatter = winston.format.combine(
     winston.format.timestamp({ format: timestampFormatVal }),
     utilFormatter(),
-    winston.format.printf(({ level, message, label, timestamp }) => `${timestamp} ${label || '-'} ${level}: ${message}`)
+    winston.format.printf(({
+                             level,
+                             message,
+                             label,
+                             timestamp
+                           }) => `${timestamp} ${label || '-'} ${level}: ${message}`)
   );
 
   const dirVal = trimCharsRight(dir, '/');

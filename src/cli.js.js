@@ -13,7 +13,11 @@ import { createLogger } from './lib/loggerlib.js';
 import { getTokenURIFromEtherscan, isValidTokenURI } from "./tokenURI.js";
 import fs from "fs";
 import * as fileutil from "./fileutil.js";
-import { writeRelativeFile } from "./fileutil.js";
+
+import opn from 'opn';
+import { toAbsoluteFilePath } from "./fileutil.js";
+
+import child_process from 'child_process';
 
 const log = createLogger();
 
@@ -23,12 +27,8 @@ const DEFAULT_FETCH_HEADERS = {
 };
 const BASE_ASSET_URL = 'https://opensea.io/assets/';
 const IPFS_URL = 'ipfs://';
-const TRAIT_NONE_VALUE = 'xnonex';
-
-const global = {
-  numTokens: 0,
-  attributes: {}
-};
+const TRAIT_NONE_VALUE = 'xxNonexx';
+const TRAIT_COUNT_TYPE = 'xxTraitCountxx';
 
 // RUNTIME ----------------------------------------------------------------------------------
 
@@ -41,13 +41,13 @@ runProgram();
 async function runProgram() {
   console.log('run program');
   program.option('--id <value>', 'Project ID', '');
-  program.option('--all', 'Show all items');
+  program.option('--debug', 'Write debug info');
   program.parse();
   const options = program.opts();
   const cmd = program.args[0];
   switch (cmd) {
     case 'fetchCollection':
-      await fetchCollection(options.id, options.all);
+      await fetchCollection(options.id, options.debug);
       break;
     case 'buynow':
       const result = await getBuynowList(options.id);
@@ -64,13 +64,13 @@ function debugToFile(config) {
   fileutil.writeRelativeFile(`../config/projects/${config.projectId}/debug.json`, JSON.stringify({ data: config }, null, 2));
 }
 
-function createConfig(projectId, showAll) {
+function createConfig(projectId, debug) {
   const baseConfig = jsonutil.importFile(`../config/config.json`);
   const projectConfig = jsonutil.importFile(`../config/projects/${projectId}/config.json`);
   const config = { ...baseConfig, ...projectConfig };
 
   config.projectId = projectId;
-  config.buynowOnly = !showAll;
+  config.debug = debug;
   config.data = {
     tokenList: [],
     numTokens: 0,
@@ -80,16 +80,17 @@ function createConfig(projectId, showAll) {
   return config;
 }
 
-async function fetchCollection(projectId, showAll = false, waitForReveal = true) {
+async function fetchCollection(projectId, debug = false, waitForReveal = true) {
   log.info('Start fetching collection');
   const startDate = new Date();
 
-  const config = createConfig(projectId, showAll);
+  const config = createConfig(projectId, debug);
 
   prepareTokens(config);
 
   if (waitForReveal) {
     await pollForReveal(config);
+    notifyRevealed();
   }
 
   await fetchCollectionMilestones(config.fetchMilestones, config);
@@ -97,11 +98,15 @@ async function fetchCollection(projectId, showAll = false, waitForReveal = true)
   log.info(`Finished pre-fetching collection: ${countFinished(config)} tokens`);
   log.info('Duration (sec):', ((new Date()).getTime() - startDate.getTime()) / 1000);
 
-  fileutil.writeRelativeFile(`../config/projects/${projectId}/debug.json`, JSON.stringify({ data: config }, null, 2));
-
   createResults(config);
 
+  let numFinalTries = 0;
   while (countFinished(config) < config.maxSupply) {
+    numFinalTries++;
+    if (numFinalTries % 5 === 0) {
+      createResults(config);
+    }
+    const x = config.data.tokenList.filter((token) => token.isDone === false);
     await utilslib.sleep(1000);
     await fetchCollectionMilestones([], config);
   }
@@ -116,6 +121,7 @@ async function fetchCollectionMilestones(milestones = [], config) {
   while (true) {
     const numFinishedBefore = countFinished(config);
     const nextTokens = getNextTokens(config, config.tokensBatchSize);
+
     if (nextTokens.length < 1) {
       break;
     }
@@ -135,8 +141,7 @@ async function fetchCollectionMilestones(milestones = [], config) {
 
 async function fetchCollectionTokens(tokenList, config) {
   const numTokens = tokenList.length;
-  const limit = Math.round(numTokens / config.tokensBatchDivider);
-  const numWhenToGetMoreTokens = limit < numTokens ? limit : numTokens;
+  const numWhenToGetMoreTokens = Math.round(config.fetchNewTokensAtPctFinished * numTokens);
 
   while (true) {
     tokenList.forEach(async (item) => {
@@ -207,17 +212,22 @@ function getBuynowList(filePath) {
     return [];
   }
 
+  let fakePrice = null;
+
   const data = fileutil.readFile(filePath, 'utf8');
 
   const tokenIdResult = [...data.matchAll(/\\"tokenId\\":\\"([0-9]+)\\"/gim)];
-  const priceResult = [...data.matchAll(/\\"quantityInEth\\":\\"([0-9]+)\\"/gim)];
+  let priceResult = [...data.matchAll(/\\"quantityInEth\\":\\"([0-9]+)\\"/gim)];
 
   if (tokenIdResult.length < 1) {
     throw new Error('BuyNow: Empty result!');
   }
 
   if (tokenIdResult.length !== priceResult.length) {
-    throw new Error('BuyNow: Token ID and Price lists have different length!');
+    // Token ID and Price lists have different length!
+    // Use fake price when prices are not known for sure!
+    log.info('Error: Token ID and Price lists have different length! Use fake price 0.001.');
+    fakePrice = 0.001;
   }
 
   const tokenList = [];
@@ -228,7 +238,7 @@ function getBuynowList(filePath) {
     if (thisToken) {
       continue;
     }
-    const thisPrice = parseInt(priceResult[i][1]) / Math.pow(10, 18);
+    const thisPrice = fakePrice ?? parseInt(priceResult[i][1]) / Math.pow(10, 18);
     const thisItem = { tokenId: thisId, price: thisPrice };
     tokenMap.set(thisId, thisItem);
     tokenList.push(thisItem);
@@ -237,7 +247,7 @@ function getBuynowList(filePath) {
   return tokenList.sort((a, b) => (a.price > b.price) ? 1 : ((b.price > a.price) ? -1 : 0));
 }
 
-function getNextTokens(config, qty = 100) {
+function getNextTokens(config, qty) {
   const now = new Date();
   const result = [];
   let count = 0;
@@ -265,13 +275,16 @@ function getNextTokens(config, qty = 100) {
 }
 
 function countFinished(config) {
-  let count = 0;
+  let numDone = 0;
+  let numNotDone = 0;
   for (var token of config.data.tokenList) {
     if (token.done) {
-      count++;
+      numDone++;
+    } else {
+      numNotDone++;
     }
   }
-  return count;
+  return numDone;
 }
 
 function countFinishedBuynow(config) {
@@ -314,11 +327,12 @@ function convertToTokenURI(id, uri) {
   return '';
 }
 
-function tokenHasTraits(token, config) {
+function isTokenRevealed(token, config) {
   if (!token?.attributes) {
     return false;
   }
   let numTraits = 0;
+  const valueMap = new Map();
   for (let attr of token?.attributes) {
     if (attr.trait_type) {
       if (attr.display_type) {
@@ -326,11 +340,13 @@ function tokenHasTraits(token, config) {
         continue;
       }
       numTraits++;
-      if (numTraits >= config.minTraitsNeeded) {
-        return true;
-      }
+      valueMap.set(attr.value, true);
     }
   }
+  if (numTraits >= config.minTraitsNeeded && valueMap.size >= config.minDifferentTraitValuesNeeded) {
+    return true;
+  }
+
   return false;
 }
 
@@ -339,6 +355,9 @@ async function pollForReveal(config) {
   const tokenId = (config.pollTokenIds ?? [1234])[0];
   while (true) {
     const newTokenURI = await getTokenURIFromEtherscan(tokenId, config.contractAddress, config.etherscanURI, config.tokenURISignatur);
+    if (config.debug) {
+      log.info('Etherscan tokenURI:', newTokenURI);
+    }
     if (newTokenURI && !isValidTokenURI(newTokenURI)) {
       log.info('Invalid tokenURI:', newTokenURI);
     } else if (newTokenURI !== '' && newTokenURI !== createTokenURI(tokenId, config.tokenURI)) {
@@ -347,12 +366,13 @@ async function pollForReveal(config) {
 
     if (config.tokenURI) {
       const token = await fetchJson(createTokenURI(tokenId, config.tokenURI), {});
-      if (tokenHasTraits(token, config)) {
-        log.info('Token have traits, collection is revealed!');
+      if (isTokenRevealed(token, config)) {
+        log.info('Token is revealed!');
         config.isRevealed = true;
         return true;
       } else {
-        log.info('Token have NO traits, collection is NOT revealed!');
+        log.info('.');
+        // log.info(`Collection is NOT revealed! Try again in ${config.pollForRevealIntervalMsec} msecs`);
       }
     }
     await utilslib.sleep(config.pollForRevealIntervalMsec);
@@ -360,18 +380,22 @@ async function pollForReveal(config) {
 }
 
 function createResults(config) {
-  debugToFile(config);
-  calcTraits(config);
+  addTokenNoneTrait(config);
+  calcGlobalRarity(config);
   calcTokenRarity(config);
   buildWebPage(config);
+
+  if (!config.webPageShown) {
+    const path = fileutil.toAbsoluteFilePath(`../config/projects/${config.projectId}/tokens-by-rarity-1.html`);
+    opn(path, { app: 'chrome' });
+    config.webPageShown = true;
+  }
+  if (config.debug) {
+    debugToFile(config);
+  }
 }
 
-function calcTraits(config) {
-  calcNoneTraits(config);
-  calcTraitsStats(config);
-}
-
-function calcNoneTraits(config) {
+function addTokenNoneTrait(config) {
   for (let trait of Object.keys(config.data.attributes)) {
     if (typeof config.data.attributes[trait] !== 'object') {
       continue;
@@ -380,31 +404,46 @@ function calcNoneTraits(config) {
       if (!token.done) {
         continue;
       }
-      // console.log(token.data);
       const item = token.traits.find(o => o.trait_type === trait);
       if (!item) {
         // log.info('Add None:', trait, token.tokenId);
         token.traits.push({ trait_type: trait, value: TRAIT_NONE_VALUE });
-        addTrait(trait, TRAIT_NONE_VALUE, '', config);
+        addGlobalTrait({ trait_type: trait, value: TRAIT_NONE_VALUE }, config);
       }
     }
   }
 }
 
-function calcTraitsStats(config) {
-  let numTraits = 0;
+function calcGlobalRarity(config) {
+  let numCategories = 0;
+  let numTotalTraits = 0;
   for (let trait of Object.keys(config.data.attributes)) {
-    numTraits++;
+    numCategories++;
     if (typeof config.data.attributes[trait] !== 'object') {
       continue;
     }
+    let numTraitsInCategory = 0;
     for (let value of Object.keys(config.data.attributes[trait].values)) {
+      numTotalTraits++;
+      numTraitsInCategory++;
       const rarity = config.data.attributes[trait].values[value].count / config.data.numTokens;
       config.data.attributes[trait].values[value].rarity = rarity;
       config.data.attributes[trait].values[value].rarityScore = 1 / rarity;
     }
+    config.data.attributes[trait].numTraitsInCategory = numTraitsInCategory;
   }
-  config.data.attributes.numTraits = numTraits;
+  config.data.attributes.numTotalTraits = numTotalTraits;
+  config.data.attributes.numCategories = numCategories;
+  config.data.attributes.avgTraitsPerCategory = numTotalTraits / numCategories;
+}
+
+function foo(config) {
+  /*
+  vanilla rarity score and multiply that by the average number of traits per category divided by the
+  number of traits in that category, so categories with fewer traits will have generally higher rarity scores.
+  config.data.attributes.avgTraitsPerCategory = numTotalTraits / numCategories;
+    trait.numTraitsInCategory = numTraitsInCategory;
+    */
 }
 
 function calcTokenRarity(config) {
@@ -412,30 +451,46 @@ function calcTokenRarity(config) {
     if (!token.done) {
       continue;
     }
+    let sumRarityScore = 0;
+    let sumRarityScoreWithNone = 0;
+    let sumRarityScoreWithTraitCount = 0;
+    let sumRarityScoreWithAll = 0;
+    let sumRarityScoreNormalized = 0;
     for (const attr of token.traits) {
-      // console.log('attr', attr);
       const trait = attr.trait_type;
       const value = attr.value;
+      attr.numWithThisTrait = config.data.attributes[trait].values[value].count;
       attr.rarity = config.data.attributes[trait].values[value].rarity;
       attr.rarityScore = config.data.attributes[trait].values[value].rarityScore;
-    }
-  }
+      attr.rarityScoreNormalized = attr.rarityScore * config.data.attributes.avgTraitsPerCategory / config.data.attributes[trait].numTraitsInCategory;
 
-  for (const token of config.data.tokenList) {
-    if (!token.done) {
-      continue;
-    }
-    let rarityScore = 0;
-    let rarityWithNoneScore = 0;
-    for (const attr of token.traits) {
-      rarityWithNoneScore = rarityWithNoneScore + attr.rarityScore;
-      if (attr.value !== TRAIT_NONE_VALUE) {
-        rarityScore = rarityScore + attr.rarityScore;
+      if (attr.value === TRAIT_NONE_VALUE) {
+        sumRarityScoreWithNone = sumRarityScoreWithNone + attr.rarityScore;
+        sumRarityScoreWithAll = sumRarityScoreWithAll + attr.rarityScore;
+      } else if (attr.trait_type === TRAIT_COUNT_TYPE) {
+        sumRarityScoreWithTraitCount = sumRarityScoreWithTraitCount + attr.rarityScore;
+        sumRarityScoreWithAll = sumRarityScoreWithAll + attr.rarityScore;
+      } else {
+        sumRarityScore = sumRarityScore + attr.rarityScore;
+        sumRarityScoreWithNone = sumRarityScoreWithNone + attr.rarityScore;
+        sumRarityScoreWithTraitCount = sumRarityScoreWithTraitCount + attr.rarityScore;
+        sumRarityScoreWithAll = sumRarityScoreWithAll + attr.rarityScore;
+        sumRarityScoreNormalized = sumRarityScoreNormalized + attr.rarityScoreNormalized;
       }
     }
-    token.rarityScore = rarityScore;
-    token.rarityWithNoneScore = rarityWithNoneScore;
-    token.hasRarity = true;
+    /*
+    vanilla rarity score and multiply that by the average number of traits per category divided by the
+    number of traits in that category, so categories with fewer traits will have generally higher rarity scores.
+    config.data.attributes.avgTraitsPerCategory = numTotalTraits / numCategories;
+      trait.numTraitsInCategory = numTraitsInCategory;
+      */
+
+    token.rarityScore = sumRarityScore;
+    token.rarityScoreWithNone = sumRarityScoreWithNone;
+    token.rarityScoreWithTraitCount = sumRarityScoreWithTraitCount;
+    token.rarityScoreWithAll = sumRarityScoreWithAll;
+    token.rarityScoreNormalized = sumRarityScoreNormalized;
+    token.hasRarity = token.rarityScore > 0;
   }
 }
 
@@ -483,17 +538,22 @@ function buildWebPage(config) {
   }
 }
 
-function createSharedHtml(config) {
+function createSharedHtml(config, title) {
   let html = '';
 
   html = html + `
-    <html><head>
+    <html><head><title>${title}</title>
     <script>
         function openLinks(className, first, last) {
             var checkboxes = document.querySelectorAll('input[class="' + className + '"]:checked');
             var links = [];
             checkboxes.forEach((ck) => { links.push(['${BASE_ASSET_URL}/${config.contractAddress}/'+ck.value, 'id_' + ck.value]);});
-            links.slice(first-1, last-1).forEach((link) => { console.log(link[1]); window.open(link[0], link[1]); });
+            console.log(links);
+            console.log('---');
+            var links2 = links.slice(first-1, last);
+            console.log(links2);
+            console.log('---');
+            links2.forEach((link) => { console.log(link[1]); window.open(link[0], link[1]); });
         }
     </script>
     <style>
@@ -505,7 +565,7 @@ function createSharedHtml(config) {
         .hilite {
           background: lightgray;
         }
-        .level1, .level2, .level3
+        .level1, .level2, .level3, .level4, .level5
         {
             float:left;
             display:inline;
@@ -520,7 +580,7 @@ function createSharedHtml(config) {
 function createHtmlAll(tokenLists, threshold, config) {
   const numTotalTokens = tokenLists.tokensByRarity.length;
 
-  let html = createSharedHtml(config);
+  let html = createSharedHtml(config, config.projectId);
 
   const tokensLevel1 = [];
   for (const item of tokenLists.tokensByRarity) {
@@ -529,20 +589,58 @@ function createHtmlAll(tokenLists, threshold, config) {
     }
   }
   if (tokensLevel1.length) {
-    const desc = "All, rarity without None";
+    const desc = "All: Rarity Score";
     html = html + createHtmlTables(tokensLevel1, numTotalTokens, 'rarityScore', 1, threshold.image, desc, config);
   }
 
+  /*
   const tokensLevel2 = [];
-  tokenLists.tokensByRarity.sort((a, b) => (a.rarityWithNoneScore < b.rarityWithNoneScore) ? 1 : ((b.rarityWithNoneScore < a.rarityWithNoneScore) ? -1 : 0));
+  tokenLists.tokensByRarity.sort((a, b) => (a.rarityScoreWithNone < b.rarityScoreWithNone) ? 1 : ((b.rarityScoreWithNone < a.rarityScoreWithNone) ? -1 : 0));
   for (const item of tokenLists.tokensByRarity) {
     if (item.percent <= threshold.level) {
       tokensLevel2.push(item);
     }
   }
   if (tokensLevel2.length) {
-    const desc = "All, rarity with None";
-    html = html + createHtmlTables(tokensLevel2, numTotalTokens, 'rarityWithNoneScore', 2, threshold.image, desc, config);
+    const desc = "All: Rarity Score + None";
+    html = html + createHtmlTables(tokensLevel2, numTotalTokens, 'rarityScoreWithNone', 2, threshold.image, desc, config);
+  }
+  */
+
+  const tokensLevel3 = [];
+  tokenLists.tokensByRarity.sort((a, b) => (a.rarityScoreWithTraitCount < b.rarityScoreWithTraitCount) ? 1 : ((b.rarityScoreWithTraitCount < a.rarityScoreWithTraitCount) ? -1 : 0));
+  for (const item of tokenLists.tokensByRarity) {
+    if (item.percent <= threshold.level) {
+      tokensLevel3.push(item);
+    }
+  }
+  if (tokensLevel3.length) {
+    const desc = "All: Rarity Score + Trait Count";
+    html = html + createHtmlTables(tokensLevel3, numTotalTokens, 'rarityScoreWithTraitCount', 3, threshold.image, desc, config);
+  }
+
+  const tokensLevel4 = [];
+  tokenLists.tokensByRarity.sort((a, b) => (a.rarityScoreWithAll < b.rarityScoreWithAll) ? 1 : ((b.rarityScoreWithAll < a.rarityScoreWithAll) ? -1 : 0));
+  for (const item of tokenLists.tokensByRarity) {
+    if (item.percent <= threshold.level) {
+      tokensLevel4.push(item);
+    }
+  }
+  if (tokensLevel4.length) {
+    const desc = "All: Rarity Score + None + Trait Count";
+    html = html + createHtmlTables(tokensLevel4, numTotalTokens, 'rarityScoreWithAll', 4, threshold.image, desc, config);
+  }
+
+  const tokensLevel5 = [];
+  tokenLists.tokensByRarity.sort((a, b) => (a.rarityScoreNormalized < b.rarityScoreNormalized) ? 1 : ((b.rarityScoreNormalized < a.rarityScoreNormalized) ? -1 : 0));
+  for (const item of tokenLists.tokensByRarity) {
+    if (item.percent <= threshold.level) {
+      tokensLevel5.push(item);
+    }
+  }
+  if (tokensLevel5.length) {
+    const desc = "All: Rarity Score Normalized";
+    html = html + createHtmlTables(tokensLevel5, numTotalTokens, 'rarityScoreNormalized', 5, threshold.image, desc, config);
   }
 
   html = html + `</body>`;
@@ -553,7 +651,7 @@ function createHtmlAll(tokenLists, threshold, config) {
 function createHtmlBuynow(tokenLists, threshold, config) {
   const numTotalTokens = tokenLists.tokensByRarity.length;
 
-  let html = createSharedHtml(config);
+  let html = createSharedHtml(config, config.projectId);
 
   const tokensLevel1 = [];
   const tokensLevel2 = [];
@@ -591,15 +689,22 @@ function createHtmlBuynow(tokenLists, threshold, config) {
 function createHtmlTables(tokens, numTotalTokens, scorePropertyName, level, maxImagePct, desc, config) {
   let html = '';
 
+  let buttonsHtml = '';
+  let lastButtonVal = 1;
+  for (let buttonVal of config.buttons) {
+    buttonsHtml = buttonsHtml + `<button onClick="openLinks('checkbox_${level}', ${lastButtonVal}, ${buttonVal})">${buttonVal}</button>&nbsp;&nbsp;`;
+    lastButtonVal = buttonVal;
+  }
+
   html = html + `
     <div class="level${level}">
-    <span>Calc Supply: <b>${numTotalTokens}</b> ({QTY})</span>
-    <button onClick="openLinks('checkbox_${level}', 1, 3)">1-3</button>
-    <button onClick="openLinks('checkbox_${level}', 4, 6)">4-6</button>`;
+    <span>Calc Supply: <b>${numTotalTokens}</b> ({QTY})</span>&nbsp;&nbsp;&nbsp;
+    ${buttonsHtml}
+    `;
 
   html = html + `
     <table>
-    <tr style="background: black; color: white"><td colspan="100%" style=" text-align: center">${desc}</td></tr>
+    <tr style="background: black; color: white"><td colspan="100%">${desc}</td></tr>
     <tr>
         <th>Image</th>
         <th></th>
@@ -627,7 +732,7 @@ function createHtmlTables(tokens, numTotalTokens, scorePropertyName, level, maxI
             <td>${priceHtml}</td>
             <td><b>${item.rank}</b></td>
             <td>${rarityScoreHtml}</b></td>
-            <td>${item.tokenId}</td>
+            <td>:${item.tokenId}</td>
         </tr>`;
   }
   html = html + `</table></div>`;
@@ -641,7 +746,8 @@ async function processTokenItem(item, config) {
   if (item.done) {
     return;
   }
-  const tokenData = await fetchJson(createTokenURI(item.tokenId, config.tokenURI), item);
+  item.tokenURI = createTokenURI(item.tokenId, config.tokenURI);
+  const tokenData = await fetchJson(item.tokenURI, item);
   if (tokenData?.attributes) {
     addTokenData(tokenData, item, config);
     item.done = true;
@@ -650,44 +756,78 @@ async function processTokenItem(item, config) {
   }
 }
 
-function getValidTraits(attributes) {
-  const result = attributes.filter((attr) => attr.trait_type && !attr.display_type);
-  log.verbose('getValidTraits', attributes, result);
-  return result;
+function getTraitGroups(attributes) {
+  const traits = attributes.filter((attr) => attr.trait_type && !attr.display_type);
+  const specialTraits = attributes.filter((attr) => attr.trait_type && attr.display_type);
+  return { traits, specialTraits };
 }
 
 function addTokenData(data, item, config) {
   config.data.numTokens++;
   item.image = data.image;
-  item.data = data;
-  item.traits = getValidTraits(data.attributes);
+  item.source = data;
+  addTokenTraits(data.attributes, item, config);
+}
+
+function normalizeTraits(traits) {
+  const result = [];
+  traits.forEach((trait) => {
+    let normalizedValue = trait.value;
+    const thisValue = trait.value.toLowerCase();
+    if (['none', 'nothing'].includes(thisValue)) {
+      normalizedValue = TRAIT_NONE_VALUE;
+    }
+    result.push({ ...trait, value: normalizedValue });
+  });
+  return result;
+}
+
+function addTokenTraits(attributes, item, config) {
+  const traitGroups = getTraitGroups(attributes);
+  item.traits = normalizeTraits(traitGroups.traits);
+  item.specialTraits = traitGroups.specialTraits;
+
+  const traitCountTrait = {
+    trait_type: TRAIT_COUNT_TYPE,
+    value: (item.traits.filter((item) => item.value !== TRAIT_NONE_VALUE).length).toString()
+  };
+  item.traits.push(traitCountTrait);
+
   try {
     for (const attr of item.traits) {
-      addTrait(attr.trait_type, attr.value, attr.display_type, config);
+      addGlobalTrait(attr, config);
     }
   } catch (error) {
-    log.error('error', data, error);
+    log.error('error', attributes, error);
   }
 }
 
-function addTrait(trait, value, displayType, config) {
-  if (!config.data.attributes[trait]) {
-    config.data.attributes[trait] = {
+function addGlobalTrait(attribute, config) {
+  if (attribute.value === '') {
+    attribute.value = TRAIT_NONE_VALUE;
+  }
+
+  const traitType = attribute.trait_type;
+  const traitValue = attribute.value;
+  const displayType = attribute.display_type;
+
+  if (!config.data.attributes[traitType]) {
+    config.data.attributes[traitType] = {
       count: 0,
-      trait,
+      trait: traitType,
       displayType,
       values: {}
     };
   }
-  config.data.attributes[trait].count++;
+  config.data.attributes[traitType].count++;
 
-  if (!config.data.attributes[trait].values[value]) {
-    config.data.attributes[trait].values[value] = {
+  if (!config.data.attributes[traitType].values[traitValue]) {
+    config.data.attributes[traitType].values[traitValue] = {
       count: 0,
-      value,
+      value: traitValue,
     };
   }
-  config.data.attributes[trait].values[value].count++;
+  config.data.attributes[traitType].values[traitValue].count++;
 }
 
 async function fetchJson(uri, item, method = 'GET') {
@@ -728,4 +868,11 @@ function convertTokenURI(uri) {
     normalizedURI = uri.replace(IPFS_URL, 'https://ipfs.io/ipfs/');
   }
   return normalizedURI;
+}
+
+function notifyRevealed() {
+  const path = fileutil.toAbsoluteFilePath('revealed-collection.html');
+  const path2 = fileutil.toAbsoluteFilePath('notification.mp3');
+  // opn(path, { app: 'firefox' });
+  opn(path2, { app: 'firefox' });
 }

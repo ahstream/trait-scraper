@@ -1,14 +1,12 @@
 {
-  "pollForRevealIntervalMsec": 2000,
-  "maxCheckPct": 0.02,
-  "maxCheckPrice": 3,
-  "maxImgPct": 0.1,
+  "pollForRevealIntervalMsec": 1000,
   "fetchMilestones": [
-    200,
+    250,
     500,
     1000,
     3000,
-    5000
+    5000,
+    7000
   ],
   "threshold": {
     "buynow": false,
@@ -18,18 +16,26 @@
     "level2": 0.04,
     "level3": 0.10,
     "image1": 0.02,
-    "image2": 0.025,
+    "image2": 0.3,
     "image3": 0.03,
     "price1": 2,
     "price2": 3,
     "price3": 4
   },
+  "buttons": [
+    10,
+    20,
+    30,
+    40,
+    50
+  ],
   "pollTokenIds": [
     1234
   ],
   "minTraitsNeeded": 2,
+  "minDifferentTraitValuesNeeded": 2,
   "tokensBatchSize": 200,
-  "tokensBatchDivider": 5,
+  "fetchNewTokensAtPctFinished": 0.8,
   "fetchRequestLifetimeMsec": 10000,
   "etherscanURI": "http://node1.web3api.com/",
   "tokenURISignatur": "0xc87b56dd"

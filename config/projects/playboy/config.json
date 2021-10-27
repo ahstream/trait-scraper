@@ -1,0 +1,28 @@
+{
+  "firstTokenId": 1,
+  "maxSupply": 11953,
+  "contractAddress": "0x65c234d041f9ef96e2f126263727dfa582206d82",
+  "pollForRevealIntervalMsec": 500,
+  "threshold": {
+    "buynow": true,
+    "level": 0.10,
+    "image": 0.10,
+    "level1": 0.02,
+    "level2": 0.04,
+    "level3": 0.10,
+    "image1": 0.02,
+    "image2": 0.03,
+    "image3": 0.03,
+    "price1": 0.40,
+    "price2": 0.40,
+    "price3": 0.90
+  },
+  "fetchMilestones": [
+    250,
+    500,
+    1000,
+    3000,
+    5000,
+    7000
+  ]
+}

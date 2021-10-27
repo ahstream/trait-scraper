@@ -16,6 +16,6 @@
     "price2": 3,
     "price3": 4
   },
-  "tokensBatchSize": 50,
-  "tokensBatchDivider": 5
+  "tokensBatchSize": 200,
+  "fetchNewTokensAtPctFinished": 0.8
 }
