@@ -32,10 +32,18 @@
   "pollTokenIds": [
     1234
   ],
+  "test": {
+    "nextTokensBatchSize": [
+      400
+    ],
+    "nextTokensFetchNewWhenFinishedPct": [
+      0.5
+    ]
+  },
+  "nextTokensBatchSize": 200,
+  "nextTokensFetchNewWhenFinishedPct": 0.8,
   "minTraitsNeeded": 2,
   "minDifferentTraitValuesNeeded": 2,
-  "tokensBatchSize": 200,
-  "fetchNewTokensAtPctFinished": 0.8,
   "fetchRequestLifetimeMsec": 10000,
   "etherscanURI": "http://node1.web3api.com/",
   "tokenURISignatur": "0xc87b56dd"

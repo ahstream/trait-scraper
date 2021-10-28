@@ -32,7 +32,8 @@ const TRAIT_COUNT_TYPE = 'xxTraitCountxx';
 
 // RUNTIME ----------------------------------------------------------------------------------
 
-// yarn cli fetchCollection --id waw --buynow
+// yarn cli fetch --id waw --debug
+// yarn cli test --id waw --debug
 
 runProgram();
 
@@ -46,8 +47,11 @@ async function runProgram() {
   const options = program.opts();
   const cmd = program.args[0];
   switch (cmd) {
-    case 'fetchCollection':
+    case 'fetch':
       await fetchCollection(options.id, options.debug);
+      break;
+    case 'test':
+      await testCollection(options.id, options.debug);
       break;
     case 'buynow':
       const result = await getBuynowList(options.id);
@@ -80,6 +84,64 @@ function createConfig(projectId, debug) {
   return config;
 }
 
+function getTimer() {
+  const timer = {
+    startDate: new Date(),
+  };
+
+  return {
+    startDate: timer.startDate,
+    getSeconds: () => {
+      return ((new Date()).getTime() - timer.startDate.getTime()) / 1000;
+    }
+  };
+}
+
+async function testCollection(projectId, debug = false) {
+  const config = createConfig(projectId, debug);
+
+  const results = {};
+  for (const batchSize of config.test.nextTokensBatchSize) {
+    const batchKey = batchSize.toString();
+    if (!results[batchKey]) {
+      results[batchKey] = [];
+    }
+    for (const finishedPct of config.test.nextTokensFetchNewWhenFinishedPct) {
+      const newConfig = createConfig(projectId, debug);
+      newConfig.nextTokensBatchSize = batchSize;
+      newConfig.nextTokensFetchNewWhenFinishedPct = finishedPct;
+      newConfig.test = true;
+      newConfig.threshold.buynow = true;
+      const timer = getTimer();
+      await testFetchCollection(projectId, newConfig);
+      results[batchKey].push([finishedPct, timer.getSeconds()]);
+      console.log('timer:', timer.getSeconds());
+    }
+  }
+  console.log('Results:', results);
+}
+
+async function testFetchCollection(projectId, config) {
+  log.info('Start testing collection');
+  const startDate = new Date();
+
+  prepareTokens(config);
+  await pollForReveal(config, true);
+  await fetchCollectionMilestones(config.fetchMilestones, config);
+
+  log.info(`Finished pre-fetching collection: ${countFinished(config)} tokens`);
+  log.info('Duration (sec):', ((new Date()).getTime() - startDate.getTime()) / 1000);
+
+  createResults(config);
+
+  if (config.debug) {
+    debugToFile(config);
+  }
+
+  log.info(`Finished testing collection: ${countFinished(config)} tokens`);
+  log.info('Duration (sec):', ((new Date()).getTime() - startDate.getTime()) / 1000);
+}
+
 async function fetchCollection(projectId, debug = false, waitForReveal = true) {
   log.info('Start fetching collection');
   const startDate = new Date();
@@ -90,7 +152,9 @@ async function fetchCollection(projectId, debug = false, waitForReveal = true) {
 
   if (waitForReveal) {
     await pollForReveal(config);
-    notifyRevealed();
+    if (!config.debug && !config.test) {
+      notifyRevealed();
+    }
   }
 
   await fetchCollectionMilestones(config.fetchMilestones, config);
@@ -120,7 +184,7 @@ async function fetchCollection(projectId, debug = false, waitForReveal = true) {
 async function fetchCollectionMilestones(milestones = [], config) {
   while (true) {
     const numFinishedBefore = countFinished(config);
-    const nextTokens = getNextTokens(config, config.tokensBatchSize);
+    const nextTokens = getNextTokens(config, config.nextTokensBatchSize);
 
     if (nextTokens.length < 1) {
       break;
@@ -141,7 +205,7 @@ async function fetchCollectionMilestones(milestones = [], config) {
 
 async function fetchCollectionTokens(tokenList, config) {
   const numTokens = tokenList.length;
-  const numWhenToGetMoreTokens = Math.round(config.fetchNewTokensAtPctFinished * numTokens);
+  const numWhenToGetMoreTokens = Math.round(config.nextTokensFetchNewWhenFinishedPct * numTokens);
 
   while (true) {
     tokenList.forEach(async (item) => {
@@ -350,7 +414,7 @@ function isTokenRevealed(token, config) {
   return false;
 }
 
-async function pollForReveal(config) {
+async function pollForReveal(config, isTest = false) {
   log.info('Poll for reveal...');
   const tokenId = (config.pollTokenIds ?? [1234])[0];
   while (true) {
@@ -371,6 +435,9 @@ async function pollForReveal(config) {
         config.isRevealed = true;
         return true;
       } else {
+        if (isTest) {
+          return true;
+        }
         log.info('.');
         // log.info(`Collection is NOT revealed! Try again in ${config.pollForRevealIntervalMsec} msecs`);
       }
@@ -380,6 +447,10 @@ async function pollForReveal(config) {
 }
 
 function createResults(config) {
+  if (config.test) {
+    return;
+  }
+
   addTokenNoneTrait(config);
   calcGlobalRarity(config);
   calcTokenRarity(config);
@@ -770,6 +841,8 @@ async function processTokenItem(item, config) {
   const tokenData = await fetchJson(item.tokenURI, item);
   if (tokenData?.attributes) {
     addTokenData(tokenData, item, config);
+    item.done = true;
+  } else if (config.test) {
     item.done = true;
   } else {
     item.done = false;

@@ -1,0 +1,19 @@
+{
+  "firstTokenId": 1,
+  "maxSupply": 8001,
+  "contractAddress": "0x6da4c631c6ad8bfd9d7845fd093541bebece2f96",
+  "threshold": {
+    "buynow": false,
+    "level": 0.10,
+    "image": 0.10,
+    "level1": 0.02,
+    "level2": 0.04,
+    "level3": 0.10,
+    "image1": 0.02,
+    "image2": 0.025,
+    "image3": 0.03,
+    "price1": 2,
+    "price2": 3,
+    "price3": 4
+  }
+}

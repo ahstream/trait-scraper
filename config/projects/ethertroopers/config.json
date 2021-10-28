@@ -3,6 +3,8 @@
   "maxSupply": 8888,
   "contractAddress": "0xe0a2e8a4d94e0c395e88aad7c9074d73a115885d",
   "pollForRevealIntervalMsec": 1000,
+  "nextTokensBatchSize": 350,
+  "nextTokensFetchNewWhenFinishedPct": 0.55,
   "threshold": {
     "buynow": true,
     "level": 0.10,
@@ -13,16 +15,12 @@
     "image1": 0.02,
     "image2": 0.03,
     "image3": 0.03,
-    "price1": 0.25,
-    "price2": 0.30,
-    "price3": 0.40
+    "price1": 0.22,
+    "price2": 0.22,
+    "price3": 0.20
   },
   "fetchMilestones": [
-    250,
-    500,
-    1000,
-    3000,
-    5000,
-    7000
+    2000,
+    5500
   ]
 }

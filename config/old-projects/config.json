@@ -1,9 +1,0 @@
-{
-  "etherscan": {
-    "url": "'http://node1.web3api.com/'",
-    "tokenURISignatur": "0xc87b56dd"
-  },
-  "assetsBatchSize": 4,
-  "sleepBetweenEachAsset": 300,
-  "sleepBetweenEachAssetBatch": 2000
-}
