@@ -50,6 +50,9 @@ async function runProgram() {
     case 'fetch':
       await fetchCollection(options.id, options.debug);
       break;
+    case 'poll':
+      await pollCollections(options.debug);
+      break;
     case 'test':
       await testCollection(options.id, options.debug);
       break;
@@ -64,13 +67,12 @@ async function runProgram() {
   console.log('Done!');
 }
 
-function debugToFile(config) {
-  fileutil.writeRelativeFile(`../config/projects/${config.projectId}/debug.json`, JSON.stringify({ data: config }, null, 2));
-}
-
 function createConfig(projectId, debug) {
   const baseConfig = jsonutil.importFile(`../config/config.json`);
-  const projectConfig = jsonutil.importFile(`../config/projects/${projectId}/config.json`);
+  let projectConfig = {};
+  if (projectId) {
+    projectConfig = jsonutil.importFile(`../config/projects/${projectId}/config.json`);
+  }
   const config = { ...baseConfig, ...projectConfig };
 
   config.projectId = projectId;
@@ -84,35 +86,30 @@ function createConfig(projectId, debug) {
   return config;
 }
 
-function getTimer() {
-  const timer = {
-    startDate: new Date(),
-  };
-
-  return {
-    startDate: timer.startDate,
-    getSeconds: () => {
-      return ((new Date()).getTime() - timer.startDate.getTime()) / 1000;
-    }
-  };
+async function pollCollections(debug = false) {
+  const config = createConfig(null, debug);
+  config.projects.forEach(projectId => {
+    console.log(projectId);
+    fetchCollection(projectId, debug);
+  });
 }
 
 async function testCollection(projectId, debug = false) {
   const config = createConfig(projectId, debug);
 
   const results = {};
-  for (const batchSize of config.test.nextTokensBatchSize) {
+  for (const batchSize of config.testParameters.nextTokensBatchSize) {
     const batchKey = batchSize.toString();
     if (!results[batchKey]) {
       results[batchKey] = [];
     }
-    for (const finishedPct of config.test.nextTokensFetchNewWhenFinishedPct) {
+    for (const finishedPct of config.testParameters.nextTokensFetchNewWhenFinishedPct) {
       const newConfig = createConfig(projectId, debug);
       newConfig.nextTokensBatchSize = batchSize;
       newConfig.nextTokensFetchNewWhenFinishedPct = finishedPct;
-      newConfig.test = true;
+      newConfig.isTest = true;
       newConfig.threshold.buynow = true;
-      const timer = getTimer();
+      const timer = createTimer();
       await testFetchCollection(projectId, newConfig);
       results[batchKey].push([finishedPct, timer.getSeconds()]);
       console.log('timer:', timer.getSeconds());
@@ -126,6 +123,7 @@ async function testFetchCollection(projectId, config) {
   const startDate = new Date();
 
   prepareTokens(config);
+
   await pollForReveal(config, true);
   await fetchCollectionMilestones(config.fetchMilestones, config);
 
@@ -143,8 +141,8 @@ async function testFetchCollection(projectId, config) {
 }
 
 async function fetchCollection(projectId, debug = false, waitForReveal = true) {
-  log.info('Start fetching collection');
-  const startDate = new Date();
+  log.info(`Start fetching collection ${projectId}`);
+  const timer = createTimer();
 
   const config = createConfig(projectId, debug);
 
@@ -152,15 +150,15 @@ async function fetchCollection(projectId, debug = false, waitForReveal = true) {
 
   if (waitForReveal) {
     await pollForReveal(config);
-    if (!config.debug && !config.test) {
+    if (!config.debug && !config.isTest) {
       notifyRevealed();
     }
   }
 
   await fetchCollectionMilestones(config.fetchMilestones, config);
 
-  log.info(`Finished pre-fetching collection: ${countFinished(config)} tokens`);
-  log.info('Duration (sec):', ((new Date()).getTime() - startDate.getTime()) / 1000);
+  log.info(`Finished pre-fetching collection ${projectId}, ${countFinished(config)} tokens`);
+  log.info(`Duration: ${timer.getSeconds()} secs`);
 
   createResults(config);
 
@@ -177,8 +175,8 @@ async function fetchCollection(projectId, debug = false, waitForReveal = true) {
 
   createResults(config);
 
-  log.info(`Finished fetching collection: ${countFinished(config)} tokens`);
-  log.info('Duration (sec):', ((new Date()).getTime() - startDate.getTime()) / 1000);
+  log.info(`Finished fetching collection ${projectId}, ${countFinished(config)} tokens`);
+  log.info(`Duration: ${timer.getSeconds()} secs`);
 }
 
 async function fetchCollectionMilestones(milestones = [], config) {
@@ -411,6 +409,8 @@ function isTokenRevealed(token, config) {
     return true;
   }
 
+  return utilslib.getRandomInteger(1, 100) > 70;
+
   return false;
 }
 
@@ -420,7 +420,7 @@ async function pollForReveal(config, isTest = false) {
   while (true) {
     const newTokenURI = await getTokenURIFromEtherscan(tokenId, config.contractAddress, config.etherscanURI, config.tokenURISignatur);
     if (config.debug) {
-      log.info('Etherscan tokenURI:', newTokenURI);
+      log.info('Token URI:', newTokenURI);
     }
     if (newTokenURI && !isValidTokenURI(newTokenURI)) {
       log.info('Invalid tokenURI:', newTokenURI);
@@ -439,7 +439,7 @@ async function pollForReveal(config, isTest = false) {
           return true;
         }
         log.info('.');
-        // log.info(`Collection is NOT revealed! Try again in ${config.pollForRevealIntervalMsec} msecs`);
+        // log.info(`Not revealed: ${config.projectId}`);
       }
     }
     await utilslib.sleep(config.pollForRevealIntervalMsec);
@@ -447,7 +447,7 @@ async function pollForReveal(config, isTest = false) {
 }
 
 function createResults(config) {
-  if (config.test) {
+  if (config.isTest) {
     return;
   }
 
@@ -458,6 +458,7 @@ function createResults(config) {
 
   if (!config.webPageShown) {
     const path = fileutil.toAbsoluteFilePath(`../config/projects/${config.projectId}/tokens-by-rarity-1.html`);
+    log.info('Open results page:', path);
     opn(path, { app: 'chrome' });
     config.webPageShown = true;
   }
@@ -842,7 +843,7 @@ async function processTokenItem(item, config) {
   if (tokenData?.attributes) {
     addTokenData(tokenData, item, config);
     item.done = true;
-  } else if (config.test) {
+  } else if (config.isTest) {
     item.done = true;
   } else {
     item.done = false;
@@ -968,4 +969,21 @@ function notifyRevealed() {
   const path2 = fileutil.toAbsoluteFilePath('notification.mp3');
   // opn(path, { app: 'firefox' });
   opn(path2, { app: 'firefox' });
+}
+
+function debugToFile(config) {
+  fileutil.writeRelativeFile(`../config/projects/${config.projectId}/debug.json`, JSON.stringify({ data: config }, null, 2));
+}
+
+function createTimer() {
+  const timer = {
+    startDate: new Date(),
+  };
+
+  return {
+    startDate: timer.startDate,
+    getSeconds: () => {
+      return ((new Date()).getTime() - timer.startDate.getTime()) / 1000;
+    }
+  };
 }

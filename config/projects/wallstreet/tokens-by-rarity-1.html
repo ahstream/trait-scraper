@@ -1,0 +1,32 @@
+
+    <html><head><title>wallstreet</title>
+    <script>
+        function openLinks(className, first, last) {
+            var checkboxes = document.querySelectorAll('input[class="' + className + '"]:checked');
+            var links = [];
+            checkboxes.forEach((ck) => { links.push(['https://opensea.io/assets//0x79da5fa272e8fb280cee4d0649aa6a9e4e62ceb0/'+ck.value, 'id_' + ck.value]);});
+            console.log(links);
+            console.log('---');
+            var links2 = links.slice(first-1, last);
+            console.log(links2);
+            console.log('---');
+            links2.forEach((link) => { console.log(link[1]); window.open(link[0], link[1]); });
+        }
+    </script>
+    <style>
+        tr { vertical-align: top; }
+        td { padding-right: 10px; }
+        img.thumb { border: 1px solid black; height:100px; width:100px }
+        table, th, td {text-align: left;}
+        body, table, th, td {font-size: 18px; }
+        .hilite {
+          background: lightgray;
+        }
+        .level1, .level2, .level3, .level4, .level5
+        {
+            float:left;
+            display:inline;
+            margin: 10px 20px 10px 10px;
+        }
+    </style>
+    </head><body></body>

@@ -2,7 +2,7 @@
   "firstTokenId": 1,
   "maxSupply": 5555,
   "contractAddress": "0x50e712b3a260d7639179e8277836253461418f23",
-  "pollForRevealIntervalMsec": 300,
+  "pollForRevealIntervalMsec": 500,
   "nextTokensBatchSize": 150,
   "nextTokensFetchNewWhenFinishedPct": 0.7,
   "threshold": {
