@@ -4,16 +4,16 @@
   "lastTokenId": 9999,
   "contractAddress": "0x8943c7bac1914c9a7aba750bf2b6b09fd21037e0",
   "threshold": {
-    "buynow": false,
+    "buynow": true,
     "level": 0.10,
     "image": 0.10,
-    "level1": 0.02,
+    "level1": 1,
     "level2": 0.04,
     "level3": 0.10,
-    "image1": 0.02,
+    "image1": 1,
     "image2": 0.025,
     "image3": 0.03,
-    "price1": 2,
+    "price1": 999999999,
     "price2": 3,
     "price3": 4
   }

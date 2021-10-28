@@ -494,6 +494,23 @@ function calcTokenRarity(config) {
   }
 }
 
+function sortBy1Key(list, key, ascending = true) {
+  if (ascending) {
+    list.sort((a, b) => (b[key] < a[key]) ? 1 : ((a[key] < b[key]) ? -1 : 0));
+  } else {
+    list.sort((a, b) => (a[key] < b[key]) ? 1 : ((b[key] < a[key]) ? -1 : 0));
+  }
+}
+
+function sortBy2Keys(list, key1, key2, ascending1 = true, ascending2 = true) {
+  list.sort((a, b) => {
+    if (a[key1] === b[key1]) {
+      return ascending2 ? a[key2] - b[key2] : b[key2] - a[key2];
+    }
+    return ascending1 ? (a[key1] > b[key1] ? 1 : -1) : (b[key1] > a[key1] ? 1 : -1);
+  });
+}
+
 function getTokenListsForResult(config) {
   const tokensByRarity = [];
   for (const token of config.data.tokenList) {
@@ -502,7 +519,9 @@ function getTokenListsForResult(config) {
     }
     tokensByRarity.push(token);
   }
-  tokensByRarity.sort((a, b) => (a.rarityScore < b.rarityScore) ? 1 : ((b.rarityScore < a.rarityScore) ? -1 : 0));
+
+  // sortBy1Key(tokensByRarity, 'rarityScore', false);
+  sortBy2Keys(tokensByRarity, 'rarityScore', 'price', false, true);
 
   const numIncludedTokens = tokensByRarity.length;
 
@@ -722,7 +741,8 @@ function createHtmlTables(tokens, numTotalTokens, scorePropertyName, level, maxI
     const checkboxHtml = `<input type="checkbox" class="checkbox_${level}" ${doHilite ? 'checked' : ''} value="${item.tokenId}">`;
     const percentHtml = `<a target="id_${item.tokenId}" href="${assetLink}">${(item.percent * 100).toFixed(1)} %</a>`;
     const priceHtml = item.buynow && item.price > 0 ? `${(item.price)} eth` : '';
-    const rarityScoreHtml = Math.round(item[scorePropertyName]);
+    // const rarityScoreHtml = Math.round(item[scorePropertyName]);
+    const rarityScoreHtml = item[scorePropertyName].toFixed(0);
     const rowClass = doHilite ? 'hilite' : '';
     html = html + `
         <tr class="${rowClass}">
