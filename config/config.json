@@ -1,11 +1,8 @@
 {
   "projects": [
-    "robopets",
-    "apewives",
-    "playboy",
-    "billionaires"
+    "apewives"
   ],
-  "pollForRevealIntervalMsec": 10000,
+  "pollForRevealIntervalMsec": 1000,
   "fetchMilestones": [
     250,
     500,

@@ -24,9 +24,9 @@ import { curly } from "node-libcurl";
 const log = createLogger();
 
 const DEFAULT_FETCH_HEADERS = {
-  'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36',
-  "accept": "*/*",
+  'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
 };
+
 const BASE_ASSET_URL = 'https://opensea.io/assets/';
 const IPFS_URL = 'ipfs://';
 const TRAIT_NONE_VALUE = 'xxNonexx';
@@ -157,16 +157,22 @@ async function fetchCollection({ projectId, all = false, debug = false }) {
     config.threshold.level = 1;
     config.threshold.image = 0.01;
   }
+  log.info('duration:', timer.duration());
 
   prepareTokens(config);
   saveToDB(config);
+  log.info('duration:', timer.duration());
 
   if (!config.data.isRevealed) {
     await pollForReveal(config);
     notifyRevealed(config);
   }
 
+  log.info('duration:', timer.duration());
+
   await fetchCollectionMilestones(config.fetchMilestones, config);
+
+  log.info('duration:', timer.duration());
 
   log.info(`Finished pre-fetching collection "${projectId}", ${countDone(config)} ok, ${countSkipped(config)} skipped!`);
   log.info(`Create results...`);
@@ -195,6 +201,7 @@ async function fetchCollection({ projectId, all = false, debug = false }) {
 }
 
 async function fetchCollectionMilestones(milestones = [], config) {
+  const timer = createTimer();
   while (true) {
     const numFinishedBefore = countDone(config);
     const nextTokens = getNextTokens(config, config.nextTokensBatchSize);
@@ -211,7 +218,9 @@ async function fetchCollectionMilestones(milestones = [], config) {
     if (milestones.length > 0 && numDone >= milestones[0]) {
       const milestone = milestones.splice(0, 1);
       log.info(`Create results after ${milestone} finished tokens...`);
+      log.info('duration:', timer.duration());
       createResults(config);
+      log.info('duration, createResults:', timer.duration());
     }
   }
 }
@@ -480,7 +489,7 @@ async function pollForReveal(config, isTest = false) {
       }
       const token = await fetchJson(thisTokenURI, {}, config.debug);
       if (isTokenRevealed(token, config)) {
-        log.info('Collection is revealed, tokenURI:');
+        log.info('Collection is revealed, tokenURI:', config.data.tokenURI);
         log.info('Token:', token);
         config.data.isRevealed = true;
         config.data.revealTime = new Date();
@@ -952,21 +961,26 @@ async function fetchJson(uri, item, debug = false, method = 'GET') {
     item.statusText = "fetch-begin";
     item.fetchStart = new Date();
     item.tokenURI = uri;
+    // console.log('fetchJson', uri);
+    log.debug('fetchJson', uri);
     const response = await fetch(uri, {
       "headers": DEFAULT_FETCH_HEADERS,
       "method": method
     });
     if (response.ok) {
+      log.debug('ok');
       const jsonData = await response.json();
       item.statusText = "ok";
       item.fetchStop = new Date();
       return jsonData;
     }
+    log.debug('error', response.status);
     item.statusCode = response.status;
     item.statusText = "error";
     item.fetchStop = new Date();
     return {};
   } catch (error) {
+    log.debug('error', error);
     item.statusText = "error";
     item.fetchStop = new Date();
     return {};
@@ -1102,17 +1116,19 @@ function debugToFile(config, filename = 'debug.json') {
 }
 
 function getFromDB(projectId) {
+  log.info('getFromDB');
   const path = `../config/projects/${projectId}/db.json`;
   if (fileutil.fileExistsRelPath(path)) {
     const obj = jsonutil.importFile(path);
     if (obj) {
-      return obj.data;
+      return obj.data;git st
     }
   }
   return {};
 }
 
 function saveToDB(config) {
+  log.info('saveToDB');
   const data = {};
   const tokenList = [];
   for (let i = 0; i < config.data.tokenList.length; i++) {
@@ -1137,14 +1153,22 @@ function saveToDB(config) {
 }
 
 function createTimer() {
+  const now = new Date();
   const timer = {
-    startDate: new Date(),
+    startDate: now,
+    lastDate: now,
   };
 
   return {
     startDate: timer.startDate,
+    lastDate: timer.startDate,
     getSeconds: () => {
       return ((new Date()).getTime() - timer.startDate.getTime()) / 1000;
+    },
+    duration: () => {
+      const duration = ((new Date()).getTime() - timer.lastDate.getTime()) / 1000;
+      timer.lastDate = new Date();
+      return duration;
     }
   };
 }

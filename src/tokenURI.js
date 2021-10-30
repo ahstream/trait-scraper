@@ -126,7 +126,7 @@ async function getAndThrow(id, contractAddress, etherscanUrl, signatur) {
   }
 
   const uri = hex2a(data.result.substring(130)).replace(/\0/g, '').trim();
-  log.debug('getFromEtherscan:', uri);
+  log.debug('getFromEtherscan, result uri:', uri);
 
   return { uri: convertTokenURI(uri), originalURI: uri };
 }
