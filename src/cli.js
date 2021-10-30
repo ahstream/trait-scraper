@@ -52,6 +52,9 @@ async function runProgram() {
   const cmd = program.args[0];
   const projectId = program.args[1];
   switch (cmd) {
+    case 'analyze':
+      await analyzeCollection({ projectId });
+      break;
     case 'fetch':
       await fetchCollection({ projectId, all: options.all, debug: options.debug });
       break;
@@ -68,7 +71,7 @@ async function runProgram() {
   // process.exit(0);
 }
 
-function getConfig(projectId, debug) {
+function getConfig(projectId, debug = false, db = true) {
   const baseConfig = jsonutil.importFile(`../config/config.json`);
 
   let projectConfig = {};
@@ -76,10 +79,14 @@ function getConfig(projectId, debug) {
     projectConfig = jsonutil.importFile(`../config/projects/${projectId}/config.json`);
   }
 
-  const dataFromDB = getFromDB(projectId);
-  const configFromDB = { data: dataFromDB };
-
-  const config = { ...configFromDB, ...baseConfig, ...projectConfig };
+  let config;
+  if (db) {
+    const dataFromDB = getFromDB(projectId);
+    const configFromDB = { data: dataFromDB };
+    config = { ...configFromDB, ...baseConfig, ...projectConfig };
+  } else {
+    config = { ...baseConfig, ...projectConfig };
+  }
 
   config.projectId = projectId;
   config.debug = debug;
@@ -145,6 +152,103 @@ async function testFetchCollection(projectId, config) {
 
   log.info(`Finished testing collection: ${countDone(config)} tokens`);
   log.info('Duration (sec):', ((new Date()).getTime() - startDate.getTime()) / 1000);
+}
+
+function getTokensByPct(pct, tokenList) {
+
+}
+
+async function analyzeCollection({ projectId }) {
+  const baseConfig = await fetchCollectionForAnalyze(projectId);
+  const numTokens = countDone(baseConfig);
+  const results = [];
+  let lastPct = 0;
+  for (let pct of baseConfig.analyze) {
+    const fromId = Math.round(lastPct * numTokens) + 1;
+    const toId = Math.round(pct * numTokens);
+    log.info(`Analyze from tokenId ${fromId} to ${toId}`);
+    const baseTokenList = baseConfig.data.tokenList.filter(obj => obj.tokenId >= fromId && obj.tokenId <= toId && obj.done);
+    const config = getConfig(projectId, false, false);
+    runOneAnalysis(config, baseTokenList);
+    lastPct = pct;
+
+    const resultsTokenList = getTokenListForResult(config);
+    sortBy1Key(resultsTokenList, 'rarityNormalized', false);
+    recalcRank(resultsTokenList);
+
+    results.push(resultsTokenList);
+  }
+
+  const finalTokenList = getTokenListForResult(baseConfig);
+  sortBy1Key(finalTokenList, 'rarityNormalized', false);
+  recalcRank(finalTokenList);
+  results.push(finalTokenList);
+
+  createAnalyzeWebPage(results, finalTokenList, baseConfig);
+
+  log.info(results.length);
+}
+
+function createAnalyzeWebPage(tokenPartLists, tokenFinalList, config) {
+  for (let i = 0; i < tokenPartLists.length; i++) {
+    const tokenList = tokenPartLists[i];
+    const pct = config.analyze[i];
+  }
+
+}
+
+function getTokenFromList(tokenId, tokenList) {
+  return tokenList.find(obj => obj.tokenId === tokenId);
+}
+
+function runOneAnalysis(config, tokenList) {
+  log.info('Run one analyzis...');
+  tokenList.forEach(token => {
+    if (token.source.attributes) {
+      addTokenData(token.source, token, config);
+      token.done = true;
+    }
+  });
+  calcResultData(config);
+  return true;
+}
+
+async function fetchCollectionForAnalyze(projectId) {
+  log.info(`Start fetching collection ${projectId} for analyze`);
+  const timer = createTimer();
+
+  const config = getConfig(projectId, false);
+  config.threshold.buynow = false;
+  config.threshold.level = 1;
+  config.threshold.image = 0.01;
+
+  prepareTokens(config);
+
+  if (!config.data.isRevealed) {
+    await pollForReveal(config);
+  }
+
+  await fetchCollectionMilestones(config.fetchMilestones, config);
+
+  log.info(`Finished pre-fetching collection "${projectId}", ${countDone(config)} ok, ${countSkipped(config)} skipped!`);
+  config.data.fetchedTime = new Date();
+  config.data.fetchDuration = timer.getSeconds();
+  log.info(`Duration: ${config.data.fetchDuration} secs`);
+
+  let numFinalTries = 0;
+  while (countDone(config) + countSkipped(config) < config.maxSupply) {
+    numFinalTries++;
+    await utilslib.sleep(1000);
+    await fetchCollectionMilestones([], config);
+  }
+
+  saveToDB(config);
+
+  log.info(`Finished fetching collection "${projectId}", ${countDone(config)} ok, ${countSkipped(config)} skipped!`);
+  log.info(`Create results...`);
+  log.info(`Duration: ${timer.getSeconds()} secs`);
+
+  return config;
 }
 
 async function fetchCollection({ projectId, all = false, debug = false }) {
@@ -510,12 +614,18 @@ function createResults(config) {
   if (config.isTest) {
     return;
   }
+  calcResultData(config);
+  createResultPage(config);
+}
 
+function calcResultData(config) {
   addTokenNoneTrait(config);
   calcGlobalRarity(config);
   calcTokenRarity(config);
-  buildWebPage(config);
+}
 
+function createResultPage(config) {
+  buildWebPage(config);
   if (!config.webPageShown) {
     const path = fileutil.toAbsoluteFilePath(`../config/projects/${config.projectId}/tokens-by-rarity.html`);
     log.info('Open results page:', path);
@@ -651,16 +761,6 @@ function getTokenListForResult(config) {
     }
     tokenList.push(token);
   }
-  /*
-    const tokensByPrice = [...tokensByRarity];
-    tokensByPrice.sort((a, b) => {
-      if (a.price === b.price) {
-        return b.rarity - a.rarity;
-      }
-      return a.price > b.price ? 1 : -1;
-    });
-    */
-
   return tokenList;
 }
 
@@ -1121,7 +1221,7 @@ function getFromDB(projectId) {
   if (fileutil.fileExistsRelPath(path)) {
     const obj = jsonutil.importFile(path);
     if (obj) {
-      return obj.data;git st
+      return obj.data;
     }
   }
   return {};
