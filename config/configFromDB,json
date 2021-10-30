@@ -1,0 +1,1742 @@
+{
+  "debug": {
+    "data": {
+      "tokenList": [],
+      "attributes": {
+        "BODY": {
+          "count": 1041,
+          "trait": "BODY",
+          "values": {
+            "GRILLZ LIGHT": {
+              "count": 64,
+              "value": "GRILLZ LIGHT",
+              "frequency": 0.06147934678194044,
+              "rarity": 16.265625,
+              "rarityNormalized": 18.279464285714287
+            },
+            "DARK": {
+              "count": 215,
+              "value": "DARK",
+              "frequency": 0.20653218059558118,
+              "rarity": 4.841860465116279,
+              "rarityNormalized": 5.441328903654485
+            },
+            "LIGHT": {
+              "count": 133,
+              "value": "LIGHT",
+              "frequency": 0.12776176753121998,
+              "rarity": 7.827067669172933,
+              "rarityNormalized": 8.796133190118153
+            },
+            "GRILLZ LIGHT TATS": {
+              "count": 58,
+              "value": "GRILLZ LIGHT TATS",
+              "frequency": 0.05571565802113353,
+              "rarity": 17.948275862068964,
+              "rarityNormalized": 20.170443349753693
+            },
+            "GRILLZ ZOMBIE": {
+              "count": 41,
+              "value": "GRILLZ ZOMBIE",
+              "frequency": 0.0393852065321806,
+              "rarity": 25.390243902439025,
+              "rarityNormalized": 28.533797909407667
+            },
+            "LIGHT TATS": {
+              "count": 167,
+              "value": "LIGHT TATS",
+              "frequency": 0.16042267050912584,
+              "rarity": 6.233532934131737,
+              "rarityNormalized": 7.005303678357571
+            },
+            "DARK TATS": {
+              "count": 178,
+              "value": "DARK TATS",
+              "frequency": 0.17098943323727187,
+              "rarity": 5.848314606741573,
+              "rarityNormalized": 6.57239165329053
+            },
+            "ETERNAL": {
+              "count": 12,
+              "value": "ETERNAL",
+              "frequency": 0.011527377521613832,
+              "rarity": 86.75,
+              "rarityNormalized": 97.49047619047619
+            },
+            "ZOMBIE": {
+              "count": 28,
+              "value": "ZOMBIE",
+              "frequency": 0.026897214217098942,
+              "rarity": 37.17857142857143,
+              "rarityNormalized": 41.78163265306123
+            },
+            "GRILLZ DARK TATS": {
+              "count": 50,
+              "value": "GRILLZ DARK TATS",
+              "frequency": 0.04803073967339097,
+              "rarity": 20.82,
+              "rarityNormalized": 23.397714285714287
+            },
+            "CYBORG": {
+              "count": 26,
+              "value": "CYBORG",
+              "frequency": 0.024975984630163303,
+              "rarity": 40.03846153846154,
+              "rarityNormalized": 44.995604395604396
+            },
+            "ALIEN": {
+              "count": 10,
+              "value": "ALIEN",
+              "frequency": 0.009606147934678195,
+              "rarity": 104.1,
+              "rarityNormalized": 116.98857142857142
+            },
+            "GRILLZ DARK": {
+              "count": 37,
+              "value": "GRILLZ DARK",
+              "frequency": 0.03554274735830932,
+              "rarity": 28.135135135135133,
+              "rarityNormalized": 31.618532818532817
+            },
+            "GRILLZ CYBORG": {
+              "count": 22,
+              "value": "GRILLZ CYBORG",
+              "frequency": 0.021133525456292025,
+              "rarity": 47.31818181818182,
+              "rarityNormalized": 53.17662337662338
+            }
+          },
+          "numTraitsInCategory": 14
+        },
+        "TOP HEAD": {
+          "count": 1041,
+          "trait": "TOP HEAD",
+          "values": {
+            "BANDANA FRONT INDIGO": {
+              "count": 24,
+              "value": "BANDANA FRONT INDIGO",
+              "frequency": 0.023054755043227664,
+              "rarity": 43.375,
+              "rarityNormalized": 18.95648148148148
+            },
+            "SHORTDREADS GREEN": {
+              "count": 25,
+              "value": "SHORTDREADS GREEN",
+              "frequency": 0.024015369836695485,
+              "rarity": 41.64,
+              "rarityNormalized": 18.19822222222222
+            },
+            "PEAKY BLINDER": {
+              "count": 30,
+              "value": "PEAKY BLINDER",
+              "frequency": 0.02881844380403458,
+              "rarity": 34.7,
+              "rarityNormalized": 15.165185185185186
+            },
+            "MOHAVK BLACK": {
+              "count": 26,
+              "value": "MOHAVK BLACK",
+              "frequency": 0.024975984630163303,
+              "rarity": 40.03846153846154,
+              "rarityNormalized": 17.4982905982906
+            },
+            "BEANIE BLACK": {
+              "count": 24,
+              "value": "BEANIE BLACK",
+              "frequency": 0.023054755043227664,
+              "rarity": 43.375,
+              "rarityNormalized": 18.95648148148148
+            },
+            "FLAT BRIM WHITE": {
+              "count": 21,
+              "value": "FLAT BRIM WHITE",
+              "frequency": 0.020172910662824207,
+              "rarity": 49.57142857142857,
+              "rarityNormalized": 21.66455026455026
+            },
+            "ANIME HAIR 1": {
+              "count": 7,
+              "value": "ANIME HAIR 1",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 64.99365079365079
+            },
+            "BLACK SHORT": {
+              "count": 27,
+              "value": "BLACK SHORT",
+              "frequency": 0.025936599423631124,
+              "rarity": 38.55555555555556,
+              "rarityNormalized": 16.85020576131687
+            },
+            "SHORT DREADS WHITE": {
+              "count": 29,
+              "value": "SHORT DREADS WHITE",
+              "frequency": 0.027857829010566763,
+              "rarity": 35.89655172413793,
+              "rarityNormalized": 15.688122605363983
+            },
+            "BANDANA FRONT GREEN": {
+              "count": 38,
+              "value": "BANDANA FRONT GREEN",
+              "frequency": 0.03650336215177714,
+              "rarity": 27.394736842105264,
+              "rarityNormalized": 11.97251461988304
+            },
+            "FLAT BRIM GRGY": {
+              "count": 14,
+              "value": "FLAT BRIM GRGY",
+              "frequency": 0.013448607108549471,
+              "rarity": 74.35714285714286,
+              "rarityNormalized": 32.49682539682539
+            },
+            "FLAT BRIM GRAY": {
+              "count": 14,
+              "value": "FLAT BRIM GRAY",
+              "frequency": 0.013448607108549471,
+              "rarity": 74.35714285714286,
+              "rarityNormalized": 32.49682539682539
+            },
+            "BEANIE ORANGE": {
+              "count": 32,
+              "value": "BEANIE ORANGE",
+              "frequency": 0.03073967339097022,
+              "rarity": 32.53125,
+              "rarityNormalized": 14.21736111111111
+            },
+            "SHORTDREADS RED": {
+              "count": 37,
+              "value": "SHORTDREADS RED",
+              "frequency": 0.03554274735830932,
+              "rarity": 28.135135135135133,
+              "rarityNormalized": 12.296096096096095
+            },
+            "WAVY CUT WHITE": {
+              "count": 24,
+              "value": "WAVY CUT WHITE",
+              "frequency": 0.023054755043227664,
+              "rarity": 43.375,
+              "rarityNormalized": 18.95648148148148
+            },
+            "RAINBOW BRAIDS": {
+              "count": 8,
+              "value": "RAINBOW BRAIDS",
+              "frequency": 0.007684918347742555,
+              "rarity": 130.125,
+              "rarityNormalized": 56.86944444444444
+            },
+            "SPIKY HAIR": {
+              "count": 17,
+              "value": "SPIKY HAIR",
+              "frequency": 0.01633045148895293,
+              "rarity": 61.23529411764706,
+              "rarityNormalized": 26.76209150326797
+            },
+            "WAVY CUT BLACK": {
+              "count": 22,
+              "value": "WAVY CUT BLACK",
+              "frequency": 0.021133525456292025,
+              "rarity": 47.31818181818182,
+              "rarityNormalized": 20.67979797979798
+            },
+            "BEANIE GRAY": {
+              "count": 27,
+              "value": "BEANIE GRAY",
+              "frequency": 0.025936599423631124,
+              "rarity": 38.55555555555556,
+              "rarityNormalized": 16.85020576131687
+            },
+            "BUCKET HAT ROSES": {
+              "count": 26,
+              "value": "BUCKET HAT ROSES",
+              "frequency": 0.024975984630163303,
+              "rarity": 40.03846153846154,
+              "rarityNormalized": 17.4982905982906
+            },
+            "BANDANA FRONT RED": {
+              "count": 23,
+              "value": "BANDANA FRONT RED",
+              "frequency": 0.022094140249759846,
+              "rarity": 45.26086956521739,
+              "rarityNormalized": 19.780676328502413
+            },
+            "LONG BEANIE": {
+              "count": 4,
+              "value": "LONG BEANIE",
+              "frequency": 0.0038424591738712775,
+              "rarity": 260.25,
+              "rarityNormalized": 113.73888888888888
+            },
+            "BUCKET HAT BLACK": {
+              "count": 26,
+              "value": "BUCKET HAT BLACK",
+              "frequency": 0.024975984630163303,
+              "rarity": 40.03846153846154,
+              "rarityNormalized": 17.4982905982906
+            },
+            "INDIGO DREADS": {
+              "count": 8,
+              "value": "INDIGO DREADS",
+              "frequency": 0.007684918347742555,
+              "rarity": 130.125,
+              "rarityNormalized": 56.86944444444444
+            },
+            "ASSTER CAP": {
+              "count": 45,
+              "value": "ASSTER CAP",
+              "frequency": 0.043227665706051875,
+              "rarity": 23.133333333333333,
+              "rarityNormalized": 10.110123456790122
+            },
+            "RAINBOW HAIR": {
+              "count": 18,
+              "value": "RAINBOW HAIR",
+              "frequency": 0.01729106628242075,
+              "rarity": 57.83333333333333,
+              "rarityNormalized": 25.275308641975304
+            },
+            "ANIME HAIR 2": {
+              "count": 17,
+              "value": "ANIME HAIR 2",
+              "frequency": 0.01633045148895293,
+              "rarity": 61.23529411764706,
+              "rarityNormalized": 26.76209150326797
+            },
+            "WHITE SHORT": {
+              "count": 13,
+              "value": "WHITE SHORT",
+              "frequency": 0.012487992315081652,
+              "rarity": 80.07692307692308,
+              "rarityNormalized": 34.9965811965812
+            },
+            "HEADPHONES": {
+              "count": 11,
+              "value": "HEADPHONES",
+              "frequency": 0.010566762728146013,
+              "rarity": 94.63636363636364,
+              "rarityNormalized": 41.35959595959596
+            },
+            "ORIENTAL HAT": {
+              "count": 5,
+              "value": "ORIENTAL HAT",
+              "frequency": 0.004803073967339097,
+              "rarity": 208.2,
+              "rarityNormalized": 90.9911111111111
+            },
+            "BUCKET HAT WHITE": {
+              "count": 28,
+              "value": "BUCKET HAT WHITE",
+              "frequency": 0.026897214217098942,
+              "rarity": 37.17857142857143,
+              "rarityNormalized": 16.248412698412697
+            },
+            "AFROFADE": {
+              "count": 22,
+              "value": "AFROFADE",
+              "frequency": 0.021133525456292025,
+              "rarity": 47.31818181818182,
+              "rarityNormalized": 20.67979797979798
+            },
+            "ANIME HAIR 3": {
+              "count": 11,
+              "value": "ANIME HAIR 3",
+              "frequency": 0.010566762728146013,
+              "rarity": 94.63636363636364,
+              "rarityNormalized": 41.35959595959596
+            },
+            "MOHAVK WHITE": {
+              "count": 22,
+              "value": "MOHAVK WHITE",
+              "frequency": 0.021133525456292025,
+              "rarity": 47.31818181818182,
+              "rarityNormalized": 20.67979797979798
+            },
+            "ANIME HAIR": {
+              "count": 9,
+              "value": "ANIME HAIR",
+              "frequency": 0.008645533141210375,
+              "rarity": 115.66666666666666,
+              "rarityNormalized": 50.55061728395061
+            },
+            "xxNonexx": {
+              "count": 307,
+              "value": "xxNonexx",
+              "frequency": 0.29490874159462055,
+              "rarity": 3.3908794788273617,
+              "rarityNormalized": 1.4819399203764023
+            }
+          },
+          "numTraitsInCategory": 36
+        },
+        "FACE": {
+          "count": 1041,
+          "trait": "FACE",
+          "values": {
+            "STUBBLE": {
+              "count": 212,
+              "value": "STUBBLE",
+              "frequency": 0.20365033621517772,
+              "rarity": 4.910377358490566,
+              "rarityNormalized": 7.72566037735849
+            },
+            "BEARD": {
+              "count": 132,
+              "value": "BEARD",
+              "frequency": 0.12680115273775217,
+              "rarity": 7.886363636363636,
+              "rarityNormalized": 12.407878787878786
+            },
+            "GREEN MASK": {
+              "count": 69,
+              "value": "GREEN MASK",
+              "frequency": 0.06628242074927954,
+              "rarity": 15.08695652173913,
+              "rarityNormalized": 23.736811594202898
+            },
+            "BLACK MASK": {
+              "count": 69,
+              "value": "BLACK MASK",
+              "frequency": 0.06628242074927954,
+              "rarity": 15.08695652173913,
+              "rarityNormalized": 23.736811594202898
+            },
+            "KABUKI MASK": {
+              "count": 18,
+              "value": "KABUKI MASK",
+              "frequency": 0.01729106628242075,
+              "rarity": 57.83333333333333,
+              "rarityNormalized": 90.9911111111111
+            },
+            "PURPLE MASK": {
+              "count": 48,
+              "value": "PURPLE MASK",
+              "frequency": 0.04610951008645533,
+              "rarity": 21.6875,
+              "rarityNormalized": 34.12166666666666
+            },
+            "CYBER MASK": {
+              "count": 36,
+              "value": "CYBER MASK",
+              "frequency": 0.0345821325648415,
+              "rarity": 28.916666666666664,
+              "rarityNormalized": 45.49555555555555
+            },
+            "FULLFACE": {
+              "count": 5,
+              "value": "FULLFACE",
+              "frequency": 0.004803073967339097,
+              "rarity": 208.2,
+              "rarityNormalized": 327.568
+            },
+            "JASON MASK": {
+              "count": 2,
+              "value": "JASON MASK",
+              "frequency": 0.0019212295869356388,
+              "rarity": 520.5,
+              "rarityNormalized": 818.92
+            },
+            "xxNonexx": {
+              "count": 450,
+              "value": "xxNonexx",
+              "frequency": 0.4322766570605187,
+              "rarity": 2.3133333333333335,
+              "rarityNormalized": 3.6396444444444445
+            }
+          },
+          "numTraitsInCategory": 10
+        },
+        "WEAR": {
+          "count": 1041,
+          "trait": "WEAR",
+          "values": {
+            "ZOMBIE T 2": {
+              "count": 16,
+              "value": "ZOMBIE T 2",
+              "frequency": 0.01536983669548511,
+              "rarity": 65.0625,
+              "rarityNormalized": 10.553092783505154
+            },
+            "NYLON BOMBER": {
+              "count": 13,
+              "value": "NYLON BOMBER",
+              "frequency": 0.012487992315081652,
+              "rarity": 80.07692307692308,
+              "rarityNormalized": 12.988421887390958
+            },
+            "META T": {
+              "count": 14,
+              "value": "META T",
+              "frequency": 0.013448607108549471,
+              "rarity": 74.35714285714286,
+              "rarityNormalized": 12.060677466863034
+            },
+            "ACID T": {
+              "count": 14,
+              "value": "ACID T",
+              "frequency": 0.013448607108549471,
+              "rarity": 74.35714285714286,
+              "rarityNormalized": 12.060677466863034
+            },
+            "PEACE T": {
+              "count": 11,
+              "value": "PEACE T",
+              "frequency": 0.010566762728146013,
+              "rarity": 94.63636363636364,
+              "rarityNormalized": 15.34995313964386
+            },
+            "SHORT SLEEVES CHEETAH 2": {
+              "count": 13,
+              "value": "SHORT SLEEVES CHEETAH 2",
+              "frequency": 0.012487992315081652,
+              "rarity": 80.07692307692308,
+              "rarityNormalized": 12.988421887390958
+            },
+            "ETHHOMIE T": {
+              "count": 19,
+              "value": "ETHHOMIE T",
+              "frequency": 0.01825168107588857,
+              "rarity": 54.78947368421053,
+              "rarityNormalized": 8.886814975583286
+            },
+            "23 JERSEY": {
+              "count": 14,
+              "value": "23 JERSEY",
+              "frequency": 0.013448607108549471,
+              "rarity": 74.35714285714286,
+              "rarityNormalized": 12.060677466863034
+            },
+            "GRGY T": {
+              "count": 14,
+              "value": "GRGY T",
+              "frequency": 0.013448607108549471,
+              "rarity": 74.35714285714286,
+              "rarityNormalized": 12.060677466863034
+            },
+            "TIGER T": {
+              "count": 48,
+              "value": "TIGER T",
+              "frequency": 0.04610951008645533,
+              "rarity": 21.6875,
+              "rarityNormalized": 3.5176975945017177
+            },
+            "ROSE PJ": {
+              "count": 10,
+              "value": "ROSE PJ",
+              "frequency": 0.009606147934678195,
+              "rarity": 104.1,
+              "rarityNormalized": 16.884948453608246
+            },
+            "CHEETAH T": {
+              "count": 48,
+              "value": "CHEETAH T",
+              "frequency": 0.04610951008645533,
+              "rarity": 21.6875,
+              "rarityNormalized": 3.5176975945017177
+            },
+            "CLOAK HOODIE": {
+              "count": 3,
+              "value": "CLOAK HOODIE",
+              "frequency": 0.002881844380403458,
+              "rarity": 347,
+              "rarityNormalized": 56.28316151202748
+            },
+            "FARMER": {
+              "count": 15,
+              "value": "FARMER",
+              "frequency": 0.01440922190201729,
+              "rarity": 69.4,
+              "rarityNormalized": 11.256632302405498
+            },
+            "ACID T 2": {
+              "count": 11,
+              "value": "ACID T 2",
+              "frequency": 0.010566762728146013,
+              "rarity": 94.63636363636364,
+              "rarityNormalized": 15.34995313964386
+            },
+            "TIGER SHIRT": {
+              "count": 39,
+              "value": "TIGER SHIRT",
+              "frequency": 0.037463976945244955,
+              "rarity": 26.692307692307693,
+              "rarityNormalized": 4.329473962463653
+            },
+            "MILITARY JACKET": {
+              "count": 10,
+              "value": "MILITARY JACKET",
+              "frequency": 0.009606147934678195,
+              "rarity": 104.1,
+              "rarityNormalized": 16.884948453608246
+            },
+            "FLOWER PJ": {
+              "count": 14,
+              "value": "FLOWER PJ",
+              "frequency": 0.013448607108549471,
+              "rarity": 74.35714285714286,
+              "rarityNormalized": 12.060677466863034
+            },
+            "RAINCOAT": {
+              "count": 2,
+              "value": "RAINCOAT",
+              "frequency": 0.0019212295869356388,
+              "rarity": 520.5,
+              "rarityNormalized": 84.42474226804123
+            },
+            "CYBER BOMBER": {
+              "count": 7,
+              "value": "CYBER BOMBER",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "NECK T": {
+              "count": 7,
+              "value": "NECK T",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "BASTARD SWEATSHIRT": {
+              "count": 11,
+              "value": "BASTARD SWEATSHIRT",
+              "frequency": 0.010566762728146013,
+              "rarity": 94.63636363636364,
+              "rarityNormalized": 15.34995313964386
+            },
+            "CHEETAH SHIRT": {
+              "count": 31,
+              "value": "CHEETAH SHIRT",
+              "frequency": 0.029779058597502402,
+              "rarity": 33.58064516129032,
+              "rarityNormalized": 5.446757565680079
+            },
+            "CASHMERE": {
+              "count": 7,
+              "value": "CASHMERE",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "24 JERSEY": {
+              "count": 11,
+              "value": "24 JERSEY",
+              "frequency": 0.010566762728146013,
+              "rarity": 94.63636363636364,
+              "rarityNormalized": 15.34995313964386
+            },
+            "SMILE T": {
+              "count": 13,
+              "value": "SMILE T",
+              "frequency": 0.012487992315081652,
+              "rarity": 80.07692307692308,
+              "rarityNormalized": 12.988421887390958
+            },
+            "PALM PJ": {
+              "count": 9,
+              "value": "PALM PJ",
+              "frequency": 0.008645533141210375,
+              "rarity": 115.66666666666666,
+              "rarityNormalized": 18.761053837342494
+            },
+            "ETHHOMIE SWEATSHIRT": {
+              "count": 8,
+              "value": "ETHHOMIE SWEATSHIRT",
+              "frequency": 0.007684918347742555,
+              "rarity": 130.125,
+              "rarityNormalized": 21.106185567010307
+            },
+            "MODZ T": {
+              "count": 9,
+              "value": "MODZ T",
+              "frequency": 0.008645533141210375,
+              "rarity": 115.66666666666666,
+              "rarityNormalized": 18.761053837342494
+            },
+            "SUNFLOWER T": {
+              "count": 8,
+              "value": "SUNFLOWER T",
+              "frequency": 0.007684918347742555,
+              "rarity": 130.125,
+              "rarityNormalized": 21.106185567010307
+            },
+            "METADENIM": {
+              "count": 7,
+              "value": "METADENIM",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "ETHHOMIE SWEATSHIRT BLACK": {
+              "count": 6,
+              "value": "ETHHOMIE SWEATSHIRT BLACK",
+              "frequency": 0.005763688760806916,
+              "rarity": 173.5,
+              "rarityNormalized": 28.14158075601374
+            },
+            "MARS JACKET BLUE": {
+              "count": 7,
+              "value": "MARS JACKET BLUE",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "SKIJACKET": {
+              "count": 14,
+              "value": "SKIJACKET",
+              "frequency": 0.013448607108549471,
+              "rarity": 74.35714285714286,
+              "rarityNormalized": 12.060677466863034
+            },
+            "BIKER JACKET": {
+              "count": 7,
+              "value": "BIKER JACKET",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "TIGERJERSEY": {
+              "count": 20,
+              "value": "TIGERJERSEY",
+              "frequency": 0.01921229586935639,
+              "rarity": 52.05,
+              "rarityNormalized": 8.442474226804123
+            },
+            "TRENCH": {
+              "count": 11,
+              "value": "TRENCH",
+              "frequency": 0.010566762728146013,
+              "rarity": 94.63636363636364,
+              "rarityNormalized": 15.34995313964386
+            },
+            "WAVY ANORAK": {
+              "count": 12,
+              "value": "WAVY ANORAK",
+              "frequency": 0.011527377521613832,
+              "rarity": 86.75,
+              "rarityNormalized": 14.07079037800687
+            },
+            "BULL JERSEY": {
+              "count": 8,
+              "value": "BULL JERSEY",
+              "frequency": 0.007684918347742555,
+              "rarity": 130.125,
+              "rarityNormalized": 21.106185567010307
+            },
+            "PRISONER": {
+              "count": 8,
+              "value": "PRISONER",
+              "frequency": 0.007684918347742555,
+              "rarity": 130.125,
+              "rarityNormalized": 21.106185567010307
+            },
+            "ROLLNECK": {
+              "count": 10,
+              "value": "ROLLNECK",
+              "frequency": 0.009606147934678195,
+              "rarity": 104.1,
+              "rarityNormalized": 16.884948453608246
+            },
+            "BB JACKET GREEN": {
+              "count": 6,
+              "value": "BB JACKET GREEN",
+              "frequency": 0.005763688760806916,
+              "rarity": 173.5,
+              "rarityNormalized": 28.14158075601374
+            },
+            "BLUE COAT": {
+              "count": 5,
+              "value": "BLUE COAT",
+              "frequency": 0.004803073967339097,
+              "rarity": 208.2,
+              "rarityNormalized": 33.76989690721649
+            },
+            "SUIT": {
+              "count": 10,
+              "value": "SUIT",
+              "frequency": 0.009606147934678195,
+              "rarity": 104.1,
+              "rarityNormalized": 16.884948453608246
+            },
+            "SHORT SLEEVES ABSTRACT": {
+              "count": 10,
+              "value": "SHORT SLEEVES ABSTRACT",
+              "frequency": 0.009606147934678195,
+              "rarity": 104.1,
+              "rarityNormalized": 16.884948453608246
+            },
+            "NET T": {
+              "count": 9,
+              "value": "NET T",
+              "frequency": 0.008645533141210375,
+              "rarity": 115.66666666666666,
+              "rarityNormalized": 18.761053837342494
+            },
+            "BANANA SWEATSHIRT": {
+              "count": 7,
+              "value": "BANANA SWEATSHIRT",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "LAMB JACKET": {
+              "count": 10,
+              "value": "LAMB JACKET",
+              "frequency": 0.009606147934678195,
+              "rarity": 104.1,
+              "rarityNormalized": 16.884948453608246
+            },
+            "PUFF+ROLL": {
+              "count": 7,
+              "value": "PUFF+ROLL",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "TWID SHIRT": {
+              "count": 8,
+              "value": "TWID SHIRT",
+              "frequency": 0.007684918347742555,
+              "rarity": 130.125,
+              "rarityNormalized": 21.106185567010307
+            },
+            "ATLAS SUIT": {
+              "count": 2,
+              "value": "ATLAS SUIT",
+              "frequency": 0.0019212295869356388,
+              "rarity": 520.5,
+              "rarityNormalized": 84.42474226804123
+            },
+            "STRAPSLEEVES": {
+              "count": 21,
+              "value": "STRAPSLEEVES",
+              "frequency": 0.020172910662824207,
+              "rarity": 49.57142857142857,
+              "rarityNormalized": 8.040451644575354
+            },
+            "MOTOJACKET+JERSEY": {
+              "count": 6,
+              "value": "MOTOJACKET+JERSEY",
+              "frequency": 0.005763688760806916,
+              "rarity": 173.5,
+              "rarityNormalized": 28.14158075601374
+            },
+            "SHORT SLEEVES ABSTRACT 2": {
+              "count": 7,
+              "value": "SHORT SLEEVES ABSTRACT 2",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "BASIC BLUE T": {
+              "count": 11,
+              "value": "BASIC BLUE T",
+              "frequency": 0.010566762728146013,
+              "rarity": 94.63636363636364,
+              "rarityNormalized": 15.34995313964386
+            },
+            "ANORAK": {
+              "count": 8,
+              "value": "ANORAK",
+              "frequency": 0.007684918347742555,
+              "rarity": 130.125,
+              "rarityNormalized": 21.106185567010307
+            },
+            "BASTARD SUIT": {
+              "count": 7,
+              "value": "BASTARD SUIT",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "HOODIE REG": {
+              "count": 3,
+              "value": "HOODIE REG",
+              "frequency": 0.002881844380403458,
+              "rarity": 347,
+              "rarityNormalized": 56.28316151202748
+            },
+            "SCOTT VEST": {
+              "count": 5,
+              "value": "SCOTT VEST",
+              "frequency": 0.004803073967339097,
+              "rarity": 208.2,
+              "rarityNormalized": 33.76989690721649
+            },
+            "GRGY HOODIE": {
+              "count": 7,
+              "value": "GRGY HOODIE",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "DRIP T": {
+              "count": 14,
+              "value": "DRIP T",
+              "frequency": 0.013448607108549471,
+              "rarity": 74.35714285714286,
+              "rarityNormalized": 12.060677466863034
+            },
+            "BB JACKET": {
+              "count": 8,
+              "value": "BB JACKET",
+              "frequency": 0.007684918347742555,
+              "rarity": 130.125,
+              "rarityNormalized": 21.106185567010307
+            },
+            "TRIBAL T": {
+              "count": 6,
+              "value": "TRIBAL T",
+              "frequency": 0.005763688760806916,
+              "rarity": 173.5,
+              "rarityNormalized": 28.14158075601374
+            },
+            "LEATHER BOMBER": {
+              "count": 9,
+              "value": "LEATHER BOMBER",
+              "frequency": 0.008645533141210375,
+              "rarity": 115.66666666666666,
+              "rarityNormalized": 18.761053837342494
+            },
+            "ADIMODZ 2": {
+              "count": 8,
+              "value": "ADIMODZ 2",
+              "frequency": 0.007684918347742555,
+              "rarity": 130.125,
+              "rarityNormalized": 21.106185567010307
+            },
+            "TROPIC PJ": {
+              "count": 8,
+              "value": "TROPIC PJ",
+              "frequency": 0.007684918347742555,
+              "rarity": 130.125,
+              "rarityNormalized": 21.106185567010307
+            },
+            "COOLCAT HOODIE": {
+              "count": 9,
+              "value": "COOLCAT HOODIE",
+              "frequency": 0.008645533141210375,
+              "rarity": 115.66666666666666,
+              "rarityNormalized": 18.761053837342494
+            },
+            "HALLOWEEN HOODIE": {
+              "count": 2,
+              "value": "HALLOWEEN HOODIE",
+              "frequency": 0.0019212295869356388,
+              "rarity": 520.5,
+              "rarityNormalized": 84.42474226804123
+            },
+            "GM SWEATSHIRT": {
+              "count": 13,
+              "value": "GM SWEATSHIRT",
+              "frequency": 0.012487992315081652,
+              "rarity": 80.07692307692308,
+              "rarityNormalized": 12.988421887390958
+            },
+            "SHORT SLEEVES CHEETAH": {
+              "count": 11,
+              "value": "SHORT SLEEVES CHEETAH",
+              "frequency": 0.010566762728146013,
+              "rarity": 94.63636363636364,
+              "rarityNormalized": 15.34995313964386
+            },
+            "VELVET SHIRT": {
+              "count": 7,
+              "value": "VELVET SHIRT",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "LED SUIT": {
+              "count": 7,
+              "value": "LED SUIT",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "FLAMEHOODIE": {
+              "count": 10,
+              "value": "FLAMEHOODIE",
+              "frequency": 0.009606147934678195,
+              "rarity": 104.1,
+              "rarityNormalized": 16.884948453608246
+            },
+            "DRIP HOODIE": {
+              "count": 10,
+              "value": "DRIP HOODIE",
+              "frequency": 0.009606147934678195,
+              "rarity": 104.1,
+              "rarityNormalized": 16.884948453608246
+            },
+            "SHORT SLEEVES PEACE": {
+              "count": 6,
+              "value": "SHORT SLEEVES PEACE",
+              "frequency": 0.005763688760806916,
+              "rarity": 173.5,
+              "rarityNormalized": 28.14158075601374
+            },
+            "MARS JACKET RED": {
+              "count": 12,
+              "value": "MARS JACKET RED",
+              "frequency": 0.011527377521613832,
+              "rarity": 86.75,
+              "rarityNormalized": 14.07079037800687
+            },
+            "JUCIE T": {
+              "count": 12,
+              "value": "JUCIE T",
+              "frequency": 0.011527377521613832,
+              "rarity": 86.75,
+              "rarityNormalized": 14.07079037800687
+            },
+            "BULLETPROOF VEST": {
+              "count": 8,
+              "value": "BULLETPROOF VEST",
+              "frequency": 0.007684918347742555,
+              "rarity": 130.125,
+              "rarityNormalized": 21.106185567010307
+            },
+            "BASIC RED T": {
+              "count": 15,
+              "value": "BASIC RED T",
+              "frequency": 0.01440922190201729,
+              "rarity": 69.4,
+              "rarityNormalized": 11.256632302405498
+            },
+            "ZOMBIE T": {
+              "count": 10,
+              "value": "ZOMBIE T",
+              "frequency": 0.009606147934678195,
+              "rarity": 104.1,
+              "rarityNormalized": 16.884948453608246
+            },
+            "SCI-FI JACKET": {
+              "count": 13,
+              "value": "SCI-FI JACKET",
+              "frequency": 0.012487992315081652,
+              "rarity": 80.07692307692308,
+              "rarityNormalized": 12.988421887390958
+            },
+            "T VEST": {
+              "count": 5,
+              "value": "T VEST",
+              "frequency": 0.004803073967339097,
+              "rarity": 208.2,
+              "rarityNormalized": 33.76989690721649
+            },
+            "MODZ JACKET": {
+              "count": 4,
+              "value": "MODZ JACKET",
+              "frequency": 0.0038424591738712775,
+              "rarity": 260.25,
+              "rarityNormalized": 42.212371134020614
+            },
+            "TROPIC 2 PJ": {
+              "count": 10,
+              "value": "TROPIC 2 PJ",
+              "frequency": 0.009606147934678195,
+              "rarity": 104.1,
+              "rarityNormalized": 16.884948453608246
+            },
+            "PALM T": {
+              "count": 9,
+              "value": "PALM T",
+              "frequency": 0.008645533141210375,
+              "rarity": 115.66666666666666,
+              "rarityNormalized": 18.761053837342494
+            },
+            "SHORT SLEEVES TROPIC": {
+              "count": 5,
+              "value": "SHORT SLEEVES TROPIC",
+              "frequency": 0.004803073967339097,
+              "rarity": 208.2,
+              "rarityNormalized": 33.76989690721649
+            },
+            "ADIMODZ": {
+              "count": 12,
+              "value": "ADIMODZ",
+              "frequency": 0.011527377521613832,
+              "rarity": 86.75,
+              "rarityNormalized": 14.07079037800687
+            },
+            "HOODIE TIGER": {
+              "count": 4,
+              "value": "HOODIE TIGER",
+              "frequency": 0.0038424591738712775,
+              "rarity": 260.25,
+              "rarityNormalized": 42.212371134020614
+            },
+            "METAMODZ": {
+              "count": 6,
+              "value": "METAMODZ",
+              "frequency": 0.005763688760806916,
+              "rarity": 173.5,
+              "rarityNormalized": 28.14158075601374
+            },
+            "HOODIE BAG": {
+              "count": 2,
+              "value": "HOODIE BAG",
+              "frequency": 0.0019212295869356388,
+              "rarity": 520.5,
+              "rarityNormalized": 84.42474226804123
+            },
+            "PRINTED BOMBER": {
+              "count": 7,
+              "value": "PRINTED BOMBER",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "PUFF JACKET": {
+              "count": 7,
+              "value": "PUFF JACKET",
+              "frequency": 0.0067243035542747355,
+              "rarity": 148.71428571428572,
+              "rarityNormalized": 24.121354933726067
+            },
+            "LED SUIT 2": {
+              "count": 4,
+              "value": "LED SUIT 2",
+              "frequency": 0.0038424591738712775,
+              "rarity": 260.25,
+              "rarityNormalized": 42.212371134020614
+            },
+            "HOODIE BRAIN": {
+              "count": 4,
+              "value": "HOODIE BRAIN",
+              "frequency": 0.0038424591738712775,
+              "rarity": 260.25,
+              "rarityNormalized": 42.212371134020614
+            },
+            "xxNonexx": {
+              "count": 54,
+              "value": "xxNonexx",
+              "frequency": 0.05187319884726225,
+              "rarity": 19.27777777777778,
+              "rarityNormalized": 3.1268423062237494
+            },
+            "MODZ JACKET ACID": {
+              "count": 1,
+              "value": "MODZ JACKET ACID",
+              "frequency": 0.0009606147934678194,
+              "rarity": 1041,
+              "rarityNormalized": 168.84948453608246
+            },
+            "COAT+ROLLNECK": {
+              "count": 1,
+              "value": "COAT+ROLLNECK",
+              "frequency": 0.0009606147934678194,
+              "rarity": 1041,
+              "rarityNormalized": 168.84948453608246
+            }
+          },
+          "numTraitsInCategory": 97
+        },
+        "JEWELRY": {
+          "count": 1041,
+          "trait": "JEWELRY",
+          "values": {
+            "MODZ CHAIN BY CJ GOLD": {
+              "count": 17,
+              "value": "MODZ CHAIN BY CJ GOLD",
+              "frequency": 0.01633045148895293,
+              "rarity": 61.23529411764706,
+              "rarityNormalized": 38.53741176470588
+            },
+            "CHAIN RING PLATINUM": {
+              "count": 71,
+              "value": "CHAIN RING PLATINUM",
+              "frequency": 0.06820365033621517,
+              "rarity": 14.661971830985918,
+              "rarityNormalized": 9.227267605633804
+            },
+            "MODZ RING GOLD": {
+              "count": 51,
+              "value": "MODZ RING GOLD",
+              "frequency": 0.04899135446685879,
+              "rarity": 20.411764705882355,
+              "rarityNormalized": 12.845803921568628
+            },
+            "HOOP GOLD": {
+              "count": 54,
+              "value": "HOOP GOLD",
+              "frequency": 0.05187319884726225,
+              "rarity": 19.27777777777778,
+              "rarityNormalized": 12.132148148148149
+            },
+            "TS CHAIN PLATINUM": {
+              "count": 28,
+              "value": "TS CHAIN PLATINUM",
+              "frequency": 0.026897214217098942,
+              "rarity": 37.17857142857143,
+              "rarityNormalized": 23.397714285714287
+            },
+            "THUMB RING PLATINUM": {
+              "count": 57,
+              "value": "THUMB RING PLATINUM",
+              "frequency": 0.05475504322766571,
+              "rarity": 18.263157894736842,
+              "rarityNormalized": 11.493614035087719
+            },
+            "J CHAIN GOLD": {
+              "count": 5,
+              "value": "J CHAIN GOLD",
+              "frequency": 0.004803073967339097,
+              "rarity": 208.2,
+              "rarityNormalized": 131.0272
+            },
+            "CROSS EARRING GOLD": {
+              "count": 51,
+              "value": "CROSS EARRING GOLD",
+              "frequency": 0.04899135446685879,
+              "rarity": 20.411764705882355,
+              "rarityNormalized": 12.845803921568628
+            },
+            "MODZ CHAIN BY CJ PLATINUM": {
+              "count": 16,
+              "value": "MODZ CHAIN BY CJ PLATINUM",
+              "frequency": 0.01536983669548511,
+              "rarity": 65.0625,
+              "rarityNormalized": 40.946
+            },
+            "HOOP PLATINUM": {
+              "count": 79,
+              "value": "HOOP PLATINUM",
+              "frequency": 0.07588856868395773,
+              "rarity": 13.177215189873419,
+              "rarityNormalized": 8.29286075949367
+            },
+            "MODZ RING PLATINUM": {
+              "count": 72,
+              "value": "MODZ RING PLATINUM",
+              "frequency": 0.069164265129683,
+              "rarity": 14.458333333333332,
+              "rarityNormalized": 9.09911111111111
+            },
+            "STUD GOLD": {
+              "count": 59,
+              "value": "STUD GOLD",
+              "frequency": 0.056676272814601344,
+              "rarity": 17.64406779661017,
+              "rarityNormalized": 11.104
+            },
+            "STUD PLATINUM": {
+              "count": 67,
+              "value": "STUD PLATINUM",
+              "frequency": 0.0643611911623439,
+              "rarity": 15.537313432835822,
+              "rarityNormalized": 9.778149253731343
+            },
+            "CROSS EARRING PLATINUM": {
+              "count": 60,
+              "value": "CROSS EARRING PLATINUM",
+              "frequency": 0.05763688760806916,
+              "rarity": 17.35,
+              "rarityNormalized": 10.918933333333333
+            },
+            "CHAIN RING GOLD": {
+              "count": 58,
+              "value": "CHAIN RING GOLD",
+              "frequency": 0.05571565802113353,
+              "rarity": 17.948275862068964,
+              "rarityNormalized": 11.295448275862068
+            },
+            "BRACELET GOLD": {
+              "count": 33,
+              "value": "BRACELET GOLD",
+              "frequency": 0.03170028818443804,
+              "rarity": 31.545454545454543,
+              "rarityNormalized": 19.852606060606057
+            },
+            "N CHAIN PLATINUM": {
+              "count": 6,
+              "value": "N CHAIN PLATINUM",
+              "frequency": 0.005763688760806916,
+              "rarity": 173.5,
+              "rarityNormalized": 109.18933333333332
+            },
+            "THIN GOLD": {
+              "count": 27,
+              "value": "THIN GOLD",
+              "frequency": 0.025936599423631124,
+              "rarity": 38.55555555555556,
+              "rarityNormalized": 24.264296296296298
+            },
+            "J CHAIN PLATINUM": {
+              "count": 1,
+              "value": "J CHAIN PLATINUM",
+              "frequency": 0.0009606147934678194,
+              "rarity": 1041,
+              "rarityNormalized": 655.136
+            },
+            "MASSIVE GOLD": {
+              "count": 53,
+              "value": "MASSIVE GOLD",
+              "frequency": 0.05091258405379443,
+              "rarity": 19.641509433962263,
+              "rarityNormalized": 12.361056603773584
+            },
+            "BRACELET PLATINUM": {
+              "count": 37,
+              "value": "BRACELET PLATINUM",
+              "frequency": 0.03554274735830932,
+              "rarity": 28.135135135135133,
+              "rarityNormalized": 17.706378378378375
+            },
+            "TS CHAIN GOLD": {
+              "count": 14,
+              "value": "TS CHAIN GOLD",
+              "frequency": 0.013448607108549471,
+              "rarity": 74.35714285714286,
+              "rarityNormalized": 46.79542857142857
+            },
+            "SW CHAIN GOLD": {
+              "count": 2,
+              "value": "SW CHAIN GOLD",
+              "frequency": 0.0019212295869356388,
+              "rarity": 520.5,
+              "rarityNormalized": 327.568
+            },
+            "xxNonexx": {
+              "count": 118,
+              "value": "xxNonexx",
+              "frequency": 0.11335254562920269,
+              "rarity": 8.822033898305085,
+              "rarityNormalized": 5.552
+            },
+            "N CHAIN GOLD": {
+              "count": 5,
+              "value": "N CHAIN GOLD",
+              "frequency": 0.004803073967339097,
+              "rarity": 208.2,
+              "rarityNormalized": 131.0272
+            }
+          },
+          "numTraitsInCategory": 25
+        },
+        "BACKGROUND": {
+          "count": 1041,
+          "trait": "BACKGROUND",
+          "values": {
+            "GREEN": {
+              "count": 90,
+              "value": "GREEN",
+              "frequency": 0.08645533141210375,
+              "rarity": 11.566666666666666,
+              "rarityNormalized": 13.998632478632478
+            },
+            "PERSIAN PINK": {
+              "count": 62,
+              "value": "PERSIAN PINK",
+              "frequency": 0.059558117195004805,
+              "rarity": 16.79032258064516,
+              "rarityNormalized": 20.320595533498757
+            },
+            "MORNING GLORY": {
+              "count": 56,
+              "value": "MORNING GLORY",
+              "frequency": 0.053794428434197884,
+              "rarity": 18.589285714285715,
+              "rarityNormalized": 22.497802197802198
+            },
+            "LIME": {
+              "count": 81,
+              "value": "LIME",
+              "frequency": 0.07780979827089338,
+              "rarity": 12.851851851851851,
+              "rarityNormalized": 15.554036087369418
+            },
+            "MINT": {
+              "count": 73,
+              "value": "MINT",
+              "frequency": 0.07012487992315082,
+              "rarity": 14.26027397260274,
+              "rarityNormalized": 17.25858798735511
+            },
+            "SUNGLOW": {
+              "count": 88,
+              "value": "SUNGLOW",
+              "frequency": 0.0845341018251681,
+              "rarity": 11.829545454545455,
+              "rarityNormalized": 14.316783216783216
+            },
+            "NICE BLUE": {
+              "count": 77,
+              "value": "NICE BLUE",
+              "frequency": 0.07396733909702209,
+              "rarity": 13.51948051948052,
+              "rarityNormalized": 16.362037962037963
+            },
+            "GRAY": {
+              "count": 94,
+              "value": "GRAY",
+              "frequency": 0.09029779058597502,
+              "rarity": 11.074468085106384,
+              "rarityNormalized": 13.402945990180033
+            },
+            "BLACK": {
+              "count": 105,
+              "value": "BLACK",
+              "frequency": 0.10086455331412104,
+              "rarity": 9.914285714285713,
+              "rarityNormalized": 11.998827838827836
+            },
+            "RED": {
+              "count": 100,
+              "value": "RED",
+              "frequency": 0.09606147934678194,
+              "rarity": 10.41,
+              "rarityNormalized": 12.59876923076923
+            },
+            "SAND": {
+              "count": 49,
+              "value": "SAND",
+              "frequency": 0.04707012487992315,
+              "rarity": 21.24489795918367,
+              "rarityNormalized": 25.711773940345363
+            },
+            "ORANGE": {
+              "count": 71,
+              "value": "ORANGE",
+              "frequency": 0.06820365033621517,
+              "rarity": 14.661971830985918,
+              "rarityNormalized": 17.744745395449623
+            },
+            "DEEP BLUE": {
+              "count": 95,
+              "value": "DEEP BLUE",
+              "frequency": 0.09125840537944284,
+              "rarity": 10.957894736842105,
+              "rarityNormalized": 13.261862348178136
+            }
+          },
+          "numTraitsInCategory": 13
+        },
+        "xxTraitCountxx": {
+          "count": 1041,
+          "trait": "xxTraitCountxx",
+          "values": {
+            "3": {
+              "count": 1,
+              "value": "3",
+              "frequency": 0.0009606147934678194,
+              "rarity": 1041,
+              "rarityNormalized": 2339.7714285714287
+            },
+            "4": {
+              "count": 19,
+              "value": "4",
+              "frequency": 0.01825168107588857,
+              "rarity": 54.78947368421053,
+              "rarityNormalized": 123.14586466165414
+            },
+            "5": {
+              "count": 123,
+              "value": "5",
+              "frequency": 0.11815561959654179,
+              "rarity": 8.463414634146341,
+              "rarityNormalized": 19.02253193960511
+            },
+            "6": {
+              "count": 275,
+              "value": "6",
+              "frequency": 0.2641690682036503,
+              "rarity": 3.7854545454545456,
+              "rarityNormalized": 8.50825974025974
+            },
+            "7": {
+              "count": 392,
+              "value": "7",
+              "frequency": 0.3765609990393852,
+              "rarity": 2.655612244897959,
+              "rarityNormalized": 5.968804664723032
+            },
+            "8": {
+              "count": 189,
+              "value": "8",
+              "frequency": 0.18155619596541786,
+              "rarity": 5.507936507936508,
+              "rarityNormalized": 12.379743008314437
+            },
+            "9": {
+              "count": 42,
+              "value": "9",
+              "frequency": 0.040345821325648415,
+              "rarity": 24.785714285714285,
+              "rarityNormalized": 55.708843537414964
+            }
+          },
+          "numTraitsInCategory": 7
+        },
+        "GLASSES": {
+          "count": 1041,
+          "trait": "GLASSES",
+          "values": {
+            "NERD GLASSES": {
+              "count": 39,
+              "value": "NERD GLASSES",
+              "frequency": 0.037463976945244955,
+              "rarity": 26.692307692307693,
+              "rarityNormalized": 19.08904428904429
+            },
+            "CYBER VISOR BIG": {
+              "count": 25,
+              "value": "CYBER VISOR BIG",
+              "frequency": 0.024015369836695485,
+              "rarity": 41.64,
+              "rarityNormalized": 29.77890909090909
+            },
+            "GOGGLES": {
+              "count": 37,
+              "value": "GOGGLES",
+              "frequency": 0.03554274735830932,
+              "rarity": 28.135135135135133,
+              "rarityNormalized": 20.120884520884516
+            },
+            "SUNGLASSES GREEN": {
+              "count": 42,
+              "value": "SUNGLASSES GREEN",
+              "frequency": 0.040345821325648415,
+              "rarity": 24.785714285714285,
+              "rarityNormalized": 17.725541125541124
+            },
+            "SUNGLASSES BROWN": {
+              "count": 29,
+              "value": "SUNGLASSES BROWN",
+              "frequency": 0.027857829010566763,
+              "rarity": 35.89655172413793,
+              "rarityNormalized": 25.67147335423197
+            },
+            "LASER GLASSES ORANGE": {
+              "count": 28,
+              "value": "LASER GLASSES ORANGE",
+              "frequency": 0.026897214217098942,
+              "rarity": 37.17857142857143,
+              "rarityNormalized": 26.588311688311688
+            },
+            "SPORTY BLACK": {
+              "count": 32,
+              "value": "SPORTY BLACK",
+              "frequency": 0.03073967339097022,
+              "rarity": 32.53125,
+              "rarityNormalized": 23.264772727272724
+            },
+            "CYBER VISOR": {
+              "count": 44,
+              "value": "CYBER VISOR",
+              "frequency": 0.04226705091258405,
+              "rarity": 23.65909090909091,
+              "rarityNormalized": 16.9198347107438
+            },
+            "MODERN GLASSES": {
+              "count": 35,
+              "value": "MODERN GLASSES",
+              "frequency": 0.03362151777137368,
+              "rarity": 29.742857142857144,
+              "rarityNormalized": 21.27064935064935
+            },
+            "TOTAL BLACK": {
+              "count": 33,
+              "value": "TOTAL BLACK",
+              "frequency": 0.03170028818443804,
+              "rarity": 31.545454545454543,
+              "rarityNormalized": 22.559779614325066
+            },
+            "FLAT BLACK": {
+              "count": 46,
+              "value": "FLAT BLACK",
+              "frequency": 0.04418828049951969,
+              "rarity": 22.630434782608695,
+              "rarityNormalized": 16.184189723320156
+            },
+            "OCTAGON": {
+              "count": 39,
+              "value": "OCTAGON",
+              "frequency": 0.037463976945244955,
+              "rarity": 26.692307692307693,
+              "rarityNormalized": 19.08904428904429
+            },
+            "MORPHEUS": {
+              "count": 33,
+              "value": "MORPHEUS",
+              "frequency": 0.03170028818443804,
+              "rarity": 31.545454545454543,
+              "rarityNormalized": 22.559779614325066
+            },
+            "LASER GLASSES GREEN": {
+              "count": 40,
+              "value": "LASER GLASSES GREEN",
+              "frequency": 0.03842459173871278,
+              "rarity": 26.025,
+              "rarityNormalized": 18.61181818181818
+            },
+            "SUNGLASSES DARK": {
+              "count": 34,
+              "value": "SUNGLASSES DARK",
+              "frequency": 0.03266090297790586,
+              "rarity": 30.61764705882353,
+              "rarityNormalized": 21.896256684491977
+            },
+            "SLIM SHADES": {
+              "count": 48,
+              "value": "SLIM SHADES",
+              "frequency": 0.04610951008645533,
+              "rarity": 21.6875,
+              "rarityNormalized": 15.509848484848483
+            },
+            "NOFRAMES": {
+              "count": 36,
+              "value": "NOFRAMES",
+              "frequency": 0.0345821325648415,
+              "rarity": 28.916666666666664,
+              "rarityNormalized": 20.679797979797975
+            },
+            "SPORTY": {
+              "count": 40,
+              "value": "SPORTY",
+              "frequency": 0.03842459173871278,
+              "rarity": 26.025,
+              "rarityNormalized": 18.61181818181818
+            },
+            "SPORTY 2": {
+              "count": 41,
+              "value": "SPORTY 2",
+              "frequency": 0.0393852065321806,
+              "rarity": 25.390243902439025,
+              "rarityNormalized": 18.157871396895786
+            },
+            "SPORTY 1": {
+              "count": 41,
+              "value": "SPORTY 1",
+              "frequency": 0.0393852065321806,
+              "rarity": 25.390243902439025,
+              "rarityNormalized": 18.157871396895786
+            },
+            "CYBER VISOR 2": {
+              "count": 38,
+              "value": "CYBER VISOR 2",
+              "frequency": 0.03650336215177714,
+              "rarity": 27.394736842105264,
+              "rarityNormalized": 19.591387559808613
+            },
+            "xxNonexx": {
+              "count": 261,
+              "value": "xxNonexx",
+              "frequency": 0.2507204610951009,
+              "rarity": 3.9885057471264367,
+              "rarityNormalized": 2.852385928247997
+            }
+          },
+          "numTraitsInCategory": 22
+        },
+        "ACCESSORIES": {
+          "count": 1041,
+          "trait": "ACCESSORIES",
+          "values": {
+            "LEATHER BRACES": {
+              "count": 191,
+              "value": "LEATHER BRACES",
+              "frequency": 0.1834774255523535,
+              "rarity": 5.450261780104713,
+              "rarityNormalized": 10.718848167539267
+            },
+            "BLACK WINGS": {
+              "count": 9,
+              "value": "BLACK WINGS",
+              "frequency": 0.008645533141210375,
+              "rarity": 115.66666666666666,
+              "rarityNormalized": 227.47777777777776
+            },
+            "GOLDEN WATCHES": {
+              "count": 82,
+              "value": "GOLDEN WATCHES",
+              "frequency": 0.0787704130643612,
+              "rarity": 12.695121951219512,
+              "rarityNormalized": 24.967073170731705
+            },
+            "PLATINUM WATCHES": {
+              "count": 85,
+              "value": "PLATINUM WATCHES",
+              "frequency": 0.08165225744476465,
+              "rarity": 12.247058823529413,
+              "rarityNormalized": 24.085882352941177
+            },
+            "WATCHES": {
+              "count": 226,
+              "value": "WATCHES",
+              "frequency": 0.21709894332372717,
+              "rarity": 4.606194690265487,
+              "rarityNormalized": 9.058849557522123
+            },
+            "NOSE BAND": {
+              "count": 74,
+              "value": "NOSE BAND",
+              "frequency": 0.07108549471661864,
+              "rarity": 14.067567567567567,
+              "rarityNormalized": 27.666216216216213
+            },
+            "WHITE WINGS": {
+              "count": 12,
+              "value": "WHITE WINGS",
+              "frequency": 0.011527377521613832,
+              "rarity": 86.75,
+              "rarityNormalized": 170.60833333333332
+            },
+            "xxNonexx": {
+              "count": 362,
+              "value": "xxNonexx",
+              "frequency": 0.34774255523535064,
+              "rarity": 2.8756906077348066,
+              "rarityNormalized": 5.655524861878453
+            }
+          },
+          "numTraitsInCategory": 8
+        },
+        "BAGS": {
+          "count": 1041,
+          "trait": "BAGS",
+          "values": {
+            "SWEATSHIRT BAGS": {
+              "count": 84,
+              "value": "SWEATSHIRT BAGS",
+              "frequency": 0.08069164265129683,
+              "rarity": 12.392857142857142,
+              "rarityNormalized": 48.74523809523809
+            },
+            "T BAG": {
+              "count": 64,
+              "value": "T BAG",
+              "frequency": 0.06147934678194044,
+              "rarity": 16.265625,
+              "rarityNormalized": 63.978125
+            },
+            "SHIRT BAG BLACK": {
+              "count": 54,
+              "value": "SHIRT BAG BLACK",
+              "frequency": 0.05187319884726225,
+              "rarity": 19.27777777777778,
+              "rarityNormalized": 75.82592592592593
+            },
+            "xxNonexx": {
+              "count": 839,
+              "value": "xxNonexx",
+              "frequency": 0.8059558117195005,
+              "rarity": 1.2407628128724673,
+              "rarityNormalized": 4.880333730631705
+            }
+          },
+          "numTraitsInCategory": 4
+        },
+        "numTraitsTotal": 236,
+        "numCategories": 15,
+        "avgTraitsPerCategory": 15.733333333333333,
+        "numTokenTraitsTotal": 6978,
+        "avgTraitsPerToken": 6.703170028818444
+      },
+      "isRevealed": true,
+      "revealTime": "2021-10-30T11:12:39.777Z",
+      "tokenURI": "https://storage.googleapis.com/modznft/meta/{ID}",
+      "tokenIdHistory": [
+        "https://storage.googleapis.com/modznft/meta/1234"
+      ]
+    }
+  }
+}

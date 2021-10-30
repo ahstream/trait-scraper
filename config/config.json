@@ -1,8 +1,9 @@
 {
   "projects": [
-    "wallstreet",
-    "modz",
-    "robopets"
+    "robopets",
+    "apewives",
+    "playboy",
+    "billionaires"
   ],
   "pollForRevealIntervalMsec": 10000,
   "fetchMilestones": [
@@ -37,7 +38,7 @@
   "pollTokenIds": [
     1234
   ],
-  "testParameters": {
+  "testSamples": {
     "nextTokensBatchSize": [
       400
     ],

@@ -1,0 +1,32 @@
+{
+  "debug": {
+    "firstTokenId": 1,
+    "maxSupply": 5555,
+    "contractAddress": "0x50e712b3a260d7639179e8277836253461418f23",
+    "pollForRevealIntervalMsec": 500,
+    "nextTokensBatchSize": 150,
+    "nextTokensFetchNewWhenFinishedPct": 0.7,
+    "threshold": {
+      "buynow": true,
+      "level": 0.1,
+      "image": 0.1,
+      "level1": 0.02,
+      "level2": 0.04,
+      "level3": 1,
+      "image1": 0.02,
+      "image2": 0.03,
+      "image3": 0.03,
+      "price1": 0.2,
+      "price2": 0.2,
+      "price3": 1
+    },
+    "fetchMilestones": [
+      555,
+      1000,
+      1500,
+      2000,
+      2500,
+      3000
+    ]
+  }
+}

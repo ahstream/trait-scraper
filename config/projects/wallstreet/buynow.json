@@ -1,375 +1,107 @@
 {
   "data": [
     {
-      "tokenId": 9484,
-      "price": 0.1797
-    },
-    {
-      "tokenId": 9093,
-      "price": 0.1798
-    },
-    {
-      "tokenId": 9092,
-      "price": 0.1798
-    },
-    {
-      "tokenId": 7147,
-      "price": 0.1799
-    },
-    {
-      "tokenId": 9543,
-      "price": 0.1799
-    },
-    {
-      "tokenId": 4798,
-      "price": 0.18
-    },
-    {
-      "tokenId": 7523,
-      "price": 0.18
-    },
-    {
-      "tokenId": 9270,
-      "price": 0.18
-    },
-    {
-      "tokenId": 7085,
-      "price": 0.18
-    },
-    {
-      "tokenId": 7349,
-      "price": 0.18
-    },
-    {
-      "tokenId": 9110,
-      "price": 0.18
-    },
-    {
-      "tokenId": 2608,
-      "price": 0.18
-    },
-    {
-      "tokenId": 6756,
-      "price": 0.18
-    },
-    {
-      "tokenId": 8823,
-      "price": 0.18
-    },
-    {
-      "tokenId": 6189,
-      "price": 0.181
-    },
-    {
-      "tokenId": 9399,
-      "price": 0.1834
-    },
-    {
-      "tokenId": 4261,
-      "price": 0.185
-    },
-    {
-      "tokenId": 6300,
-      "price": 0.1869
-    },
-    {
-      "tokenId": 4658,
-      "price": 0.187
-    },
-    {
-      "tokenId": 8258,
-      "price": 0.188
-    },
-    {
-      "tokenId": 8314,
-      "price": 0.188
-    },
-    {
-      "tokenId": 8315,
-      "price": 0.188
-    },
-    {
-      "tokenId": 7448,
-      "price": 0.189
-    },
-    {
-      "tokenId": 4303,
-      "price": 0.19
-    },
-    {
-      "tokenId": 5002,
-      "price": 0.19
-    },
-    {
-      "tokenId": 2481,
-      "price": 0.19
-    },
-    {
-      "tokenId": 2249,
-      "price": 0.19
-    },
-    {
-      "tokenId": 7148,
-      "price": 0.192
-    },
-    {
-      "tokenId": 3450,
-      "price": 0.1945
-    },
-    {
-      "tokenId": 6165,
-      "price": 0.1945
-    },
-    {
-      "tokenId": 6220,
-      "price": 0.195
-    },
-    {
-      "tokenId": 8918,
-      "price": 0.195
-    },
-    {
-      "tokenId": 6219,
-      "price": 0.195
-    },
-    {
-      "tokenId": 8181,
-      "price": 0.1969
-    },
-    {
-      "tokenId": 6589,
-      "price": 0.1969
-    },
-    {
-      "tokenId": 9476,
-      "price": 0.1969
-    },
-    {
-      "tokenId": 9856,
-      "price": 0.197
-    },
-    {
-      "tokenId": 5737,
-      "price": 0.197
-    },
-    {
-      "tokenId": 8259,
-      "price": 0.198
-    },
-    {
-      "tokenId": 7449,
-      "price": 0.198
-    },
-    {
-      "tokenId": 9765,
-      "price": 0.1987
-    },
-    {
-      "tokenId": 7086,
-      "price": 0.199
-    },
-    {
-      "tokenId": 6740,
-      "price": 0.199
-    },
-    {
-      "tokenId": 2128,
-      "price": 0.1998
-    },
-    {
-      "tokenId": 9853,
-      "price": 0.2
-    },
-    {
-      "tokenId": 2563,
-      "price": 0.2
-    },
-    {
-      "tokenId": 9468,
-      "price": 0.2
-    },
-    {
-      "tokenId": 6501,
-      "price": 0.2
-    },
-    {
-      "tokenId": 8681,
-      "price": 0.2
-    },
-    {
-      "tokenId": 5151,
-      "price": 0.2
-    },
-    {
-      "tokenId": 5831,
-      "price": 0.2
-    },
-    {
-      "tokenId": 9113,
-      "price": 0.2
-    },
-    {
-      "tokenId": 5664,
-      "price": 0.2
-    },
-    {
-      "tokenId": 5798,
-      "price": 0.2
-    },
-    {
-      "tokenId": 2616,
-      "price": 0.2
-    },
-    {
-      "tokenId": 8645,
-      "price": 0.2
-    },
-    {
-      "tokenId": 7044,
-      "price": 0.2
-    },
-    {
-      "tokenId": 3291,
-      "price": 0.2
-    },
-    {
-      "tokenId": 5003,
-      "price": 0.2
-    },
-    {
-      "tokenId": 8074,
-      "price": 0.2
-    },
-    {
-      "tokenId": 3509,
-      "price": 0.2
-    },
-    {
-      "tokenId": 9829,
-      "price": 0.2
-    },
-    {
-      "tokenId": 9983,
-      "price": 0.2
-    },
-    {
-      "tokenId": 8682,
-      "price": 0.2
-    },
-    {
-      "tokenId": 3324,
-      "price": 0.2
-    },
-    {
-      "tokenId": 9417,
-      "price": 0.2
-    },
-    {
-      "tokenId": 3325,
-      "price": 0.2
-    },
-    {
-      "tokenId": 8260,
-      "price": 0.208
-    },
-    {
-      "tokenId": 3699,
+      "tokenId": 8519,
       "price": 0.21
     },
     {
-      "tokenId": 5004,
+      "tokenId": 8521,
       "price": 0.21
     },
     {
-      "tokenId": 8261,
-      "price": 0.218
+      "tokenId": 9683,
+      "price": 0.2199
     },
     {
-      "tokenId": 7087,
-      "price": 0.219
-    },
-    {
-      "tokenId": 9369,
+      "tokenId": 5976,
       "price": 0.22
     },
     {
-      "tokenId": 8262,
-      "price": 0.228
+      "tokenId": 5977,
+      "price": 0.22
+    },
+    {
+      "tokenId": 5978,
+      "price": 0.22
+    },
+    {
+      "tokenId": 5979,
+      "price": 0.22
+    },
+    {
+      "tokenId": 8309,
+      "price": 0.223
+    },
+    {
+      "tokenId": 7261,
+      "price": 0.23
     },
     {
       "tokenId": 7453,
       "price": 0.23
     },
     {
-      "tokenId": 8263,
-      "price": 0.238
+      "tokenId": 8313,
+      "price": 0.23
     },
     {
-      "tokenId": 3432,
+      "tokenId": 9647,
+      "price": 0.235
+    },
+    {
+      "tokenId": 8312,
+      "price": 0.235
+    },
+    {
+      "tokenId": 8310,
+      "price": 0.237
+    },
+    {
+      "tokenId": 3493,
+      "price": 0.2393
+    },
+    {
+      "tokenId": 4640,
       "price": 0.24
+    },
+    {
+      "tokenId": 8311,
+      "price": 0.24
+    },
+    {
+      "tokenId": 8443,
+      "price": 0.24
+    },
+    {
+      "tokenId": 4625,
+      "price": 0.245
+    },
+    {
+      "tokenId": 7751,
+      "price": 0.245
     },
     {
       "tokenId": 8264,
       "price": 0.248
     },
     {
-      "tokenId": 8400,
+      "tokenId": 7849,
       "price": 0.249
     },
     {
-      "tokenId": 9833,
-      "price": 0.25
+      "tokenId": 5102,
+      "price": 0.249
     },
     {
-      "tokenId": 4890,
-      "price": 0.25
+      "tokenId": 5279,
+      "price": 0.249
     },
     {
-      "tokenId": 9076,
-      "price": 0.25
+      "tokenId": 3491,
+      "price": 0.2491
     },
     {
-      "tokenId": 9830,
-      "price": 0.25
-    },
-    {
-      "tokenId": 9832,
-      "price": 0.25
-    },
-    {
-      "tokenId": 5944,
-      "price": 0.25
-    },
-    {
-      "tokenId": 9683,
-      "price": 0.25
-    },
-    {
-      "tokenId": 8646,
-      "price": 0.25
-    },
-    {
-      "tokenId": 7045,
-      "price": 0.25
-    },
-    {
-      "tokenId": 5006,
-      "price": 0.25
-    },
-    {
-      "tokenId": 4284,
-      "price": 0.25
-    },
-    {
-      "tokenId": 9831,
-      "price": 0.25
-    },
-    {
-      "tokenId": 9179,
-      "price": 0.25
-    },
-    {
-      "tokenId": 8994,
+      "tokenId": 4897,
       "price": 0.25
     },
     {
@@ -377,7 +109,35 @@
       "price": 0.25
     },
     {
-      "tokenId": 2281,
+      "tokenId": 8994,
+      "price": 0.25
+    },
+    {
+      "tokenId": 9076,
+      "price": 0.25
+    },
+    {
+      "tokenId": 9832,
+      "price": 0.25
+    },
+    {
+      "tokenId": 9833,
+      "price": 0.25
+    },
+    {
+      "tokenId": 9830,
+      "price": 0.25
+    },
+    {
+      "tokenId": 9831,
+      "price": 0.25
+    },
+    {
+      "tokenId": 4284,
+      "price": 0.25
+    },
+    {
+      "tokenId": 6062,
       "price": 0.25
     },
     {
@@ -385,35 +145,27 @@
       "price": 0.258
     },
     {
+      "tokenId": 6715,
+      "price": 0.275
+    },
+    {
       "tokenId": 7025,
       "price": 0.284
+    },
+    {
+      "tokenId": 5617,
+      "price": 0.289
+    },
+    {
+      "tokenId": 5618,
+      "price": 0.29
     },
     {
       "tokenId": 9291,
       "price": 0.29
     },
     {
-      "tokenId": 6576,
-      "price": 0.299
-    },
-    {
-      "tokenId": 2441,
-      "price": 0.3
-    },
-    {
-      "tokenId": 5991,
-      "price": 0.3
-    },
-    {
       "tokenId": 9185,
-      "price": 0.3
-    },
-    {
-      "tokenId": 5647,
-      "price": 0.3
-    },
-    {
-      "tokenId": 9070,
       "price": 0.3
     },
     {
@@ -421,352 +173,24 @@
       "price": 0.3
     },
     {
+      "tokenId": 9070,
+      "price": 0.3
+    },
+    {
+      "tokenId": 6063,
+      "price": 0.3
+    },
+    {
+      "tokenId": 5647,
+      "price": 0.3
+    },
+    {
+      "tokenId": 5991,
+      "price": 0.3
+    },
+    {
       "tokenId": 7876,
       "price": 0.3
-    },
-    {
-      "tokenId": 2282,
-      "price": 0.3
-    },
-    {
-      "tokenId": 4476,
-      "price": 0.3
-    },
-    {
-      "tokenId": 9315,
-      "price": 0.301
-    },
-    {
-      "tokenId": 3232,
-      "price": 0.32
-    },
-    {
-      "tokenId": 6488,
-      "price": 0.333
-    },
-    {
-      "tokenId": 9503,
-      "price": 0.3499
-    },
-    {
-      "tokenId": 3500,
-      "price": 0.35
-    },
-    {
-      "tokenId": 8840,
-      "price": 0.35
-    },
-    {
-      "tokenId": 8075,
-      "price": 0.355
-    },
-    {
-      "tokenId": 7227,
-      "price": 0.358
-    },
-    {
-      "tokenId": 4725,
-      "price": 0.36
-    },
-    {
-      "tokenId": 2564,
-      "price": 0.39
-    },
-    {
-      "tokenId": 1260,
-      "price": 0.4
-    },
-    {
-      "tokenId": 2607,
-      "price": 0.41
-    },
-    {
-      "tokenId": 5827,
-      "price": 0.42
-    },
-    {
-      "tokenId": 9409,
-      "price": 0.42
-    },
-    {
-      "tokenId": 5826,
-      "price": 0.42069
-    },
-    {
-      "tokenId": 8404,
-      "price": 0.4269
-    },
-    {
-      "tokenId": 7178,
-      "price": 0.4269
-    },
-    {
-      "tokenId": 6846,
-      "price": 0.45
-    },
-    {
-      "tokenId": 8687,
-      "price": 0.45
-    },
-    {
-      "tokenId": 2099,
-      "price": 0.45
-    },
-    {
-      "tokenId": 3700,
-      "price": 0.4569
-    },
-    {
-      "tokenId": 7119,
-      "price": 0.49
-    },
-    {
-      "tokenId": 6719,
-      "price": 0.5
-    },
-    {
-      "tokenId": 5412,
-      "price": 0.5
-    },
-    {
-      "tokenId": 809,
-      "price": 0.5
-    },
-    {
-      "tokenId": 7467,
-      "price": 0.5
-    },
-    {
-      "tokenId": 1727,
-      "price": 0.5
-    },
-    {
-      "tokenId": 9682,
-      "price": 0.5
-    },
-    {
-      "tokenId": 5150,
-      "price": 0.5
-    },
-    {
-      "tokenId": 2503,
-      "price": 0.5
-    },
-    {
-      "tokenId": 5760,
-      "price": 0.5
-    },
-    {
-      "tokenId": 2948,
-      "price": 0.5
-    },
-    {
-      "tokenId": 273,
-      "price": 0.5
-    },
-    {
-      "tokenId": 807,
-      "price": 0.5
-    },
-    {
-      "tokenId": 1728,
-      "price": 0.5
-    },
-    {
-      "tokenId": 1729,
-      "price": 0.5
-    },
-    {
-      "tokenId": 2553,
-      "price": 0.5
-    },
-    {
-      "tokenId": 1640,
-      "price": 0.5
-    },
-    {
-      "tokenId": 3084,
-      "price": 0.6
-    },
-    {
-      "tokenId": 1839,
-      "price": 0.6
-    },
-    {
-      "tokenId": 1283,
-      "price": 0.65
-    },
-    {
-      "tokenId": 5689,
-      "price": 0.67
-    },
-    {
-      "tokenId": 546,
-      "price": 0.69
-    },
-    {
-      "tokenId": 2606,
-      "price": 0.69
-    },
-    {
-      "tokenId": 2311,
-      "price": 0.69
-    },
-    {
-      "tokenId": 288,
-      "price": 0.69
-    },
-    {
-      "tokenId": 4232,
-      "price": 0.6942
-    },
-    {
-      "tokenId": 4630,
-      "price": 0.7
-    },
-    {
-      "tokenId": 9518,
-      "price": 0.74
-    },
-    {
-      "tokenId": 1265,
-      "price": 0.75
-    },
-    {
-      "tokenId": 8437,
-      "price": 0.969
-    },
-    {
-      "tokenId": 4632,
-      "price": 0.98
-    },
-    {
-      "tokenId": 5159,
-      "price": 1
-    },
-    {
-      "tokenId": 3422,
-      "price": 1
-    },
-    {
-      "tokenId": 8398,
-      "price": 1
-    },
-    {
-      "tokenId": 7351,
-      "price": 1
-    },
-    {
-      "tokenId": 8589,
-      "price": 1
-    },
-    {
-      "tokenId": 7352,
-      "price": 1
-    },
-    {
-      "tokenId": 5961,
-      "price": 1
-    },
-    {
-      "tokenId": 310,
-      "price": 1
-    },
-    {
-      "tokenId": 650,
-      "price": 1
-    },
-    {
-      "tokenId": 6026,
-      "price": 1.3
-    },
-    {
-      "tokenId": 4629,
-      "price": 1.4
-    },
-    {
-      "tokenId": 4631,
-      "price": 1.4
-    },
-    {
-      "tokenId": 930,
-      "price": 1.55
-    },
-    {
-      "tokenId": 4940,
-      "price": 2
-    },
-    {
-      "tokenId": 6567,
-      "price": 2
-    },
-    {
-      "tokenId": 5421,
-      "price": 2
-    },
-    {
-      "tokenId": 609,
-      "price": 2
-    },
-    {
-      "tokenId": 2833,
-      "price": 2.2
-    },
-    {
-      "tokenId": 610,
-      "price": 2.5
-    },
-    {
-      "tokenId": 8463,
-      "price": 4.2
-    },
-    {
-      "tokenId": 8632,
-      "price": 4.2
-    },
-    {
-      "tokenId": 2942,
-      "price": 4.2
-    },
-    {
-      "tokenId": 9515,
-      "price": 4.2069
-    },
-    {
-      "tokenId": 5201,
-      "price": 4.2069
-    },
-    {
-      "tokenId": 1158,
-      "price": 4.2069
-    },
-    {
-      "tokenId": 31,
-      "price": 4.69
-    },
-    {
-      "tokenId": 141,
-      "price": 4.69
-    },
-    {
-      "tokenId": 494,
-      "price": 4.94
-    },
-    {
-      "tokenId": 7371,
-      "price": 6.942
-    },
-    {
-      "tokenId": 8106,
-      "price": 8.04
-    },
-    {
-      "tokenId": 2028,
-      "price": 10
-    },
-    {
-      "tokenId": 283,
-      "price": 15
     }
   ]
 }

@@ -1,0 +1,58 @@
+{
+  "debug": {
+    "projects": [
+      "robopets",
+      "apewives",
+      "playboy",
+      "billionaires"
+    ],
+    "pollForRevealIntervalMsec": 10000,
+    "fetchMilestones": [
+      250,
+      500,
+      1000,
+      3000,
+      5000,
+      7000
+    ],
+    "threshold": {
+      "buynow": false,
+      "level": 0.1,
+      "image": 0.1,
+      "level1": 0.02,
+      "level2": 0.04,
+      "level3": 0.1,
+      "image1": 0.02,
+      "image2": 0.3,
+      "image3": 0.03,
+      "price1": 2,
+      "price2": 3,
+      "price3": 4
+    },
+    "buttons": [
+      10,
+      20,
+      30,
+      40,
+      50
+    ],
+    "pollTokenIds": [
+      1234
+    ],
+    "testSamples": {
+      "nextTokensBatchSize": [
+        400
+      ],
+      "nextTokensFetchNewWhenFinishedPct": [
+        0.5
+      ]
+    },
+    "nextTokensBatchSize": 200,
+    "nextTokensFetchNewWhenFinishedPct": 0.8,
+    "minTraitsNeeded": 2,
+    "minDifferentTraitValuesNeeded": 2,
+    "fetchRequestLifetimeMsec": 10000,
+    "etherscanURI": "http://node1.web3api.com/",
+    "tokenURISignatur": "0xc87b56dd"
+  }
+}

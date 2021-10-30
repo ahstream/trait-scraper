@@ -1,0 +1,134 @@
+
+    <html><head><title>wallstreet</title>
+    <script>
+        function openLinks(className, first, last) {
+            var checkboxes = document.querySelectorAll('input[class="' + className + '"]:checked');
+            var links = [];
+            checkboxes.forEach((ck) => { links.push(['https://opensea.io/assets//0x79da5fa272e8fb280cee4d0649aa6a9e4e62ceb0/'+ck.value, 'id_' + ck.value]);});
+            console.log(links);
+            console.log('---');
+            var links2 = links.slice(first-1, last);
+            console.log(links2);
+            console.log('---');
+            links2.forEach((link) => { console.log(link[1]); window.open(link[0], link[1]); });
+        }
+    </script>
+    <style>
+        tr { vertical-align: top; }
+        td { padding-right: 10px; }
+        img.thumb { border: 1px solid black; height:100px; width:100px }
+        table, th, td {text-align: left;}
+        body, table, th, td {font-size: 18px; }
+        .hilite {
+          background: lightgray;
+        }
+        .level1, .level2, .level3, .level4, .level5
+        {
+            float:left;
+            display:inline;
+            margin: 10px 20px 10px 10px;
+        }
+    </style>
+    </head><body>
+    <div class="level2">
+    <span>Calc Supply: <b>4223</b> (1)</span>&nbsp;&nbsp;&nbsp;
+    <button onClick="openLinks('checkbox_2', 1, 10)">10</button>&nbsp;&nbsp;<button onClick="openLinks('checkbox_2', 10, 20)">20</button>&nbsp;&nbsp;<button onClick="openLinks('checkbox_2', 20, 30)">30</button>&nbsp;&nbsp;<button onClick="openLinks('checkbox_2', 30, 40)">40</button>&nbsp;&nbsp;<button onClick="openLinks('checkbox_2', 40, 50)">50</button>&nbsp;&nbsp;
+    
+    <table>
+    <tr style="background: black; color: white"><td colspan="100%">Rank < 4.0 % &nbsp;&nbsp; Price < 0.25 ETH</td></tr>
+    <tr>
+        <th>Image</th>
+        <th></th>
+        <th>Pct</th>
+        <th>Price</th>
+        <th>Rank&nbsp;&nbsp;</th>
+        <th>Score&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+        <th>ID</th>
+    </tr>
+        <tr class="">
+            <td><a target="_blank" href="https://opensea.io/assets//0x79da5fa272e8fb280cee4d0649aa6a9e4e62ceb0/5279"><img class="thumb" src="https://wallstreetbulls.io/media/5279.jpg"></a></td>
+            <td><input type="checkbox" class="checkbox_2"  value="5279"></td>
+            <td><a target="id_5279" href="https://opensea.io/assets//0x79da5fa272e8fb280cee4d0649aa6a9e4e62ceb0/5279">2.1 %</a></td>
+            <td>0.249 eth</td>
+            <td><b>89</b></td>
+            <td>353</b></td>
+            <td>:5279</td>
+        </tr></table></div>
+    <div class="level3">
+    <span>Calc Supply: <b>4223</b> (7)</span>&nbsp;&nbsp;&nbsp;
+    <button onClick="openLinks('checkbox_3', 1, 10)">10</button>&nbsp;&nbsp;<button onClick="openLinks('checkbox_3', 10, 20)">20</button>&nbsp;&nbsp;<button onClick="openLinks('checkbox_3', 20, 30)">30</button>&nbsp;&nbsp;<button onClick="openLinks('checkbox_3', 30, 40)">40</button>&nbsp;&nbsp;<button onClick="openLinks('checkbox_3', 40, 50)">50</button>&nbsp;&nbsp;
+    
+    <table>
+    <tr style="background: black; color: white"><td colspan="100%">Rank < 10.0 % &nbsp;&nbsp; Price < 1 ETH</td></tr>
+    <tr>
+        <th>Image</th>
+        <th></th>
+        <th>Pct</th>
+        <th>Price</th>
+        <th>Rank&nbsp;&nbsp;</th>
+        <th>Score&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+        <th>ID</th>
+    </tr>
+        <tr class="">
+            <td><a target="_blank" href="https://opensea.io/assets//0x79da5fa272e8fb280cee4d0649aa6a9e4e62ceb0/7025"><img class="thumb" src="https://wallstreetbulls.io/media/7025.jpg"></a></td>
+            <td><input type="checkbox" class="checkbox_3"  value="7025"></td>
+            <td><a target="id_7025" href="https://opensea.io/assets//0x79da5fa272e8fb280cee4d0649aa6a9e4e62ceb0/7025">0.2 %</a></td>
+            <td>0.284 eth</td>
+            <td><b>8</b></td>
+            <td>679</b></td>
+            <td>:7025</td>
+        </tr>
+        <tr class="">
+            <td></td>
+            <td><input type="checkbox" class="checkbox_3"  value="3491"></td>
+            <td><a target="id_3491" href="https://opensea.io/assets//0x79da5fa272e8fb280cee4d0649aa6a9e4e62ceb0/3491">5.3 %</a></td>
+            <td>0.2491 eth</td>
+            <td><b>224</b></td>
+            <td>278</b></td>
+            <td>:3491</td>
+        </tr>
+        <tr class="">
+            <td></td>
+            <td><input type="checkbox" class="checkbox_3"  value="9831"></td>
+            <td><a target="id_9831" href="https://opensea.io/assets//0x79da5fa272e8fb280cee4d0649aa6a9e4e62ceb0/9831">5.3 %</a></td>
+            <td>0.25 eth</td>
+            <td><b>225</b></td>
+            <td>278</b></td>
+            <td>:9831</td>
+        </tr>
+        <tr class="">
+            <td></td>
+            <td><input type="checkbox" class="checkbox_3"  value="5979"></td>
+            <td><a target="id_5979" href="https://opensea.io/assets//0x79da5fa272e8fb280cee4d0649aa6a9e4e62ceb0/5979">6.3 %</a></td>
+            <td>0.22 eth</td>
+            <td><b>266</b></td>
+            <td>259</b></td>
+            <td>:5979</td>
+        </tr>
+        <tr class="">
+            <td></td>
+            <td><input type="checkbox" class="checkbox_3"  value="5978"></td>
+            <td><a target="id_5978" href="https://opensea.io/assets//0x79da5fa272e8fb280cee4d0649aa6a9e4e62ceb0/5978">8.0 %</a></td>
+            <td>0.22 eth</td>
+            <td><b>337</b></td>
+            <td>230</b></td>
+            <td>:5978</td>
+        </tr>
+        <tr class="">
+            <td></td>
+            <td><input type="checkbox" class="checkbox_3"  value="9683"></td>
+            <td><a target="id_9683" href="https://opensea.io/assets//0x79da5fa272e8fb280cee4d0649aa6a9e4e62ceb0/9683">8.6 %</a></td>
+            <td>0.2199 eth</td>
+            <td><b>364</b></td>
+            <td>226</b></td>
+            <td>:9683</td>
+        </tr>
+        <tr class="">
+            <td></td>
+            <td><input type="checkbox" class="checkbox_3"  value="7261"></td>
+            <td><a target="id_7261" href="https://opensea.io/assets//0x79da5fa272e8fb280cee4d0649aa6a9e4e62ceb0/7261">8.7 %</a></td>
+            <td>0.23 eth</td>
+            <td><b>368</b></td>
+            <td>225</b></td>
+            <td>:7261</td>
+        </tr></table></div></body>

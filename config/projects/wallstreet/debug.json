@@ -33,7 +33,7 @@
     "pollTokenIds": [
       1234
     ],
-    "testParameters": {
+    "testSamples": {
       "nextTokensBatchSize": [
         400
       ],

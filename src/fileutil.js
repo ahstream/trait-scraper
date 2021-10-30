@@ -40,3 +40,7 @@ export function writeRelativeFile(path, data) {
 export function fileExists(path) {
   return fs.existsSync(path);
 }
+
+export function fileExistsRelPath(path) {
+  return fs.existsSync(join(__dirname, path));
+}
