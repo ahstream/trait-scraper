@@ -29,6 +29,7 @@
     "lodash": "^4.17.21",
     "mongodb": "^3.6.9",
     "mongoose": "^5.12.13",
+    "node-abort-controller": "^3.0.1",
     "node-fetch": "^3.0.0",
     "node-json-db": "^1.4.1",
     "node-libcurl": "^2.3.3",

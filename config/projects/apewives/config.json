@@ -3,7 +3,7 @@
   "maxSupply": 10000,
   "contractAddress": "0xf1268733c6fb05ef6be9cf23d24436dcd6e0b35e",
   "pollForRevealIntervalMsec": 500,
-  "nextTokensBatchSize": 50,
+  "nextTokensBatchSize": 150,
   "nextTokensFetchNewWhenFinishedPct": 0.5,
   "threshold": {
     "buynow": true,

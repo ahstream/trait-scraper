@@ -1,0 +1,99 @@
+/**
+ * Copyright (c) 2021
+ * FILE DESCRIPTION
+ */
+
+import { exec } from 'child_process';
+
+import program from 'commander';
+import fetch from 'node-fetch';
+import { Curl, curly } from 'node-libcurl';
+
+import * as projectlib from './project.js';
+import * as fileutil from './fileutil.js';
+import * as jsonutil from './jsonutil.js';
+import { createLogger } from './lib/loggerlib.js';
+import * as miscutil from './miscutil.js';
+
+const globalConfig = jsonutil.importFile('../config/config.json');
+const log = createLogger();
+
+const DEFAULT_FETCH_HEADERS = {
+  'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36',
+  "accept": "*/*",
+};
+
+// RUNTIME ----------------------------------------------------------------------------------
+
+// yarn cli crawlCollection --id bearseum
+program.option('--id <value>', 'Project ID', '');
+program.parse();
+
+runProgram();
+
+// MAIN FUNCTIONS ----------------------------------------------------------------------------------
+
+async function runProgram() {
+  const options = program.opts();
+  const cmd = program.args[0];
+  switch (cmd) {
+    case 'crawlCollection':
+      const project = projectlib.create(options.id);
+      project.addCollection();
+      project.crawlCollection();
+      break;
+    case 'crawlBuyNow':
+      break;
+    case 'test':
+      await test();
+      break;
+    default:
+      log.error(`Unknown command: ${cmd}`);
+  }
+}
+
+async function crawlCollection(id) {
+  const project = projectlib.create(id);
+  project.addCollection();
+  await project.crawlCollection();
+}
+
+async function test() {
+  const cmd = `curl 'https://node1.web3api.com/' \\
+  -H 'authority: node1.web3api.com' \\
+  -H 'sec-ch-ua: "Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"' \\
+  -H 'sec-ch-ua-mobile: ?0' \\
+  -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36' \\
+  -H 'sec-ch-ua-platform: "Windows"' \\
+  -H 'content-type: application/json' \\
+  -H 'accept: */*' \\
+  -H 'origin: https://etherscan.io' \\
+  -H 'sec-fetch-site: cross-site' \\
+  -H 'sec-fetch-mode: cors' \\
+  -H 'sec-fetch-dest: empty' \\
+  -H 'referer: https://etherscan.io/' \\
+  -H 'accept-language: en-US,en;q=0.9' \\
+  --data-raw '{"jsonrpc":"2.0","id":2,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"0xc87b56dd0000000000000000000000000000000000000000000000000000000000000050","to":"0x03f5CeE0d698c24A42A396EC6BDAEe014057d4c8"},"latest"]}' \\
+  --compressed`;
+  const cmd2 = 'curl https://www.keycdn.com';
+  exec(`'curl 'https://node1.web3api.com/'`, (error, stdout, stderr) => {
+    if (error) {
+      console.log(`error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+  });
+}
+
+/*
+
+async function crawlAsset(project, asset) {
+  log.info('Crawl asset ID:', asset.id);
+  await setTokenURI(project, asset);
+  await setTokenData(project, asset);
+}
+ */

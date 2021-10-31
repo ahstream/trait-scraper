@@ -8,7 +8,7 @@ import { CustomError } from './exceptions';
 const _ = require('lodash');
 
 const { createLogger } = require('./lib/loggerlib');
-const utilslib = require('./lib/utilslib');
+const miscutil = require('./miscutil');
 const provider = require('./provider');
 
 const log = createLogger();
@@ -21,11 +21,11 @@ export function parseMatchUrl(url) {
     return null;
   }
 
-  const sport = utilslib.trimChars(result[1] ?? '', '/').trim();
-  const country = utilslib.trimChars(result[2] ?? '', '/').trim();
-  const tournament = utilslib.trimChars(result[3] ?? '', '/').trim();
+  const sport = miscutil.trimChars(result[1] ?? '', '/').trim();
+  const country = miscutil.trimChars(result[2] ?? '', '/').trim();
+  const tournament = miscutil.trimChars(result[3] ?? '', '/').trim();
   const tournamentKey = `${sport}/${country}/${tournament}`;
-  const match = utilslib.trimChars(result[4] ?? '', '/').trim();
+  const match = miscutil.trimChars(result[4] ?? '', '/').trim();
   const matchUrl = `/${sport}/${country}/${tournament}/${match}/`;
 
   const matchIdTmp = match.match(/.*-([0-9A-Z]*)$/i);

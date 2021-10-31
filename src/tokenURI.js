@@ -153,3 +153,23 @@ function hex2a(hexValue) {
     str += String.fromCharCode(parseInt(hexStr.substr(i, 2), 16));
   return str;
 }
+
+function createTokenURI(id, uri) {
+  if (typeof uri !== 'string') {
+    return '';
+  }
+  return uri.replace('{ID}', id);
+}
+
+function convertToTokenURI(id, uri) {
+  const idString = id.toString();
+  const count = countInstances(uri, idString);
+  if (count === 1) {
+    return uri.replace(idString, '{ID}');
+  }
+  if (count > 1) {
+    return replaceLastOccurrenceOf(uri, idString, '{ID}');
+  }
+  log.error('Invalid conversion to tokenURI:', id, uri);
+  return '';
+}

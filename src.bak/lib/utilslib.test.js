@@ -3,7 +3,7 @@ import {
   trimCharsLeft,
   trimCharsRight,
   trimChars
-} from './utilslib';
+} from './miscutil';
 
 test('propertiesExists', () => {
   const obj = {};

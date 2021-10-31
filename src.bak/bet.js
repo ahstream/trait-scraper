@@ -9,7 +9,7 @@ import { createLogger } from './lib/loggerlib';
 const config = require('../config/projects/waw/config.json');
 const attributelib = require('./attribute.js');
 const feedlib = require('./feed.js');
-const utilslib = require('./lib/utilslib');
+const miscutil = require('./miscutil');
 const marketlib = require('./market.js');
 const oddsfeedlib = require('./oddsFeed.js');
 const outcomelib = require('./outcome.js');
@@ -57,7 +57,7 @@ export async function getBetTypes(match) {
 
   const betTypes = {};
   Object.keys(feed.nav).forEach((bettingTypeKey, _index) => {
-    utilslib.ensureProperties(betTypes, [bettingTypeKey]);
+    miscutil.ensureProperties(betTypes, [bettingTypeKey]);
     Object.keys(feed.nav[bettingTypeKey]).forEach((scopeKey, _scopeIndex) => {
       betTypes[bettingTypeKey][scopeKey] = feed.nav[bettingTypeKey][scopeKey].length;
     });

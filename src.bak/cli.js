@@ -10,7 +10,7 @@ const program = require('commander');
 
 const config = require('../config/projects/waw/config.json');
 const httplib = require('./lib/httplib');
-const utilslib = require('./lib/utilslib');
+const miscutil = require('./miscutil');
 const matchLink = require('./matchLink.js');
 const mongodb = require('./mongodb.js');
 const oddsHistory = require('./oddsHistory.js');
@@ -89,7 +89,7 @@ async function crawlMatchPages(args) {
       log.info('Result:', await crawlMatchPagesThread(args));
       if (ct < numTimes) {
         log.info(`Sleep for ${args.interval} minutes before starting run #${ct + 1}...`);
-        await utilslib.sleep(args.interval * 60 * 1000);
+        await miscutil.sleep(args.interval * 60 * 1000);
       }
     }
     log.info('Done!');
@@ -124,7 +124,7 @@ async function crawlMatchLinks(args) {
       log.info('Result:', await crawlMatchLinksThread(args));
       if (ct < numTimes) {
         log.info(`Sleep for ${args.interval} minutes before starting run #${ct + 1}...`);
-        await utilslib.sleep(args.interval * 60 * 1000);
+        await miscutil.sleep(args.interval * 60 * 1000);
       }
     }
     log.info('Done!');
