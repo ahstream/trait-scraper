@@ -1,18 +1,19 @@
 import * as miscutil from "./miscutil.js";
 import { fetchTokens } from "./fetchTokens.js";
-import * as fileutil from "./fileutil.js";
 import * as timer from "./timer.js";
 import { getConfig } from "./config.js";
 import * as debugutil from "./debugutil.js";
 import * as db from "./db.js";
 import * as buynow from "./buynow.js";
 import * as rarity from "./rarity.js";
-import * as html from "./html.js";
+import * as webPage from "./webPage.js";
+import * as poll from "./poll.js";
 import {
   countDone,
   countDoneConfig,
   countSkippedConfig,
-  countFinishedBuynowConfig, countDoneOrSkip, countSkip
+  countDoneOrSkip,
+  countSkip
 } from "./count.js";
 
 import opn from "opn";
@@ -39,8 +40,8 @@ export async function fetchCollection({ projectId, all = false, debug = false, f
   partTimer.ping('Prepare tokens duration');
 
   if (!config.data.isRevealed) {
-    // todo await pollForReveal(config);
-    // todo notifyRevealed(config);
+    await poll.pollForReveal(config);
+    poll.notifyRevealed(config);
   }
   partTimer.ping('Poll for reveal duration');
 
@@ -49,26 +50,41 @@ export async function fetchCollection({ projectId, all = false, debug = false, f
   partTimer.ping('Fetch collection tokens');
 
   debugutil.debugToFile(config);
+  partTimer.ping('Debug to file duration');
 
   createResults(config);
-  db.saveToDB(config);
   partTimer.ping('Create results duration');
+
+  db.saveToDB(config);
+  partTimer.ping('Save to DB duration');
 
   config.data.fetchedTime = new Date();
   config.data.fetchDuration = fullTimer.getSeconds();
 
   fullTimer.ping('Collection fetch duration');
+
+  return config;
 }
 
-async function fetchCollectionTokens(config) {
+export async function fetchCollectionTokens(config) {
   config.data.baseTokenURI = 'https://storage.googleapis.com/modznft/meta/{ID}';
   await fetchTokens(config, 6000, fetchTokensIsFinishedCallback);
 }
 
 function fetchTokensIsFinishedCallback(config, stats) {
+  const numDone = countDone(config.data.tokenList);
   const numFinished = countDoneOrSkip(config.data.tokenList);
   const numTokens = config.data.tokenList.length;
-  log.debug('numDone, numTokens, stats', numFinished, numTokens, stats);
+  log.debug('numDone, numFinished, numTokens, stats', numDone, numFinished, numTokens, stats);
+
+  if (config.milestones.length > 0 && numDone >= config.milestones[0] * config.maxSupply) {
+    const myTimer = timer.createTimer();
+    const milestone = config.milestones.splice(0, 1);
+    log.info(`Create results after ${numDone} finished tokens...`);
+    createResults(config);
+    myTimer.ping('Create results');
+  }
+
   if (numFinished >= numTokens) {
     log.info(`${countDone(config.data.tokenList)} + ${countSkip(config.data.tokenList)} = ${numFinished} (${numTokens})`);
     return true;
@@ -78,35 +94,7 @@ function fetchTokensIsFinishedCallback(config, stats) {
   return false;
 }
 
-async function fetchCollectionMilestones(milestones = [], config) {
-  const myTimer = timer.createTimer();
-  fetchTokens(config.data.tokenList, config.data.tokenURI, config.nextTokensBatchSize);
-  return;
-
-  while (true) {
-    const numFinishedBefore = countDoneConfig(config);
-    const nextTokens = getNextTokens(config, config.nextTokensBatchSize);
-
-    if (nextTokens.length < 1) {
-      break;
-    }
-    await fetchCollectionTokens(nextTokens, config);
-
-    const numDone = countDoneConfig(config) + countSkippedConfig(config);
-    const numFinishedInThisRun = numDone - numFinishedBefore;
-    log.info(`Finished: ${numFinishedBefore} + ${numFinishedInThisRun} = ${numDone}`);
-
-    if (milestones.length > 0 && numDone >= milestones[0]) {
-      const milestone = milestones.splice(0, 1);
-      log.info(`Create results after ${milestone} finished tokens...`);
-      myTimer.ping();
-      createResults(config);
-      myTimer.ping();
-    }
-  }
-}
-
-function prepareTokens(config) {
+export function prepareTokens(config) {
   buynow.prepareBuynow(config);
 
   // If tokens exists in DB, use these!
@@ -178,38 +166,14 @@ function prepareTokensBAK(config) {
 }
 
 function createResults(config) {
-  calcResultData(config);
-  createResultPage(config);
-}
-
-function calcResultData(config) {
-  rarity.addTokenNoneTrait(config.data);
-  rarity.calcGlobalRarity(config.data);
-  rarity.calcTokenRarity(config.data);
-}
-
-function createResultPage(config) {
-  /*
-  html.createWebPage(config);
-  if (!config.webPageShown) {
-    const path = fileutil.toAbsoluteFilePath(`../config/projects/${config.projectId}/tokens-by-rarity.html`);
+  rarity.calc(config);
+  const path = webPage.createCollectionWebPage(config);
+  if (!config.webPageShown && config.openWebPage.firstResultPage) {
     log.info('Open results page:', path);
     opn(path, { app: 'chrome' });
     config.webPageShown = true;
   }
-   */
-}
-
-function getTokenListForResult(config) {
-  console.log('config.data.tokenList.length', config.data.tokenList.length);
-  debugutil.debugToFile(config, 'config2.json');
-  const tokenList = [];
-  for (const token of config.data.tokenList) {
-    if (!token.hasRarity) {
-      continue;
-    }
-    tokenList.push(token);
+  if (config.openWebPage.maxRarityPct && config.openWebPage.maxRarityPct > 0) {
+    // todo;
   }
-  console.log('tokenList.length xxx', tokenList.length);
-  return tokenList;
 }

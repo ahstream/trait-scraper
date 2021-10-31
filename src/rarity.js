@@ -8,6 +8,12 @@ const log = createLogger();
 const TRAIT_NONE_VALUE = 'xxNonexx';
 const TRAIT_COUNT_TYPE = 'xxTraitCountxx';
 
+export function calc(config) {
+  addTokenNoneTrait(config.data);
+  calcGlobalRarity(config.data);
+  calcTokenRarity(config.data);
+}
+
 export function calcGlobalRarity(collectionData) {
   const numTokens = countDone(collectionData.tokenList);
   let numTraitTypes = 0;

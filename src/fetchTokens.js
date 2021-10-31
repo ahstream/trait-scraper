@@ -9,6 +9,8 @@ import { addTokenTraits } from './rarity.js';
 
 const log = createLogger();
 
+const DEFAULT_FETCH_TIMEOUT = 6000;
+
 const stats = {
   numOk: 0,
   num404: 0,
@@ -64,12 +66,26 @@ function shouldTokenBeFetched(token) {
   return true;
 }
 
+async function getSimpleToken(tokenURI, timeout) {
+  try {
+    const response = await fetchWithTimeout(tokenURI, {
+      timeout: timeout ?? DEFAULT_FETCH_TIMEOUT
+    });
+    if (response.ok) {
+      return await response.json();
+    }
+    return {};
+  } catch (error) {
+    return {};
+  }
+}
+
 async function fetchToken(token, baseTokenURI, timeout, collectionData) {
   try {
     const uri = createTokenURI(token.tokenId, baseTokenURI);
     token.status = 'fetch';
     const response = await fetchWithTimeout(uri, {
-      timeout: timeout ?? 6000
+      timeout: timeout ?? DEFAULT_FETCH_TIMEOUT
     });
 
     token.statusCode = response.status;
@@ -80,6 +96,7 @@ async function fetchToken(token, baseTokenURI, timeout, collectionData) {
       token.done = true;
       stats.numOk++;
       addTokenData(token, data, collectionData);
+      return token;
     } else if (response.status === 404) {
       token.status = '404';
       token.skip = true;
@@ -88,6 +105,7 @@ async function fetchToken(token, baseTokenURI, timeout, collectionData) {
       token.status = '429';
       stats.num429++;
     }
+    return {};
   } catch (error) {
     if (error.name === 'AbortError') {
       token.status = 'timeout';
@@ -98,14 +116,8 @@ async function fetchToken(token, baseTokenURI, timeout, collectionData) {
       console.log(`Error: ${error}`);
       stats.numUnknownError++;
     }
+    return {};
   }
-}
-
-function createTokenURI(id, uri) {
-  if (typeof uri !== 'string') {
-    return '';
-  }
-  return uri.replace('{ID}', id);
 }
 
 async function fetchWithTimeout(resource, options = {}) {
@@ -121,10 +133,44 @@ async function fetchWithTimeout(resource, options = {}) {
   return response;
 }
 
-async function addTokenData(token, data, collectionData) {
+export function addTokenData(token, data, collectionData) {
   if (data.attributes) {
     token.image = data.image;
     token.source = data;
     addTokenTraits(token, data.attributes, collectionData);
   }
+}
+
+function createTokenURI(id, uri) {
+  if (typeof uri !== 'string') {
+    return '';
+  }
+  return uri.replace('{ID}', id);
+}
+
+export async function isTokenRevealed(tokenURI, config) {
+  const token = await getSimpleToken(tokenURI);
+
+  if (!token?.attributes) {
+    return false;
+  }
+
+  let numTraits = 0;
+  const valueMap = new Map();
+  for (let attr of token?.attributes) {
+    if (attr.trait_type) {
+      if (attr.display_type) {
+        // Dont count other types than normal (string) traits!
+        continue;
+      }
+      numTraits++;
+      valueMap.set(attr.value, true);
+    }
+  }
+  if (numTraits >= config.minTraitsNeeded && valueMap.size >= config.minDifferentTraitValuesNeeded) {
+    log.info('Revealed token:', token);
+    return true;
+  }
+
+  return false;
 }

@@ -21,6 +21,8 @@ import opn from 'opn';
 import { curly } from "node-libcurl";
 
 import { fetchCollection } from './collection.js';
+import { testCollection } from './test.js';
+import { analyzeCollection } from './analyze.js';
 
 const log = createLogger();
 
@@ -28,7 +30,6 @@ const DEFAULT_FETCH_HEADERS = {
   'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
 };
 
-const BASE_ASSET_URL = 'https://opensea.io/assets/';
 const IPFS_URL = 'ipfs://';
 
 // RUNTIME ----------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ async function runProgram() {
   const projectId = program.args[1];
   switch (cmd) {
     case 'analyze':
-      // await analyzeCollection({ projectId });
+      await analyzeCollection({ projectId });
       break;
     case 'fetch':
       await fetchCollection({
@@ -67,7 +68,7 @@ async function runProgram() {
       // await pollCollections({ debug: options.debug });
       break;
     case 'test':
-      // await testCollection({ projectId, doSample: options.sample, debug: options.debug });
+      await testCollection({ projectId, doSample: options.sample, debug: options.debug });
       break;
     default:
       log.error(`Unknown command: ${cmd}`);

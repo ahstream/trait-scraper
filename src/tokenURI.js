@@ -5,8 +5,11 @@
 
 import { createLogger } from './lib/loggerlib.js';
 import { curly } from "node-libcurl";
+import * as miscutil from "./miscutil.js";
 
 const log = createLogger();
+
+const IPFS_URL = 'ipfs://';
 
 // MAIN FUNCTIONS ----------------------------------------------------------------------------------
 
@@ -131,15 +134,6 @@ async function getAndThrow(id, contractAddress, etherscanUrl, signatur) {
   return { uri: convertTokenURI(uri), originalURI: uri };
 }
 
-function convertTokenURI(uri) {
-  const IPFS_URL = 'ipfs://';
-  let normalizedURI = uri;
-  if (uri.startsWith(IPFS_URL)) {
-    normalizedURI = uri.replace(IPFS_URL, 'https://ipfs.io/ipfs/');
-  }
-  return normalizedURI;
-}
-
 function createTokenURIData(id, signatur) {
   const hexId = id.toString(16);
   const suffix = hexId.padStart(64, '0');
@@ -154,22 +148,30 @@ function hex2a(hexValue) {
   return str;
 }
 
-function createTokenURI(id, uri) {
+export function createTokenURI(id, uri) {
   if (typeof uri !== 'string') {
     return '';
   }
   return uri.replace('{ID}', id);
 }
 
-function convertToTokenURI(id, uri) {
+export function convertToTokenURI(id, uri) {
   const idString = id.toString();
-  const count = countInstances(uri, idString);
+  const count = miscutil.countInstances(uri, idString);
   if (count === 1) {
     return uri.replace(idString, '{ID}');
   }
   if (count > 1) {
-    return replaceLastOccurrenceOf(uri, idString, '{ID}');
+    return miscutil.replaceLastOccurrenceOf(uri, idString, '{ID}');
   }
   log.error('Invalid conversion to tokenURI:', id, uri);
   return '';
+}
+
+export function convertTokenURI(uri) {
+  let normalizedURI = uri;
+  if (uri.startsWith(IPFS_URL)) {
+    normalizedURI = uri.replace(IPFS_URL, 'https://ipfs.io/ipfs/');
+  }
+  return normalizedURI;
 }

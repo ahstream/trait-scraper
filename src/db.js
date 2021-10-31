@@ -18,7 +18,6 @@ export function getFromDB(projectId) {
 }
 
 export function saveToDB(config) {
-  log.info('saveToDB');
   const data = {};
   const tokenList = [];
   for (let i = 0; i < config.data.tokenList.length; i++) {

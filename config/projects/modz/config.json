@@ -5,6 +5,11 @@
   "contractAddress": "0x50e712b3a260d7639179e8277836253461418f23",
   "pollForRevealIntervalMsec": 500,
   "numConcurrent": 50,
+  "openWebPage": {
+    "firstResultPage": true,
+    "maxRarityPct": 0.005,
+    "maxTokenPages": 10
+  },
   "threshold": {
     "buynow": true,
     "level": 0.10,
@@ -19,12 +24,36 @@
     "price2": 0.20,
     "price3": 1
   },
-  "fetchMilestones": [
-    555,
-    1000,
-    1500,
-    2000,
-    2500,
-    3000
-  ]
+  "milestones": [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "testSamples": {
+    "numConcurrent": [
+      10,
+      25,
+      50,
+      75,
+      100,
+      125,
+      150,
+      175,
+      200,
+      225,
+      250,
+      275,
+      300,
+      325,
+      350,
+      375,
+      400
+    ]
+  }
 }
