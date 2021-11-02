@@ -22,6 +22,7 @@ import { curly } from "node-libcurl";
 
 import { fetchCollection } from './collection.js';
 import { testCollection } from './test.js';
+import { pollCollections } from './poll.js';
 import { analyzeCollection } from './analyze.js';
 
 const log = createLogger();
@@ -65,7 +66,7 @@ async function runProgram() {
       });
       break;
     case 'poll':
-      // await pollCollections({ debug: options.debug });
+      await pollCollections({ debug: options.debug });
       break;
     case 'test':
       await testCollection({ projectId, doSample: options.sample, debug: options.debug });

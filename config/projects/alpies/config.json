@@ -1,0 +1,31 @@
+{
+  "firstTokenId": 1,
+  "lastTokenId": 5026,
+  "maxSupply": 5026,
+  "contractAddress": "0x57a7c5d10c3f87f5617ac1c60da60082e44d539e",
+  "pollForRevealIntervalMsec": 1000,
+  "numConcurrent": 50,
+  "openWebPage": {
+    "firstResultPage": true,
+    "maxRarityPct": 0.005,
+    "maxTokenPages": 10
+  },
+  "threshold": {
+    "buynow": true,
+    "level": 1,
+    "image": 0.10,
+    "level1": 0.02,
+    "level2": 0.04,
+    "level3": 0.10,
+    "image1": 0.02,
+    "image2": 0.03,
+    "image3": 0.03,
+    "price1": 0.20,
+    "price2": 0.20,
+    "price3": 1
+  },
+  "milestones": [
+    1000,
+    5000
+  ]
+}

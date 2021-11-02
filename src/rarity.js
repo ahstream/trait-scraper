@@ -2,6 +2,7 @@ import { createLogger } from "./lib/loggerlib.js";
 import {
   countDone,
 } from "./count.js";
+import * as miscutil from "./miscutil.js";
 
 const log = createLogger();
 
@@ -155,12 +156,23 @@ function addGlobalTrait(attribute, collectionData) {
   collectionData.traits.data[traitType].data[traitValue].count++;
 }
 
-export function recalcRank(tokenList) {
+export function calcRank(tokenList, sortKey, ascending, rankKey = 'rank') {
+  miscutil.sortBy1Key(tokenList, sortKey, ascending);
   let rank = 1;
   const numTokens = tokenList.length;
   for (const item of tokenList) {
-    item.rank = rank;
-    item.rankPct = rank / numTokens;
+    item[rankKey] = rank;
+    item[`${rankKey}Pct`] = rank / numTokens;
+    rank++;
+  }
+}
+
+export function recalcRank(tokenList, rankKey = 'rank') {
+  let rank = 1;
+  const numTokens = tokenList.length;
+  for (const item of tokenList) {
+    item[rankKey] = rank;
+    item[`${rankKey}Pct`] = rank / numTokens;
     rank++;
   }
 }

@@ -98,10 +98,12 @@ async function fetchToken(token, baseTokenURI, timeout, collectionData) {
       addTokenData(token, data, collectionData);
       return token;
     } else if (response.status === 404) {
+      log.debug(`404: ${baseTokenURI}, ${token.tokenId}`);
       token.status = '404';
       token.skip = true;
       stats.num404++;
     } else if (response.status === 429) {
+      log.debug(`429: ${baseTokenURI}, ${token.tokenId}`);
       token.status = '429';
       stats.num429++;
     }
@@ -109,11 +111,11 @@ async function fetchToken(token, baseTokenURI, timeout, collectionData) {
   } catch (error) {
     if (error.name === 'AbortError') {
       token.status = 'timeout';
-      console.log(`Timeout`);
+      log.info(`Timeout`);
       stats.numTimeout++;
     } else {
       token.status = 'error';
-      console.log(`Error: ${error}`);
+      log.error(`Error: ${error}`);
       stats.numUnknownError++;
     }
     return {};

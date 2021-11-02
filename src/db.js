@@ -2,6 +2,7 @@ import * as fileutil from "./fileutil.js";
 import * as jsonutil from "./jsonutil.js";
 import * as debugutil from "./debugutil.js";
 import { createLogger } from "./lib/loggerlib.js";
+import { closeRelPath } from "./fileutil.js";
 
 const log = createLogger();
 
@@ -9,10 +10,11 @@ export function getFromDB(projectId) {
   log.info('getFromDB');
   const path = `../config/projects/${projectId}/db.json`;
   if (fileutil.fileExistsRelPath(path)) {
-    const obj = jsonutil.importFile(path);
-    if (obj) {
-      return obj.data;
-    }
+    const s = fileutil.readRelativeFile(path);
+    const data = JSON.parse(s);
+    return data.data;
+  } else {
+    console.log('error');
   }
   return {};
 }

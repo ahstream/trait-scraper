@@ -38,7 +38,6 @@ export async function pollForReveal(config, isTest = false) {
       log.info('Invalid tokenURI:', newTokenURI);
     } else if (newTokenURI !== '' && newTokenURI !== tokenURI.createTokenURI(tokenId, config.data.tokenURI)) {
       config.data.tokenURI = tokenURI.convertToTokenURI(tokenId, newTokenURI);
-      log.info('Converted tokenURI:', config.data.tokenURI);
       miscutil.addToListIfNotPresent(newTokenURI, config.data.tokenIdHistory);
     }
 

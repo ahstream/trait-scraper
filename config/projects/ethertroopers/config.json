@@ -1,13 +1,18 @@
 {
   "firstTokenId": 1,
+  "lastTokenId": 8888,
   "maxSupply": 8888,
   "contractAddress": "0xe0a2e8a4d94e0c395e88aad7c9074d73a115885d",
   "pollForRevealIntervalMsec": 1000,
-  "nextTokensBatchSize": 350,
-  "nextTokensFetchNewWhenFinishedPct": 0.55,
+  "numConcurrent": 50,
+  "openWebPage": {
+    "firstResultPage": true,
+    "maxRarityPct": 0.005,
+    "maxTokenPages": 10
+  },
   "threshold": {
     "buynow": true,
-    "level": 0.10,
+    "level": 1,
     "image": 0.10,
     "level1": 0.02,
     "level2": 0.04,
@@ -15,12 +20,12 @@
     "image1": 0.02,
     "image2": 0.03,
     "image3": 0.03,
-    "price1": 0.22,
-    "price2": 0.22,
-    "price3": 0.20
+    "price1": 0.20,
+    "price2": 0.20,
+    "price3": 1
   },
-  "fetchMilestones": [
-    2000,
-    5500
+  "milestones": [
+    1000,
+    5000
   ]
 }

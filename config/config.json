@@ -1,9 +1,21 @@
 {
   "projects": [
-    "apewives"
+    "testflight",
+    "alpies",
+    "fatapeclub",
+    "smiles",
+    "rareghost",
+    "ethertroopers",
+    "playboy"
   ],
   "pollForRevealIntervalMsec": 1000,
-  "fetchMilestones": [
+  "numConcurrent": 50,
+  "openWebPage": {
+    "firstResultPage": true,
+    "maxRarityPct": 0.005,
+    "maxTokenPages": 10
+  },
+  "milestones": [
     250,
     500,
     1000,
@@ -58,18 +70,28 @@
     1234
   ],
   "testSamples": {
-    "nextTokensBatchSize": [
+    "numConcurrent": [
+      10,
+      25,
+      50,
+      75,
+      100,
+      125,
+      150,
+      175,
+      200,
+      225,
+      250,
+      275,
+      300,
+      325,
+      350,
+      375,
       400
-    ],
-    "nextTokensFetchNewWhenFinishedPct": [
-      0.5
     ]
   },
-  "nextTokensBatchSize": 200,
-  "nextTokensFetchNewWhenFinishedPct": 0.8,
   "minTraitsNeeded": 2,
   "minDifferentTraitValuesNeeded": 2,
-  "fetchRequestLifetimeMsec": 10000,
   "etherscanURI": "http://node1.web3api.com/",
   "tokenURISignatur": "0xc87b56dd"
 }

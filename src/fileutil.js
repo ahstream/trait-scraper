@@ -44,3 +44,7 @@ export function fileExists(path) {
 export function fileExistsRelPath(path) {
   return fs.existsSync(join(__dirname, path));
 }
+
+export function closeRelPath(path) {
+  // return fs.closeSync(join(__dirname, path));
+}
