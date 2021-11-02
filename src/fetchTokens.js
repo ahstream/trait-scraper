@@ -83,6 +83,7 @@ async function getSimpleToken(tokenURI, timeout) {
 async function fetchToken(token, baseTokenURI, timeout, collectionData) {
   try {
     const uri = createTokenURI(token.tokenId, baseTokenURI);
+    token.uri = uri;
     token.status = 'fetch';
     const response = await fetchWithTimeout(uri, {
       timeout: timeout ?? DEFAULT_FETCH_TIMEOUT

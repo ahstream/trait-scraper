@@ -33,7 +33,7 @@ export function saveToDB(config) {
   data.revealTime = config.data.revealTime;
   data.fetchedTime = config.data.fetchedTime;
   data.fetchDuration = config.data.fetchDuration;
-  data.tokenURI = config.data.tokenURI;
+  data.baseTokenURI = config.data.baseTokenURI;
   data.tokenIdHistory = config.data.tokenIdHistory;
 
   fileutil.writeRelativeFile(`../config/projects/${config.projectId}/db.json`, JSON.stringify({ data }, null, 2));

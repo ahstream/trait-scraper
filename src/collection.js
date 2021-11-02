@@ -18,6 +18,7 @@ import {
 
 import opn from "opn";
 import { createLogger } from "./lib/loggerlib.js";
+import { debugToFile } from "./debugutil.js";
 
 const log = createLogger();
 
@@ -28,6 +29,7 @@ export async function fetchCollection({ projectId, all = false, debug = false, f
   log.info(`Start fetching collection ${projectId}`);
 
   const config = getConfig(projectId, debug, fromDB);
+  debugToFile(config, "bar.json");
   if (all) {
     config.threshold.buynow = false;
     config.threshold.level = 1;
@@ -67,7 +69,6 @@ export async function fetchCollection({ projectId, all = false, debug = false, f
 }
 
 export async function fetchCollectionTokens(config) {
-  config.data.baseTokenURI = 'https://storage.googleapis.com/modznft/meta/{ID}';
   await fetchTokens(config, 6000, fetchTokensIsFinishedCallback);
 }
 

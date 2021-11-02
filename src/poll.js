@@ -36,18 +36,17 @@ export async function pollForReveal(config, isTest = false) {
     }
     if (newTokenURI && !tokenURI.isValidTokenURI(newTokenURI)) {
       log.info('Invalid tokenURI:', newTokenURI);
-    } else if (newTokenURI !== '' && newTokenURI !== tokenURI.createTokenURI(tokenId, config.data.tokenURI)) {
-      config.data.tokenURI = tokenURI.convertToTokenURI(tokenId, newTokenURI);
+    } else if (newTokenURI !== '' && newTokenURI !== tokenURI.createTokenURI(tokenId, config.data.baseTokenURI)) {
+      config.data.baseTokenURI = tokenURI.convertToTokenURI(tokenId, newTokenURI);
       miscutil.addToListIfNotPresent(newTokenURI, config.data.tokenIdHistory);
     }
-
-    if (config.data.tokenURI) {
-      const thisTokenURI = tokenURI.createTokenURI(tokenId, config.data.tokenURI);
+    if (config.data.baseTokenURI) {
+      const thisTokenURI = tokenURI.createTokenURI(tokenId, config.data.baseTokenURI);
       if (config.debug) {
         log.info('Fetch:', thisTokenURI);
       }
       if (await isTokenRevealed(thisTokenURI, config)) {
-        log.info('Collection is revealed, tokenURI:', config.data.tokenURI);
+        log.info('Collection is revealed, tokenURI:', config.data.baseTokenURI);
         config.data.isRevealed = true;
         config.data.revealTime = new Date();
         return true;

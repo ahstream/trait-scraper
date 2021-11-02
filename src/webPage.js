@@ -2,6 +2,7 @@ import fs from "fs";
 import * as fileutil from "./fileutil.js";
 import * as rarity from "./rarity.js";
 import * as miscutil from "./miscutil.js";
+import * as debugutil from "./debugutil.js";
 import { convertTokenURI } from './tokenURI.js';
 import {
   countDone,
@@ -141,6 +142,7 @@ export function createAnalyzeWebPage(config, results, doOpen = false) {
 }
 
 export function createCollectionWebPage(config) {
+  debugutil.debugToFile(config, 'foo.json');
   const numTokensDone = countDoneConfig(config);
   const path1 = fileutil.toAbsoluteFilePath(`../config/projects/${config.projectId}/tokens-by-rarity.html`);
   const path2 = fileutil.toAbsoluteFilePath(`../config/projects/${config.projectId}/tokens-by-rarity-${numTokensDone}.html`);
@@ -337,10 +339,6 @@ function createCollectionTablesHtml(tokens, numTokensDone, scorePropertyName, le
     const checkboxHtml = `<input type="checkbox" class="checkbox_${level}" ${doHilite ? 'checked' : ''} value="${item.tokenId}">`;
     const percentHtml = `<a target="id_${item.tokenId}" href="${assetLink}">${(item.rankPct * 100).toFixed(1)} %</a>`;
     const priceHtml = item.buynow && item.price > 0 ? `${(item.price.toFixed(3))} eth` : '';
-    if (item[scorePropertyName] == undefined) {
-      console.log(item);
-      console.log(scorePropertyName);
-    }
     const rarityHtml = item[scorePropertyName].toFixed(0);
     const rowClass = doHilite ? 'hilite' : '';
     html = html + `

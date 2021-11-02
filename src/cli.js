@@ -58,6 +58,7 @@ async function runProgram() {
       await analyzeCollection({ projectId });
       break;
     case 'fetch':
+      console.log(projectId);
       await fetchCollection({
         projectId,
         all: options.all,
