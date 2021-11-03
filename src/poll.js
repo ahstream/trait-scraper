@@ -1,5 +1,5 @@
 import * as miscutil from "./miscutil.js";
-import { isTokenRevealed } from "./fetchTokens.js";
+import { isTokenRevealed } from "./token.js";
 import * as fileutil from "./fileutil.js";
 import { getConfig } from "./config.js";
 import * as tokenURI from "./tokenURI.js";
@@ -65,8 +65,8 @@ export function notifyRevealed(config) {
   if (config.debug || config.isTest) {
     return;
   }
-  const path = fileutil.toAbsoluteFilePath('revealed-collection.html');
-  const path2 = fileutil.toAbsoluteFilePath('notification.mp3');
+  const path = fileutil.toAbsFilepath('./revealed-collection.html');
+  const path2 = fileutil.toAbsFilepath('./audio/notification.mp3');
   // opn(path, { app: 'firefox' });
   opn(path2, { app: 'firefox' });
 }

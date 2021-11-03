@@ -1,14 +1,11 @@
-import fs from "fs";
 import * as fileutil from "./fileutil.js";
 import * as rarity from "./rarity.js";
 import * as miscutil from "./miscutil.js";
-import * as debugutil from "./debugutil.js";
+import { debugToFile } from "./config.js";
 import { convertTokenURI } from './tokenURI.js';
 import {
   countDone,
   countDoneConfig,
-  countSkippedConfig,
-  countFinishedBuynowConfig, countDoneOrSkip, countSkip
 } from "./count.js";
 import opn from "opn";
 
@@ -134,23 +131,23 @@ function pageTemplate(title, config) {
 
 export function createAnalyzeWebPage(config, results, doOpen = false) {
   const html = createAnalyzeWebPageHtml(config, results);
-  const path = fileutil.toAbsoluteFilePath(`../config/projects/${config.projectId}/analyze.html`);
-  fs.writeFileSync(path, html);
+  const path = fileutil.toAbsFilepath(`../config/projects/${config.projectId}/analyze.html`);
+  fileutil.writeFile(path, html);
   if (doOpen) {
     opn(path, { app: 'chrome' });
   }
 }
 
 export function createCollectionWebPage(config) {
-  debugutil.debugToFile(config, 'foo.json');
+  debugToFile(config, 'foo.json');
   const numTokensDone = countDoneConfig(config);
-  const path1 = fileutil.toAbsoluteFilePath(`../config/projects/${config.projectId}/tokens-by-rarity.html`);
-  const path2 = fileutil.toAbsoluteFilePath(`../config/projects/${config.projectId}/tokens-by-rarity-${numTokensDone}.html`);
+  const path1 = fileutil.toAbsFilepath(`../config/projects/${config.projectId}/tokens-by-rarity.html`);
+  const path2 = fileutil.toAbsFilepath(`../config/projects/${config.projectId}/tokens-by-rarity-${numTokensDone}.html`);
   const html = config.threshold.buynow
     ? createCollectionBuynowHtml(config, numTokensDone)
     : createCollectionAllHtml(config, numTokensDone);
-  fs.writeFileSync(path1, html);
-  fs.writeFileSync(path2, html);
+  fileutil.writeFile(path1, html);
+  fileutil.writeFile(path2, html);
   return path1;
 }
 

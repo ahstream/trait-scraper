@@ -3,18 +3,17 @@
  * FILE DESCRIPTION
  */
 
+import fs from "fs";
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import fs from "fs";
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-export function toAbsoluteFilePath(filePath) {
-  return join(__dirname, filePath);
-}
-
-export function absFilePath(filePath) {
-  return join(__dirname, filePath);
+export function toAbsFilepath(path) {
+  return join(__dirname, path);
 }
 
 export function currentDir() {
@@ -29,22 +28,22 @@ export function writeFile(path, data) {
   fs.writeFileSync(path, data);
 }
 
-export function readRelativeFile(path, encoding = 'utf8') {
-  return fs.readFileSync(join(__dirname, path), encoding);
-}
-
-export function writeRelativeFile(path, data) {
-  fs.writeFileSync(join(__dirname, path), data);
-}
-
 export function fileExists(path) {
   return fs.existsSync(path);
 }
 
-export function fileExistsRelPath(path) {
-  return fs.existsSync(join(__dirname, path));
+export function readJSONFile(path) {
+  if (fileExists(path)) {
+    return JSON.parse(readFile(path));
+  } else {
+    throw new Error('File does not exist!');
+  }
 }
 
-export function closeRelPath(path) {
-  // return fs.closeSync(join(__dirname, path));
+export function importJSONFile(path) {
+  return require(path);
+}
+
+export function writeJSONFile(path, data) {
+  writeFile(path, JSON.stringify(data, null, 2));
 }

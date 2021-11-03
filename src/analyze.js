@@ -1,11 +1,10 @@
 import * as miscutil from "./miscutil.js";
 import * as timer from "./timer.js";
-import { getConfig } from "./config.js";
+import { getConfig, debugToFile } from "./config.js";
 import * as db from "./db.js";
-import { addTokenData } from "./fetchTokens.js";
+import { addTokenData } from "./token.js";
 import * as rarity from "./rarity.js";
 import * as webPage from "./webPage.js";
-import * as debugutil from "./debugutil.js";
 import {
   countDone,
   countDoneConfig,
@@ -81,7 +80,7 @@ function printResults(results, baseConfig) {
 }
 
 function runOneAnalysis(config) {
-  debugutil.debugToFile(config, 'analyzis12.json');
+  debugToFile(config, 'analyzis12.json');
   log.info('Run one analyzis...');
   // todo: ersätt token i config med token från tokenList om token.done!
   config.data.tokenList.forEach(token => {
@@ -90,7 +89,7 @@ function runOneAnalysis(config) {
       token.done = true;
     }
   });
-  debugutil.debugToFile(config.data.traits, 'analyzis123.json');
+  debugToFile(config.data.traits, 'analyzis123.json');
   rarity.calc(config);
   return true;
 }

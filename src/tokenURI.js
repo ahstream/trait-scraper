@@ -13,58 +13,6 @@ const IPFS_URL = 'ipfs://';
 
 // MAIN FUNCTIONS ----------------------------------------------------------------------------------
 
-/*
-export async function getTokenURI(asset, config) {
-  const tokenURI = asset.tokenURI || {
-    source: '',
-    uri: '',
-    originalURI: '',
-    error: ''
-  };
-
-  // Reset error!
-  tokenURI.error = '';
-
-  if (tokenURI.uri) {
-    return tokenURI;
-  }
-
-  try {
-    if (config.tokenURITemplate) {
-      tokenURI.uri = config.tokenURITemplate.replace('{ID}', asset.id);
-      tokenURI.source = 'template';
-      return tokenURI;
-    }
-
-    const etherscanTokenURI = await getFromEtherscan(asset.id, config.contractAddress, config.tokenURISignatur, config.etherscanUrl);
-    tokenURI.uri = etherscanTokenURI.uri;
-    tokenURI.originalURI = etherscanTokenURI.originalURI;
-    tokenURI.source = 'etherscan';
-  } catch (error) {
-    tokenURI.error = error;
-    log.info(`${error} error when getting Etherscan tokenURI for asset id ${asset.id}`);
-    switch (error) {
-      case 'RESPONSE_NOT_OK':
-        // Probably server error or network error. Try again next run!
-        break;
-      case 'NON_EXISTING_TOKEN':
-        // Either not revealed yet or outside supply limit. Try again next run!
-        // If polling for updates, polling can be paused after a couple of these occurs!
-        log.info('NON_EXISTING_TOKEN error for Asset ID:', asset.id);
-        break;
-      case 'INVALID_JSON':
-      case 'INVALID_URI':
-      case 'UNKNOWN_ERROR':
-        log.error(`${error} error when getting Etherscan tokenURI for asset id ${asset.id}`);
-        break;
-      default:
-    }
-  }
-
-  return tokenURI;
-}
- */
-
 export async function getTokenURIFromEtherscan(id, contractAddress, url, signatur) {
   try {
     const uri = await getAndThrow(id, contractAddress, url, signatur);
@@ -140,14 +88,6 @@ function createTokenURIData(id, signatur) {
   return `${signatur}${suffix}`;
 }
 
-function hex2a(hexValue) {
-  const hexStr = hexValue.toString(); // force conversion
-  let str = '';
-  for (let i = 0; i < hexStr.length; i += 2)
-    str += String.fromCharCode(parseInt(hexStr.substr(i, 2), 16));
-  return str;
-}
-
 export function createTokenURI(id, uri) {
   if (typeof uri !== 'string') {
     return '';
@@ -174,4 +114,12 @@ export function convertTokenURI(uri) {
     normalizedURI = uri.replace(IPFS_URL, 'https://ipfs.io/ipfs/');
   }
   return normalizedURI;
+}
+
+function hex2a(hexValue) {
+  const hexStr = hexValue.toString(); // force conversion
+  let str = '';
+  for (let i = 0; i < hexStr.length; i += 2)
+    str += String.fromCharCode(parseInt(hexStr.substr(i, 2), 16));
+  return str;
 }

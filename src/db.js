@@ -1,22 +1,17 @@
-import * as fileutil from "./fileutil.js";
-import * as jsonutil from "./jsonutil.js";
-import * as debugutil from "./debugutil.js";
 import { createLogger } from "./lib/loggerlib.js";
-import { closeRelPath } from "./fileutil.js";
+import { fileExists, toAbsFilepath, importJSONFile, writeJSONFile } from "./fileutil.js";
+import { debugToFile } from "./config.js";
 
 const log = createLogger();
 
 export function getFromDB(projectId) {
-  log.info('getFromDB');
-  const path = `../config/projects/${projectId}/db.json`;
-  if (fileutil.fileExistsRelPath(path)) {
-    const s = fileutil.readRelativeFile(path);
-    const data = JSON.parse(s);
-    return data.data;
+  const path = toAbsFilepath(`../config/projects/${projectId}/db.json`);
+  if (fileExists(path)) {
+    return importJSONFile(path);
+    // return readJSONFile(path).data;
   } else {
-    console.log('error');
+    return {};
   }
-  return {};
 }
 
 export function saveToDB(config) {
@@ -36,9 +31,10 @@ export function saveToDB(config) {
   data.baseTokenURI = config.data.baseTokenURI;
   data.tokenIdHistory = config.data.tokenIdHistory;
 
-  fileutil.writeRelativeFile(`../config/projects/${config.projectId}/db.json`, JSON.stringify({ data }, null, 2));
+  const filepath = toAbsFilepath(`../config/projects/${config.projectId}/db.json`);
+  writeJSONFile(filepath, { data });
 
   if (config.debug) {
-    debugutil.debugToFile(config);
+    debugToFile(config);
   }
 }

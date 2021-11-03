@@ -1,8 +1,7 @@
 import * as miscutil from "./miscutil.js";
-import { fetchTokens } from "./fetchTokens.js";
+import { fetchTokens } from "./token.js";
 import * as timer from "./timer.js";
-import { getConfig } from "./config.js";
-import * as debugutil from "./debugutil.js";
+import { getConfig, debugToFile } from "./config.js";
 import * as db from "./db.js";
 import * as buynow from "./buynow.js";
 import * as rarity from "./rarity.js";
@@ -18,7 +17,6 @@ import {
 
 import opn from "opn";
 import { createLogger } from "./lib/loggerlib.js";
-import { debugToFile } from "./debugutil.js";
 
 const log = createLogger();
 
@@ -51,7 +49,7 @@ export async function fetchCollection({ projectId, all = false, debug = false, f
   log.info(`Finished fetching collection "${projectId}", ${countDoneConfig(config)} ok, ${countSkippedConfig(config)} skipped!`);
   partTimer.ping('Fetch collection tokens');
 
-  debugutil.debugToFile(config);
+  debugToFile(config);
   partTimer.ping('Debug to file duration');
 
   createResults(config);

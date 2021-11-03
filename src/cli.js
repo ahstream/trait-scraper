@@ -8,8 +8,7 @@ import fetch from 'node-fetch';
 import https from 'https';
 
 import * as miscutil from './miscutil.js';
-import * as jsonutil from './jsonutil.js';
-import { fetchTokens } from './fetchTokens.js';
+import { fetchTokens } from './token.js';
 import { createLogger } from './lib/loggerlib.js';
 
 import { getTokenURIFromEtherscan, isValidTokenURI } from "./tokenURI.js";

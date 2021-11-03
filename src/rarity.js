@@ -113,11 +113,13 @@ export function addTokenTraits(token, attributes, collectionData) {
   token.traits = normalizeTraits(traitGroups.traits);
   token.specialTraits = traitGroups.specialTraits;
 
+  const numTraits = token.traits.filter((item) => item.value !== TRAIT_NONE_VALUE).length;
   const traitCountTrait = {
     trait_type: TRAIT_COUNT_TYPE,
-    value: (token.traits.filter((item) => item.value !== TRAIT_NONE_VALUE).length).toString()
+    value: numTraits.toString()
   };
   token.traits.push(traitCountTrait);
+  token.numTraits = numTraits;
 
   try {
     for (const attr of token.traits) {
