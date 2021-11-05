@@ -5,24 +5,14 @@
 
 import program from 'commander';
 import fetch from 'node-fetch';
-import https from 'https';
 
-import * as miscutil from './miscutil.js';
-import { fetchTokens } from './token.js';
 import { createLogger } from './lib/loggerlib.js';
 
-import { getTokenURIFromEtherscan, isValidTokenURI } from "./tokenURI.js";
-import fs from "fs";
-import * as fileutil from "./fileutil.js";
-
-import opn from 'opn';
-
-import { curly } from "node-libcurl";
-
-import { fetchCollection } from './collection.js';
+import { fetchCollection, pollCollections } from './collection.js';
 import { testCollection } from './test.js';
-import { pollCollections } from './poll.js';
 import { analyzeCollection } from './analyze.js';
+import { getBuynow } from './opensea.js';
+import { debugToFile } from './config.js';
 
 const log = createLogger();
 
@@ -45,13 +35,18 @@ async function runProgram() {
   log.info('run program');
   program.option('--id <value>', 'Project ID', '');
   program.option('--debug', 'Write debug info');
-  program.option('--all', 'Use all items in collection');
+  program.option('--all', 'Output all items instead of only buynow items');
   program.option('--nodb', 'Do not get data from DB');
+  program.option('--silent', 'Do not notify events');
   program.option('--sample', 'Use test samples');
+  program.option('--getbuynow', 'Get new buynow tokens from OpenSea');
+  program.option('--value <value>', 'Arbitrary value');
+  program.option('--contract <value>', 'Contract address');
   program.parse();
   const options = program.opts();
   const cmd = program.args[0];
   const projectId = program.args[1];
+  log.info('options', options);
   switch (cmd) {
     case 'analyze':
       await analyzeCollection({ projectId });
@@ -62,14 +57,34 @@ async function runProgram() {
         projectId,
         all: options.all,
         debug: options.debug,
-        fromDB: !options.nodb
+        fromDB: !options.nodb,
+        silent: options.silent,
+        getbuynow: options.getbuynow,
       });
       break;
     case 'poll':
-      await pollCollections({ debug: options.debug });
+      await pollCollections({
+        projectId,
+        all: options.all,
+        debug: options.debug,
+        fromDB: !options.nodb,
+        silent: options.silent
+      });
       break;
     case 'test':
       await testCollection({ projectId, doSample: options.sample, debug: options.debug });
+      break;
+    case 'assets':
+      const result = await getBuynow(options.contract);
+      debugToFile(result, 'getBuynow.json');
+      // console.log(result);
+      break;
+    case 'getchunks':
+      const result2 = await getBuynow(options.contract, options.value);
+      // console.log(result2[0].length);
+      // console.log(result2[1].length);
+      debugToFile(result2, 'getChunks2.json');
+      // console.log(result);
       break;
     default:
       log.error(`Unknown command: ${cmd}`);
@@ -83,7 +98,7 @@ function getNextTokens(config, qty) {
   const result = [];
   let count = 0;
 
-  for (var token of config.data.tokenList) {
+  for (var token of config.data.collection.tokens) {
     if (count >= qty) {
       break;
     }

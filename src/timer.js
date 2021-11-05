@@ -2,7 +2,7 @@ import { createLogger } from "./lib/loggerlib.js";
 
 const log = createLogger();
 
-export function createTimer() {
+export function create() {
   const now = new Date();
   const timer = {
     startDate: now,

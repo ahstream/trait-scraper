@@ -13,9 +13,9 @@ import {
   countSkip
 } from "./count.js";
 
-import { fetchCollection, prepareTokens } from './collection.js';
+import { fetchCollection, createCollectionTokens } from './collection.js';
 
-import opn from "opn";
+import open from "open";
 import { createLogger } from "./lib/loggerlib.js";
 import { createAnalyzeWebPage } from "./webPage.js";
 
@@ -23,8 +23,8 @@ const log = createLogger();
 
 export async function analyzeCollection({ projectId }) {
   const baseConfig = await fetchCollection({ projectId });
-  const numTokens = countDone(baseConfig.data.tokenList);
-  const baseTokenList = baseConfig.data.tokenList.filter(obj => obj.done);
+  const numTokens = countDone(baseConfig.data.collection.tokens);
+  const baseTokenList = baseConfig.data.collection.tokens.filter(obj => obj.done);
 
   let lastPct = 0;
   const results = [];
@@ -35,22 +35,22 @@ export async function analyzeCollection({ projectId }) {
     log.info(`Analyze from tokenId ${fromId} to ${toId}`);
 
     const config = getConfig(projectId, false, false);
-    prepareTokens(config);
+    createCollectionTokens(config);
 
     miscutil.shuffle(baseTokenList);
     for (let i = 0; i < toId; i++) {
       const id = i + 1;
-      const oldItem = config.data.tokenList[i];
+      const oldItem = config.data.collection.tokens[i];
       Object.assign(oldItem, baseTokenList[i]);
     }
     runOneAnalysis(config);
-    rarity.calcRank(config.data.tokenList, 'rarityNormalized', false);
+    rarity.calcRank(config.data.collection.tokens, 'rarityNorm', false);
 
-    results.push([...config.data.tokenList]);
+    results.push([...config.data.collection.tokens]);
     lastPct = pct;
   }
 
-  rarity.calcRank(baseConfig.data.tokenList, 'rarityNormalized', false);
+  rarity.calcRank(baseConfig.data.collection.tokens, 'rarityNorm', false);
   printResults(results, baseConfig);
 
   webPage.createAnalyzeWebPage(baseConfig, results, true);
@@ -68,7 +68,7 @@ function printResults(results, baseConfig) {
     for (let j = 0; j < results[i].length; j++) {
       const tokenId = results[i][j].tokenId;
       const rank1 = results[i][j].rank;
-      const rank2 = baseConfig.data.tokenList.find(obj => obj.tokenId === tokenId).rank;
+      const rank2 = baseConfig.data.collection.tokens.find(obj => obj.tokenId === tokenId).rank;
       // console.log(results[i][j]);
       s = s + `${rank1}/${rank2}/${tokenId} - `;
       if (j > stopIdx) {
@@ -80,16 +80,14 @@ function printResults(results, baseConfig) {
 }
 
 function runOneAnalysis(config) {
-  debugToFile(config, 'analyzis12.json');
   log.info('Run one analyzis...');
-  // todo: ersätt token i config med token från tokenList om token.done!
-  config.data.tokenList.forEach(token => {
+  // todo: ersätt token i config med token från tokens om token.done!
+  config.data.collection.tokens.forEach(token => {
     if (token.source?.attributes) {
-      addTokenData(token, token.source, config.data);
+      addTokenData(token, token.source, config.data.collection);
       token.done = true;
     }
   });
-  debugToFile(config.data.traits, 'analyzis123.json');
-  rarity.calc(config);
+  rarity.calcRarity(config);
   return true;
 }

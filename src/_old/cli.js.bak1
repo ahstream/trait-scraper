@@ -14,7 +14,7 @@ import * as miscutil from './miscutil.js';
 import * as jsonutil from './jsonutil.js';
 import { createLogger } from './lib/loggerlib.js';
 
-import { getTokenURIFromEtherscanURIOnly } from "./tokenURI.js";
+import { getTokenURIFromContractURIOnly } from "./tokenURI.js";
 import fs from "fs";
 import * as fileutil from "./fileutil.js";
 
@@ -197,7 +197,7 @@ function buildWebPage() {
   for (const item of sortedItems) {
     rank++;
     const link = ASSET_URL + item.tokenId;
-    const image = convertTokenURI(item.image);
+    const image = normalizeURI(item.image);
     const score = Math.round(item.rarityScore);
     s = s + `<tr><td>Rank: <b>${rank}</b>, Score:<b>${score}</b>, ID: ${item.tokenId}, Price: ${item.price}, <a href="${link}">OpenSea</a></td><td><img style="border: 1px" height="120" width="120" src="${image}"></img></td></tr>`;
   }
@@ -206,7 +206,7 @@ function buildWebPage() {
   fs.writeFileSync(filePath, s);
 }
 
-function convertTokenURI(uri) {
+function normalizeURI(uri) {
   const IPFS_URL = 'ipfs://';
   let normalizedURI = uri;
   if (uri.startsWith(IPFS_URL)) {
@@ -334,7 +334,7 @@ async function pingReveal(assetList) {
     console.log(data);
     if (data === {} || data.attributes === undefined) {
       // if (data === {}) {
-      const newExternalUrl = await getTokenURIFromEtherscanURIOnly(tokenId, CONTRACT_ADDRESS, SIGNATUR, ETHERSCAN_URL);
+      const newExternalUrl = await getTokenURIFromContractURIOnly(tokenId, CONTRACT_ADDRESS, SIGNATUR, ETHERSCAN_URL);
       console.log('newExternalUrl', newExternalUrl);
       if (newExternalUrl !== '') {
         data = fetchExternalJson(newExternalUrl);

@@ -1,12 +1,12 @@
 import * as miscutil from "./miscutil.js";
-import { fetchTokens } from "./token.js";
+import { fetchTokens, createToken } from "./token.js";
 import * as timer from "./timer.js";
 import { getConfig, debugToFile } from "./config.js";
 import * as db from "./db.js";
-import * as buynow from "./buynow.js";
+import { createBuynow } from "./buynow.js";
 import * as rarity from "./rarity.js";
 import * as webPage from "./webPage.js";
-import * as poll from "./poll.js";
+import { pollForReveal, notifyRevealed, notifyNewResults } from "./reveal.js";
 import {
   countDone,
   countDoneConfig,
@@ -15,164 +15,169 @@ import {
   countSkip
 } from "./count.js";
 
-import opn from "opn";
+import open from "open";
 import { createLogger } from "./lib/loggerlib.js";
+import { saveToDB } from "./db.js";
 
 const log = createLogger();
 
-export async function fetchCollection({ projectId, all = false, debug = false, fromDB = true }) {
-  const fullTimer = timer.createTimer();
-  const partTimer = timer.createTimer();
+export async function pollCollections(args) {
+  const config = getConfig(args);
+  Object.keys(config.projects).forEach((projectId) => {
+    if (config.projects[projectId].enabled) {
+      fetchCollection({ ...args, projectId });
+    }
+  });
+}
 
-  log.info(`Start fetching collection ${projectId}`);
+export async function fetchCollection(args) {
+  const fullTimer = timer.create();
+  const partTimer = timer.create();
 
-  const config = getConfig(projectId, debug, fromDB);
-  debugToFile(config, "bar.json");
-  if (all) {
-    config.threshold.buynow = false;
-    config.threshold.level = 1;
-    config.threshold.image = 0.01;
+  const config = getConfig(args);
+  log.info(`Start fetching collection (${config.projectId})`);
+
+  if (config.args.all) {
+    config.forceAll = true;
   }
-  partTimer.ping('Get config duration');
+  partTimer.ping(`Get config duration (${config.projectId})`);
 
-  prepareTokens(config);
+  await createCollectionTokens(config);
   db.saveToDB(config);
-  partTimer.ping('Prepare tokens duration');
+  partTimer.ping(`Prepare tokens duration (${config.projectId})`);
 
-  if (!config.data.isRevealed) {
-    await poll.pollForReveal(config);
-    poll.notifyRevealed(config);
+  if (!config.data.collection.isRevealed) {
+    await pollForReveal(config);
+    notifyRevealed(config);
   }
-  partTimer.ping('Poll for reveal duration');
+  partTimer.ping(`Poll for reveal duration (${config.projectId})`);
 
   await fetchCollectionTokens(config);
-  log.info(`Finished fetching collection "${projectId}", ${countDoneConfig(config)} ok, ${countSkippedConfig(config)} skipped!`);
-  partTimer.ping('Fetch collection tokens');
-
-  debugToFile(config);
-  partTimer.ping('Debug to file duration');
+  log.info(`Finished fetching collection "${config.projectId}", ${countDoneConfig(config)} ok, ${countSkippedConfig(config)} skipped!`);
+  partTimer.ping(`Fetch collection tokens (${config.projectId})`);
 
   createResults(config);
-  partTimer.ping('Create results duration');
+  partTimer.ping(`Create results duration (${config.projectId})`);
 
   db.saveToDB(config);
-  partTimer.ping('Save to DB duration');
+  partTimer.ping(`Save to DB duration (${config.projectId})`);
 
-  config.data.fetchedTime = new Date();
-  config.data.fetchDuration = fullTimer.getSeconds();
+  config.data.collection.fetchedTime = new Date();
+  config.data.collection.fetchDuration = fullTimer.getSeconds();
 
-  fullTimer.ping('Collection fetch duration');
+  fullTimer.ping(`Collection fetch duration (${config.projectId})`);
+
+  debugToFile(config, 'config-done.json');
 
   return config;
 }
 
 export async function fetchCollectionTokens(config) {
-  await fetchTokens(config, 6000, fetchTokensIsFinishedCallback);
+  config.runtime.fetchStartTime = new Date();
+  config.runtime.nextTimeCreateResults = miscutil.addSecondsToDate(new Date(), config.milestones.createResultEverySecs);
+  config.runtime.nextTimeSaveDB = miscutil.addSecondsToDate(new Date(), config.milestones.saveDBEverySecs);
+
+  await fetchTokens(config, fetchCollectionTokensCallback);
 }
 
-function fetchTokensIsFinishedCallback(config, stats) {
-  const numDone = countDone(config.data.tokenList);
-  const numFinished = countDoneOrSkip(config.data.tokenList);
-  const numTokens = config.data.tokenList.length;
-  log.debug('numDone, numFinished, numTokens, stats', numDone, numFinished, numTokens, stats);
+function fetchCollectionTokensCallback(config) {
+  const numDone = countDone(config.data.collection.tokens);
+  const numFinished = countDoneOrSkip(config.data.collection.tokens);
+  const numTokens = config.data.collection.tokens.length;
+  log.debug(`numDone: ${numDone}, numFinished: ${numFinished}, numTokens: ${numTokens} (${config.projectId}`);
+  log.debug(`stats: ${config.runtime.stats} (${config.projectId}`);
 
-  if (config.milestones.length > 0 && numDone >= config.milestones[0] * config.maxSupply) {
-    const myTimer = timer.createTimer();
-    const milestone = config.milestones.splice(0, 1);
-    log.info(`Create results after ${numDone} finished tokens...`);
-    createResults(config);
-    myTimer.ping('Create results');
+  let flCreateResults = false;
+  const now = new Date();
+  const numDoneMilestone = config.runtime.milestones.donePct.length > 0 ? Math.round(config.runtime.milestones.donePct[0] * config.maxSupply) : Infinity;
+  if (numDone >= numDoneMilestone) {
+    log.info(`Create results after ${numDoneMilestone} finished tokens (${config.projectId})`);
+    config.runtime.milestones.donePct.splice(0, 1);
+
+    flCreateResults = true;
+  } else if (now >= config.runtime.nextTimeCreateResults) {
+    log.info(`Create results after ${config.milestones.createResultEverySecs} seconds since last time (${config.projectId})`);
+    flCreateResults = true;
   }
+
+  if (flCreateResults) {
+    const myTimer = timer.create();
+    createResults(config);
+    config.runtime.nextTimeCreateResults = miscutil.addSecondsToDate(new Date(), config.milestones.createResultEverySecs);
+    myTimer.ping(`Create results ${config.projectId}`);
+  }
+
+  let flSaveToDB = (now >= config.runtime.nextTimeSaveDB) && flCreateResults;
+  if (numFinished >= numTokens || flSaveToDB) {
+    config.runtime.nextTimeSaveDB = miscutil.addSecondsToDate(new Date(), config.milestones.firstSaveDBSeconds);
+    const myTimer = timer.create();
+    saveToDB(config);
+    myTimer.ping(`Save to DB (${config.projectId})`);
+  }
+  if (flCreateResults && !flSaveToDB) {
+    log.debug('Skip save to DB');
+  }
+
+  // todo: open hot pages?
 
   if (numFinished >= numTokens) {
-    log.info(`${countDone(config.data.tokenList)} + ${countSkip(config.data.tokenList)} = ${numFinished} (${numTokens})`);
+    log.info(`${countDone(config.data.collection.tokens)} + ${countSkip(config.data.collection.tokens)} = ${numFinished} (${numTokens})`);
     return true;
   }
-  // todo: create milestones result
-  // todo: open web pages?
+
   return false;
 }
 
-export function prepareTokens(config) {
-  buynow.prepareBuynow(config);
+function createCollection() {
+  return {
+    tokens: [],
+    traits: { data: {} },
+    traitCounts: { data: {} },
+  };
+}
 
-  // If tokens exists in DB, use these!
-  const currentTokenList = config.data.tokenList ?? [];
+export async function createCollectionTokens(config) {
+  config.buynow = await createBuynow(config);
 
-  const tokenList = [];
+  const collection = createCollection();
 
-  const source = miscutil.range(config.firstTokenId, config.lastTokenId, 1);
+  // If tokens exists from DB, use these!
+  const currentTokenList = config.data.collection.tokens ?? [];
+
+  const source = miscutil.range(config.tokenIdRange[0], config.tokenIdRange[1], 1).map(obj => obj.toString());
   source.forEach((id) => {
     const existingItem = currentTokenList.find((obj) => obj.tokenId === id) ?? {};
-    const buynowItem = config.buynowMap.get(id);
+    const buynowItem = config.buynow.itemMap.get(id);
     const newItem = {
       tokenId: id,
       price: buynowItem?.price ?? 0,
       buynow: buynowItem !== undefined,
     };
-    tokenList.push({ ...existingItem, ...newItem });
+    const newToken = { ...existingItem, ...newItem };
+    collection.tokens.push(newToken);
   });
 
-  miscutil.sortBy1Key(tokenList, 'buynow', false);
+  // Make sure buynow items are fetched first!
+  miscutil.sortBy1Key(collection.tokens, 'buynow', false);
 
-  config.data.tokenList = tokenList;
+  collection.traits = config.data.collection.traits ?? collection.traits;
+  collection.traitCounts = config.data.collection.traitCounts ?? collection.traitCounts;
 
-  log.info('Num buynow tokens:', config.buynowList.length);
-  log.info('Num total tokens:', config.data.tokenList.length);
-}
+  config.data.collection = collection;
 
-function prepareTokensBAK(config) {
-  const fromId = config.firstTokenId;
-  const toId = config.maxSupply;
-
-  buynow.prepareBuynow(config);
-
-  // Reset tokenList if it already was present in saved config!
-  const currentTokenList = config.data.tokenList ?? [];
-
-  const tokenList = [];
-
-  // First add buynow items so they get fetched first!
-  log.info('Num of BuyNow tokens:', config.buynowList.length);
-  config.buynowList.forEach((item) => {
-    const existingItem = currentTokenList.find((obj) => obj.tokenId === item.tokenId) ?? {};
-    const newItem = {
-      tokenId: item.tokenId,
-      price: item.price,
-      buynow: true,
-    };
-    tokenList.push({ ...existingItem, ...newItem });
-  });
-
-  const source = miscutil.range(fromId, toId, 1);
-  source.forEach((id) => {
-    if (config.buynowMap.get(id)) {
-      // Already handled when adding buynow items!
-      return;
-    }
-    const existingItem = currentTokenList.find((obj) => obj.tokenId === id) ?? {};
-    const newItem = {
-      tokenId: id,
-      price: 0,
-      buynow: false,
-    };
-    tokenList.push({ ...existingItem, ...newItem });
-  });
-
-  config.data.tokenList = tokenList;
-
-  log.info('Num of total tokens:', config.data.tokenList.length);
+  log.info(`Created collection of ${config.data.collection.tokens.length} tokens where ${config.buynow.itemList.length} is buynow items!`);
 }
 
 function createResults(config) {
-  rarity.calc(config);
+  rarity.calcRarity(config);
   const path = webPage.createCollectionWebPage(config);
-  if (!config.webPageShown && config.openWebPage.firstResultPage) {
-    log.info('Open results page:', path);
-    opn(path, { app: 'chrome' });
-    config.webPageShown = true;
+  if (!config.runtime.webPageShown && config.autoOpen.firstResultPage) {
+    open(path, { app: 'chrome' });
+    config.runtime.webPageShown = true;
+  } else {
+    notifyNewResults(config);
   }
-  if (config.openWebPage.maxRarityPct && config.openWebPage.maxRarityPct > 0) {
+  if (config.autoOpen.hotPct && config.autoOpen.hotPct > 0) {
     // todo;
   }
 }

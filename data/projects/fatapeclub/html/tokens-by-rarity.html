@@ -1,0 +1,862 @@
+
+    <html><head><title>Collection All</title>
+    <script>
+        function openLinks(className, first, last) {
+            var checkboxes = document.querySelectorAll('input[class="' + className + '"]:checked');
+            var links = [];
+            checkboxes.forEach((ck) => { links.push(['https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/'+ck.value, 'id_' + ck.value]);});
+            console.log(links);
+            console.log('---');
+            var links2 = links.slice(first-1, last);
+            console.log(links2);
+            console.log('---');
+            links2.forEach((link) => { console.log(link[1]); window.open(link[0], link[1]); });
+        }
+    </script>
+    <style>
+        tr { vertical-align: top; }
+        td { padding-right: 10px; }
+        img.thumb { border: 1px solid black; height:100px; width:100px }
+        table, th, td {text-align: left;}
+        body, table, th, td {font-size: 18px; }
+        .hilite {
+          background: lightgray;
+        }
+        .level1, .level2, .level3, .level4, .level5
+        {
+            float:left;
+            display:inline;
+            margin: 10px 20px 10px 10px;
+        }
+
+        .analyze-level1.analyze-final1 {
+            border: 4px solid black;
+            background-color: lawngreen;
+        }
+        .analyze-level1.analyze-final2 {
+            border: 4px solid black;
+            background-color: green;
+            color: white;
+        }
+        .analyze-level1.analyze-final3 {
+            border: 4px solid black;
+            background-color: lightcoral;
+        }
+
+        .analyze-level2.analyze-final1 {
+            border: 2px solid black;
+            background-color: lawngreen;
+        }
+        .analyze-level2.analyze-final2 {
+            border: 2px solid black;
+            background-color: green;
+            color: white;
+        }
+        .analyze-level2.analyze-final3 {
+            border: 2px solid black;
+            background-color: lightcoral;
+        }
+
+        .analyze-level3.analyze-final1 {
+            border: none;
+            background-color: white;
+        }
+        .analyze-level3.analyze-final2 {
+            border: none;
+            background-color: white;
+        }
+        .analyze-level3.analyze-final3 {
+            border: none;
+            background-color: white;
+        }
+
+        .current-rank-level1 {
+            border: 8px solid black;
+        }
+        .current-rank-level2 {
+            border: 6px solid black;
+        }
+        .current-rank-level3 {
+            border: 4px solid black;
+        }
+        .current-rank-level4 {
+            border: 2px solid black;
+        }
+
+        .final-rank-level1 {
+            background-color: yellow;
+        }
+        .final-rank-level2 {
+            background-color: lawngreen;
+        }
+        .final-rank-level3 {
+            background-color: limegreen;
+        }
+        .final-rank-level4 {
+            background-color: green;
+        }
+        .final-rank-level5 {
+            background-color: lightcoral;
+        }
+        .final-rank-level6 {
+            background-color: red;
+            color: white;
+        }
+    </style>
+    </head>
+    <body>
+    <h3>Collection: fatapeclub</h3>
+    
+    <div class="level1">
+    <span><b>4 %</b> (403 of 9999): 40 tokens</span>&nbsp;&nbsp;&nbsp;
+    <button onClick="openLinks('checkbox_1', 1, 10)">10</button>&nbsp;&nbsp;<button onClick="openLinks('checkbox_1', 10, 20)">20</button>&nbsp;&nbsp;<button onClick="openLinks('checkbox_1', 20, 30)">30</button>&nbsp;&nbsp;
+    
+    <table>
+    <tr style="background: black; color: white"><td colspan="100%">All: Rarity (not normalized)</td></tr>
+    <tr>
+        <th>Image</th>
+        <th></th>
+        <th>Pct</th>
+        <th>Price</th>
+        <th>Rank&nbsp;&nbsp;</th>
+        <th>Score&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+        <th>ID</th>
+    </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/1"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/1.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="1"></td>
+            <td><a target="id_1" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/1">0.2 %</a></td>
+            <td></td>
+            <td><b>1</b></td>
+            <td>2419</b></td>
+            <td>:1</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/157"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/157.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="157"></td>
+            <td><a target="id_157" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/157">0.5 %</a></td>
+            <td></td>
+            <td><b>2</b></td>
+            <td>477</b></td>
+            <td>:157</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/35"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/35.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="35"></td>
+            <td><a target="id_35" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/35">0.7 %</a></td>
+            <td></td>
+            <td><b>3</b></td>
+            <td>461</b></td>
+            <td>:35</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/41"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/41.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="41"></td>
+            <td><a target="id_41" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/41">1.0 %</a></td>
+            <td></td>
+            <td><b>4</b></td>
+            <td>285</b></td>
+            <td>:41</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/191"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/191.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="191"></td>
+            <td><a target="id_191" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/191">1.2 %</a></td>
+            <td></td>
+            <td><b>5</b></td>
+            <td>272</b></td>
+            <td>:191</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/340"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/340.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="340"></td>
+            <td><a target="id_340" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/340">1.5 %</a></td>
+            <td></td>
+            <td><b>6</b></td>
+            <td>263</b></td>
+            <td>:340</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/377"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/377.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="377"></td>
+            <td><a target="id_377" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/377">1.7 %</a></td>
+            <td></td>
+            <td><b>7</b></td>
+            <td>263</b></td>
+            <td>:377</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/156"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/156.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="156"></td>
+            <td><a target="id_156" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/156">2.0 %</a></td>
+            <td></td>
+            <td><b>8</b></td>
+            <td>244</b></td>
+            <td>:156</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/103"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/103.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="103"></td>
+            <td><a target="id_103" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/103">2.2 %</a></td>
+            <td></td>
+            <td><b>9</b></td>
+            <td>237</b></td>
+            <td>:103</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/155"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/155.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="155"></td>
+            <td><a target="id_155" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/155">2.5 %</a></td>
+            <td></td>
+            <td><b>10</b></td>
+            <td>231</b></td>
+            <td>:155</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/131"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/131.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="131"></td>
+            <td><a target="id_131" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/131">2.7 %</a></td>
+            <td></td>
+            <td><b>11</b></td>
+            <td>229</b></td>
+            <td>:131</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/185"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/185.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="185"></td>
+            <td><a target="id_185" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/185">3.0 %</a></td>
+            <td></td>
+            <td><b>12</b></td>
+            <td>216</b></td>
+            <td>:185</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/59"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/59.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="59"></td>
+            <td><a target="id_59" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/59">3.2 %</a></td>
+            <td></td>
+            <td><b>13</b></td>
+            <td>206</b></td>
+            <td>:59</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/380"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/380.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="380"></td>
+            <td><a target="id_380" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/380">3.5 %</a></td>
+            <td></td>
+            <td><b>14</b></td>
+            <td>204</b></td>
+            <td>:380</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/342"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/342.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="342"></td>
+            <td><a target="id_342" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/342">3.7 %</a></td>
+            <td></td>
+            <td><b>15</b></td>
+            <td>204</b></td>
+            <td>:342</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/373"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/373.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="373"></td>
+            <td><a target="id_373" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/373">4.0 %</a></td>
+            <td></td>
+            <td><b>16</b></td>
+            <td>196</b></td>
+            <td>:373</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/352"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/352.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="352"></td>
+            <td><a target="id_352" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/352">4.2 %</a></td>
+            <td></td>
+            <td><b>17</b></td>
+            <td>195</b></td>
+            <td>:352</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/270"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/270.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="270"></td>
+            <td><a target="id_270" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/270">4.5 %</a></td>
+            <td></td>
+            <td><b>18</b></td>
+            <td>193</b></td>
+            <td>:270</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/275"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/275.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="275"></td>
+            <td><a target="id_275" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/275">4.7 %</a></td>
+            <td></td>
+            <td><b>19</b></td>
+            <td>193</b></td>
+            <td>:275</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/240"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/240.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="240"></td>
+            <td><a target="id_240" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/240">5.0 %</a></td>
+            <td></td>
+            <td><b>20</b></td>
+            <td>187</b></td>
+            <td>:240</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/334"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/334.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="334"></td>
+            <td><a target="id_334" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/334">5.2 %</a></td>
+            <td></td>
+            <td><b>21</b></td>
+            <td>186</b></td>
+            <td>:334</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/91"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/91.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="91"></td>
+            <td><a target="id_91" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/91">5.5 %</a></td>
+            <td></td>
+            <td><b>22</b></td>
+            <td>184</b></td>
+            <td>:91</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/241"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/241.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="241"></td>
+            <td><a target="id_241" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/241">5.7 %</a></td>
+            <td></td>
+            <td><b>23</b></td>
+            <td>182</b></td>
+            <td>:241</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/272"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/272.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="272"></td>
+            <td><a target="id_272" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/272">6.0 %</a></td>
+            <td></td>
+            <td><b>24</b></td>
+            <td>180</b></td>
+            <td>:272</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/64"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/64.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="64"></td>
+            <td><a target="id_64" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/64">6.2 %</a></td>
+            <td></td>
+            <td><b>25</b></td>
+            <td>179</b></td>
+            <td>:64</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/337"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/337.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="337"></td>
+            <td><a target="id_337" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/337">6.5 %</a></td>
+            <td></td>
+            <td><b>26</b></td>
+            <td>179</b></td>
+            <td>:337</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/395"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/395.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="395"></td>
+            <td><a target="id_395" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/395">6.7 %</a></td>
+            <td></td>
+            <td><b>27</b></td>
+            <td>171</b></td>
+            <td>:395</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/347"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/347.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="347"></td>
+            <td><a target="id_347" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/347">6.9 %</a></td>
+            <td></td>
+            <td><b>28</b></td>
+            <td>166</b></td>
+            <td>:347</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/279"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/279.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="279"></td>
+            <td><a target="id_279" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/279">7.2 %</a></td>
+            <td></td>
+            <td><b>29</b></td>
+            <td>165</b></td>
+            <td>:279</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/146"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/146.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="146"></td>
+            <td><a target="id_146" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/146">7.4 %</a></td>
+            <td></td>
+            <td><b>30</b></td>
+            <td>164</b></td>
+            <td>:146</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/57"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/57.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="57"></td>
+            <td><a target="id_57" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/57">7.7 %</a></td>
+            <td></td>
+            <td><b>31</b></td>
+            <td>164</b></td>
+            <td>:57</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/315"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/315.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="315"></td>
+            <td><a target="id_315" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/315">7.9 %</a></td>
+            <td></td>
+            <td><b>32</b></td>
+            <td>163</b></td>
+            <td>:315</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/130"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/130.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="130"></td>
+            <td><a target="id_130" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/130">8.2 %</a></td>
+            <td></td>
+            <td><b>33</b></td>
+            <td>159</b></td>
+            <td>:130</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/243"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/243.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="243"></td>
+            <td><a target="id_243" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/243">8.4 %</a></td>
+            <td></td>
+            <td><b>34</b></td>
+            <td>158</b></td>
+            <td>:243</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/366"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/366.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="366"></td>
+            <td><a target="id_366" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/366">8.7 %</a></td>
+            <td></td>
+            <td><b>35</b></td>
+            <td>157</b></td>
+            <td>:366</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/203"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/203.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="203"></td>
+            <td><a target="id_203" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/203">8.9 %</a></td>
+            <td></td>
+            <td><b>36</b></td>
+            <td>155</b></td>
+            <td>:203</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/48"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/48.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="48"></td>
+            <td><a target="id_48" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/48">9.2 %</a></td>
+            <td></td>
+            <td><b>37</b></td>
+            <td>152</b></td>
+            <td>:48</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/23"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/23.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="23"></td>
+            <td><a target="id_23" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/23">9.4 %</a></td>
+            <td></td>
+            <td><b>38</b></td>
+            <td>152</b></td>
+            <td>:23</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/371"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/371.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="371"></td>
+            <td><a target="id_371" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/371">9.7 %</a></td>
+            <td></td>
+            <td><b>39</b></td>
+            <td>151</b></td>
+            <td>:371</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/54"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/54.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="54"></td>
+            <td><a target="id_54" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/54">9.9 %</a></td>
+            <td></td>
+            <td><b>40</b></td>
+            <td>151</b></td>
+            <td>:54</td>
+        </tr></table></div>
+    <div class="level1">
+    <span><b>4 %</b> (403 of 9999): 40 tokens</span>&nbsp;&nbsp;&nbsp;
+    <button onClick="openLinks('checkbox_1', 1, 10)">10</button>&nbsp;&nbsp;<button onClick="openLinks('checkbox_1', 10, 20)">20</button>&nbsp;&nbsp;<button onClick="openLinks('checkbox_1', 20, 30)">30</button>&nbsp;&nbsp;
+    
+    <table>
+    <tr style="background: black; color: white"><td colspan="100%">All: Rarity Normalized</td></tr>
+    <tr>
+        <th>Image</th>
+        <th></th>
+        <th>Pct</th>
+        <th>Price</th>
+        <th>Rank&nbsp;&nbsp;</th>
+        <th>Score&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+        <th>ID</th>
+    </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/1"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/1.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="1"></td>
+            <td><a target="id_1" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/1">0.2 %</a></td>
+            <td></td>
+            <td><b>1</b></td>
+            <td>2431</b></td>
+            <td>:1</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/157"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/157.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="157"></td>
+            <td><a target="id_157" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/157">0.5 %</a></td>
+            <td></td>
+            <td><b>2</b></td>
+            <td>522</b></td>
+            <td>:157</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/35"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/35.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="35"></td>
+            <td><a target="id_35" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/35">0.7 %</a></td>
+            <td></td>
+            <td><b>3</b></td>
+            <td>291</b></td>
+            <td>:35</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/340"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/340.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="340"></td>
+            <td><a target="id_340" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/340">1.0 %</a></td>
+            <td></td>
+            <td><b>4</b></td>
+            <td>278</b></td>
+            <td>:340</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/41"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/41.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="41"></td>
+            <td><a target="id_41" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/41">1.2 %</a></td>
+            <td></td>
+            <td><b>5</b></td>
+            <td>275</b></td>
+            <td>:41</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/156"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/156.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="156"></td>
+            <td><a target="id_156" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/156">1.5 %</a></td>
+            <td></td>
+            <td><b>6</b></td>
+            <td>248</b></td>
+            <td>:156</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/377"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/377.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="377"></td>
+            <td><a target="id_377" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/377">1.7 %</a></td>
+            <td></td>
+            <td><b>7</b></td>
+            <td>234</b></td>
+            <td>:377</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/352"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/352.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="352"></td>
+            <td><a target="id_352" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/352">2.0 %</a></td>
+            <td></td>
+            <td><b>8</b></td>
+            <td>220</b></td>
+            <td>:352</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/103"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/103.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="103"></td>
+            <td><a target="id_103" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/103">2.2 %</a></td>
+            <td></td>
+            <td><b>9</b></td>
+            <td>218</b></td>
+            <td>:103</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/59"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/59.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="59"></td>
+            <td><a target="id_59" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/59">2.5 %</a></td>
+            <td></td>
+            <td><b>10</b></td>
+            <td>215</b></td>
+            <td>:59</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/380"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/380.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="380"></td>
+            <td><a target="id_380" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/380">2.7 %</a></td>
+            <td></td>
+            <td><b>11</b></td>
+            <td>211</b></td>
+            <td>:380</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/342"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/342.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="342"></td>
+            <td><a target="id_342" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/342">3.0 %</a></td>
+            <td></td>
+            <td><b>12</b></td>
+            <td>207</b></td>
+            <td>:342</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/373"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/373.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="373"></td>
+            <td><a target="id_373" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/373">3.2 %</a></td>
+            <td></td>
+            <td><b>13</b></td>
+            <td>206</b></td>
+            <td>:373</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/185"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/185.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="185"></td>
+            <td><a target="id_185" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/185">3.5 %</a></td>
+            <td></td>
+            <td><b>14</b></td>
+            <td>205</b></td>
+            <td>:185</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/91"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/91.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="91"></td>
+            <td><a target="id_91" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/91">3.7 %</a></td>
+            <td></td>
+            <td><b>15</b></td>
+            <td>201</b></td>
+            <td>:91</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/241"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/241.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="241"></td>
+            <td><a target="id_241" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/241">4.0 %</a></td>
+            <td></td>
+            <td><b>16</b></td>
+            <td>198</b></td>
+            <td>:241</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/270"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/270.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="270"></td>
+            <td><a target="id_270" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/270">4.2 %</a></td>
+            <td></td>
+            <td><b>17</b></td>
+            <td>190</b></td>
+            <td>:270</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/240"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/240.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="240"></td>
+            <td><a target="id_240" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/240">4.5 %</a></td>
+            <td></td>
+            <td><b>18</b></td>
+            <td>189</b></td>
+            <td>:240</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/337"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/337.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="337"></td>
+            <td><a target="id_337" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/337">4.7 %</a></td>
+            <td></td>
+            <td><b>19</b></td>
+            <td>188</b></td>
+            <td>:337</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/131"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/131.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="131"></td>
+            <td><a target="id_131" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/131">5.0 %</a></td>
+            <td></td>
+            <td><b>20</b></td>
+            <td>185</b></td>
+            <td>:131</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/54"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/54.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="54"></td>
+            <td><a target="id_54" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/54">5.2 %</a></td>
+            <td></td>
+            <td><b>21</b></td>
+            <td>182</b></td>
+            <td>:54</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/57"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/57.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="57"></td>
+            <td><a target="id_57" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/57">5.5 %</a></td>
+            <td></td>
+            <td><b>22</b></td>
+            <td>181</b></td>
+            <td>:57</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/395"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/395.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="395"></td>
+            <td><a target="id_395" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/395">5.7 %</a></td>
+            <td></td>
+            <td><b>23</b></td>
+            <td>179</b></td>
+            <td>:395</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/191"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/191.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="191"></td>
+            <td><a target="id_191" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/191">6.0 %</a></td>
+            <td></td>
+            <td><b>24</b></td>
+            <td>179</b></td>
+            <td>:191</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/366"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/366.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="366"></td>
+            <td><a target="id_366" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/366">6.2 %</a></td>
+            <td></td>
+            <td><b>25</b></td>
+            <td>176</b></td>
+            <td>:366</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/334"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/334.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="334"></td>
+            <td><a target="id_334" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/334">6.5 %</a></td>
+            <td></td>
+            <td><b>26</b></td>
+            <td>171</b></td>
+            <td>:334</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/297"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/297.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="297"></td>
+            <td><a target="id_297" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/297">6.7 %</a></td>
+            <td></td>
+            <td><b>27</b></td>
+            <td>159</b></td>
+            <td>:297</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/146"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/146.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="146"></td>
+            <td><a target="id_146" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/146">6.9 %</a></td>
+            <td></td>
+            <td><b>28</b></td>
+            <td>157</b></td>
+            <td>:146</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/77"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/77.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="77"></td>
+            <td><a target="id_77" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/77">7.2 %</a></td>
+            <td></td>
+            <td><b>29</b></td>
+            <td>154</b></td>
+            <td>:77</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/155"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/155.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="155"></td>
+            <td><a target="id_155" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/155">7.4 %</a></td>
+            <td></td>
+            <td><b>30</b></td>
+            <td>150</b></td>
+            <td>:155</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/67"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/67.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="67"></td>
+            <td><a target="id_67" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/67">7.7 %</a></td>
+            <td></td>
+            <td><b>31</b></td>
+            <td>148</b></td>
+            <td>:67</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/121"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/121.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="121"></td>
+            <td><a target="id_121" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/121">7.9 %</a></td>
+            <td></td>
+            <td><b>32</b></td>
+            <td>148</b></td>
+            <td>:121</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/210"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/210.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="210"></td>
+            <td><a target="id_210" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/210">8.2 %</a></td>
+            <td></td>
+            <td><b>33</b></td>
+            <td>147</b></td>
+            <td>:210</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/203"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/203.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="203"></td>
+            <td><a target="id_203" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/203">8.4 %</a></td>
+            <td></td>
+            <td><b>34</b></td>
+            <td>147</b></td>
+            <td>:203</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/23"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/23.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="23"></td>
+            <td><a target="id_23" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/23">8.7 %</a></td>
+            <td></td>
+            <td><b>35</b></td>
+            <td>144</b></td>
+            <td>:23</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/64"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/64.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="64"></td>
+            <td><a target="id_64" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/64">8.9 %</a></td>
+            <td></td>
+            <td><b>36</b></td>
+            <td>142</b></td>
+            <td>:64</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/163"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/163.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="163"></td>
+            <td><a target="id_163" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/163">9.2 %</a></td>
+            <td></td>
+            <td><b>37</b></td>
+            <td>138</b></td>
+            <td>:163</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/292"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/292.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="292"></td>
+            <td><a target="id_292" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/292">9.4 %</a></td>
+            <td></td>
+            <td><b>38</b></td>
+            <td>138</b></td>
+            <td>:292</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/275"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/275.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="275"></td>
+            <td><a target="id_275" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/275">9.7 %</a></td>
+            <td></td>
+            <td><b>39</b></td>
+            <td>137</b></td>
+            <td>:275</td>
+        </tr>
+        <tr class="hilite">
+            <td><a target="_blank" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/371"><img class="thumb" src="https://ipfs.io/ipfs/QmXAoYcQ4PiADT8x6odeHHtvCUhewS1L46eU6WKVL7ZwU8/371.png"></a></td>
+            <td><input type="checkbox" class="checkbox_1" checked value="371"></td>
+            <td><a target="id_371" href="https://opensea.io/assets//0xF3114DD5c5b50a573E66596563D15A630ED359b4/371">9.9 %</a></td>
+            <td></td>
+            <td><b>40</b></td>
+            <td>137</b></td>
+            <td>:371</td>
+        </tr></table></div>
+    </body>
+    </html>
+    

@@ -10,6 +10,16 @@
 // MAIN FUNCTIONS
 // ------------------------------------------------------------------------------------------------
 
+export function addSecondsToDate(date, seconds) {
+  date.setSeconds(date.getSeconds() + seconds);
+  return date;
+}
+
+export function subtractSecondsFromDate(date, seconds) {
+  date.setSeconds(date.getSeconds() - seconds);
+  return date;
+}
+
 export function shuffle(array) {
   let currentIndex = array.length, randomIndex;
 

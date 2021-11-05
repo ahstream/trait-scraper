@@ -217,7 +217,7 @@ async function setTokenURI(project, asset) {
       const uri = project.tokenURITemplate.replace('{ID}', asset.id)
       asset.tokenURI = uri;
     } else {
-      const uri = await getTokenURIFromEtherscan(asset.id, project.contractAddress, project.tokenURISignatur);
+      const uri = await getTokenURIFromContract(asset.id, project.contractAddress, project.tokenURISignatur);
       asset.tokenURI = uri.normalizedURI;
       asset.tokenOriginalURI = uri.originalURI;
     }
@@ -237,7 +237,7 @@ async function setTokenData(project, asset) {
   }
 }
 
-async function getTokenURIFromEtherscan(id, contractAddress, signatur) {
+async function getTokenURIFromContract(id, contractAddress, signatur) {
   const tokenURIData = createTokenURIData(id, signatur);
   const postFields = `{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x0000000000000000000000000000000000000000","data":"${tokenURIData}","to":"${contractAddress}"},"latest"]}`;
   const response = await curly.post('http://node1.web3api.com/', {
@@ -261,7 +261,7 @@ async function getTokenURIFromEtherscan(id, contractAddress, signatur) {
     throw new Error('INVALID_URI');
   }
   const uri = hex2a(data.result.substring(130)).replace(/\0/g, '').trim();
-  log.debug('getTokenURIFromEtherscan:', uri)
+  log.debug('getTokenURIFromContract:', uri)
 
   return convertURI(uri);
 }

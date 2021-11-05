@@ -1,13 +1,12 @@
 import * as fileutil from "./fileutil.js";
 import * as rarity from "./rarity.js";
 import * as miscutil from "./miscutil.js";
-import { debugToFile } from "./config.js";
-import { convertTokenURI } from './tokenURI.js';
+import { hasBuynow } from "./buynow.js";
+import { normalizeURI } from './tokenURI.js';
 import {
   countDone,
-  countDoneConfig,
 } from "./count.js";
-import opn from "opn";
+import open from "open";
 
 const BASE_ASSET_URL = 'https://opensea.io/assets/';
 
@@ -123,6 +122,7 @@ function pageTemplate(title, config) {
     </style>
     </head>
     <body>
+    <span><b>Collection: ${config.projectId}</b></span><br>
     {CONTENT}
     </body>
     </html>
@@ -134,21 +134,17 @@ export function createAnalyzeWebPage(config, results, doOpen = false) {
   const path = fileutil.toAbsFilepath(`../config/projects/${config.projectId}/analyze.html`);
   fileutil.writeFile(path, html);
   if (doOpen) {
-    opn(path, { app: 'chrome' });
+    open(path, { app: 'chrome' });
   }
 }
 
 export function createCollectionWebPage(config) {
-  debugToFile(config, 'foo.json');
-  const numTokensDone = countDoneConfig(config);
-  const path1 = fileutil.toAbsFilepath(`../config/projects/${config.projectId}/tokens-by-rarity.html`);
-  const path2 = fileutil.toAbsFilepath(`../config/projects/${config.projectId}/tokens-by-rarity-${numTokensDone}.html`);
-  const html = config.threshold.buynow
-    ? createCollectionBuynowHtml(config, numTokensDone)
-    : createCollectionAllHtml(config, numTokensDone);
-  fileutil.writeFile(path1, html);
-  fileutil.writeFile(path2, html);
-  return path1;
+  const path = `${config.dataFolder}html/tokens-by-rarity.html`;
+  const html = config.forceAll || !hasBuynow(config)
+    ? createCollectionAllHtml(config)
+    : createCollectionBuynowHtml(config);
+  fileutil.writeFile(path, html);
+  return path;
 }
 
 function createAnalyzeWebPageHtml(config, results) {
@@ -175,8 +171,8 @@ function createAnalyzeWebPageHtml(config, results) {
 
   rankLevels.forEach((level, index) => {
     add(`<tr><td class="current-rank-level${index + 1} final-rank-level${index + 1}">${(level * 100).toFixed(2)}%</td>`);
-    results.forEach(tokenList => {
-      const done = countDone(tokenList);
+    results.forEach(tokens => {
+      const done = countDone(tokens);
       const maxRank = Math.round(level * done);
       add(`<td>${maxRank}</td>`);
     });
@@ -188,7 +184,7 @@ function createAnalyzeWebPageHtml(config, results) {
   config.analyze.forEach((pct, index) => add(`<th>${Math.round(pct * 100)}%</th>`));
   add(`</tr>`);
 
-  const numFinalDone = countDone(config.data.tokenList);
+  const numFinalDone = countDone(config.data.collection.tokens);
   const numToInclude = Math.round(numFinalDone * numToIncludePct) ?? 1;
 
   const level1MaxFinalRank = Math.round(level1Pct * numFinalDone);
@@ -203,7 +199,7 @@ function createAnalyzeWebPageHtml(config, results) {
       const level2MaxCurrentRank = Math.round(level2Pct * numCurrentDone);
       const tokenId = results[i][tokenIdx].tokenId;
       const currentRank = results[i][tokenIdx].rank;
-      const finalRank = config.data.tokenList.find(obj => obj.tokenId === tokenId).rank;
+      const finalRank = config.data.collection.tokens.find(obj => obj.tokenId === tokenId).rank;
       const className1 = `current-rank-level${getRankLevel(currentRank, numCurrentDone)}`;
       const className2 = `final-rank-level${getRankLevel(finalRank, numFinalDone)}`;
       /*
@@ -229,78 +225,75 @@ function createAnalyzeWebPageHtml(config, results) {
   return buildPage(html, 'Analyze Results', config);
 }
 
-function createCollectionAllHtml(config, numTokensDone) {
+function createCollectionAllHtml(config) {
   let html = '';
 
-  const tokenList = config.data.tokenList.filter(obj => obj.done);
+  const numDone = countDone(config.data.collection.tokens);
 
-  const tokensLevel1 = [];
-  // miscutil.sortBy1Key(tokenList, 'rarity', false);
-  rarity.calcRank(tokenList, 'rarity', false);
-  for (const item of tokenList) {
-    if (!item.done) {
-      continue;
-    }
-    if (item.rankPct <= config.threshold.level) {
-      tokensLevel1.push(item);
+  const tokens1 = [];
+  miscutil.sortBy1Key(config.data.collection.tokens, 'rarity', false);
+  for (const token of config.data.collection.tokens) {
+    if (token.rarityRankPct <= config.output.all.rankPct) {
+      tokens1.push(token);
     }
   }
-  if (tokensLevel1.length) {
-    const desc = "All: Vanilla Rarity";
-    html = html + createCollectionTablesHtml(tokensLevel1, numTokensDone, 'rarity', 1, config.threshold.image, desc, config);
-  }
+  html = html + createCollectionTablesHtml(tokens1, numDone, 'rarity', 1, config.output.all.imgPct, "All: Rarity (not normalized)", config);
 
-  const tokensLevel2 = [];
-  rarity.calcRank(tokenList, 'rarityNormalized', false);
-  for (const item of tokenList) {
-    if (item.rankPct <= config.threshold.level) {
-      tokensLevel2.push(item);
+  const tokens2 = [];
+  miscutil.sortBy1Key(config.data.collection.tokens, 'rarityNorm', false);
+  for (const token of config.data.collection.tokens) {
+    if (token.rarityNormRankPct <= config.output.all.rankPct) {
+      tokens2.push(token);
     }
   }
-  if (tokensLevel2.length) {
-    const desc = "All: Rarity Normalized";
-    html = html + createCollectionTablesHtml(tokensLevel2, numTokensDone, 'rarityNormalized', 2, config.threshold.image, desc, config);
-  }
+  html = html + createCollectionTablesHtml(tokens2, numDone, 'rarityNorm', 1, config.output.all.imgPct, "All: Rarity Normalized", config);
 
   return buildPage(html, 'Collection All', config);
 }
 
-function createCollectionBuynowHtml(config, numTokensDone) {
+function createCollectionBuynowHtml(config) {
   let html = '';
 
-  const tokenList = config.data.tokenList.filter(obj => obj.done);
+  const numDone = countDone(config.data.collection.tokens);
 
-  miscutil.sortBy2Keys(tokenList, 'rarityNormalized', 'price', false, true);
-  rarity.recalcRank(tokenList);
+  miscutil.sortBy1Key(config.data.collection.tokens, config.rules.scoreKey, false);
+
+  const rankPctKey = `${config.rules.scoreKey}RankPct`;
 
   const tokensLevel1 = [];
   const tokensLevel2 = [];
   const tokensLevel3 = [];
-  for (const item of tokenList) {
-    if (!config.buynowMap.get(item.tokenId) || !item.done) {
+  for (const token of config.data.collection.tokens) {
+    if (!config.buynow.itemMap.get(token.tokenId) || !token.done) {
       continue;
     }
-
-    if (item.rankPct <= config.threshold.level1 && item.price > 0 && item.price <= config.threshold.price1) {
-      tokensLevel1.push(item);
-    } else if (item.rankPct <= config.threshold.level2 && item.price > 0 && item.price <= config.threshold.price2) {
-      tokensLevel2.push(item);
-    } else if (item.rankPct <= config.threshold.level3 && item.price > 0 && item.price <= config.threshold.price3) {
-      tokensLevel3.push(item);
+    const rankPct = token[rankPctKey];
+    if (rankPct <= config.output.buynow1.rankPct && token.price > 0 && token.price <= config.output.buynow1.price) {
+      tokensLevel1.push(token);
+    } else if (rankPct <= config.output.buynow2.rankPct && token.price > 0 && token.price <= config.output.buynow2.price) {
+      tokensLevel2.push(token);
+    } else if (rankPct <= config.output.buynow3.rankPct && token.price > 0 && token.price <= config.output.buynow3.price) {
+      tokensLevel3.push(token);
+    } else {
     }
   }
 
-  const desc1 = `Rank < ${(config.threshold.level1 * 100).toFixed(1)} % &nbsp;&nbsp; Price < ${config.threshold.price1} ETH`;
-  html = html + createCollectionTablesHtml(tokensLevel1, numTokensDone, 'rarityNormalized', 1, config.threshold.image1, desc1, config);
-  const desc2 = `Rank < ${(config.threshold.level2 * 100).toFixed(1)} % &nbsp;&nbsp; Price < ${config.threshold.price2} ETH`;
-  html = html + createCollectionTablesHtml(tokensLevel2, numTokensDone, 'rarityNormalized', 2, config.threshold.image2, desc2, config);
-  const desc3 = `Rank < ${(config.threshold.level3 * 100).toFixed(1)} % &nbsp;&nbsp; Price < ${config.threshold.price3} ETH`;
-  html = html + createCollectionTablesHtml(tokensLevel3, numTokensDone, 'rarityNormalized', 3, config.threshold.image3, desc3, config);
+  // const rulesDesc = `${config.rules.scoreKey}, ${config.rules.traitCount ? 'traitCount' : 'no traitCount'}, ${config.rules.numberValues ? 'numbers' : 'no numbers'}, ${config.rules.requiredTraitTypes ?? 'no requiredTraitTypes'}, ${config.rules.weight ?? 'no weight'}`;
+  const rulesDesc = `${config.rules.scoreKey}, ${config.rules.traitCount ? 'traitCount' : 'no traitCount'}`;
+
+  const desc1 = `Rank < ${(config.output.buynow1.rankPct * 100).toFixed(1)}%, Price < ${config.output.buynow1.price} ETH (${rulesDesc})`;
+  html = html + createCollectionTablesHtml(tokensLevel1, numDone, config.rules.scoreKey, 1, config.output.buynow1.imgPct, desc1, config);
+
+  const desc2 = `Rank < ${(config.output.buynow2.rankPct * 100).toFixed(1)}%, Price < ${config.output.buynow2.price} ETH (${rulesDesc})`;
+  html = html + createCollectionTablesHtml(tokensLevel2, numDone, config.rules.scoreKey, 2, config.output.buynow2.imgPct, desc2, config);
+
+  const desc3 = `Rank < ${(config.output.buynow3.rankPct * 100).toFixed(1)}%, Price < ${config.output.buynow3.price} ETH (${rulesDesc})`;
+  html = html + createCollectionTablesHtml(tokensLevel3, numDone, config.rules.scoreKey, 3, config.output.buynow3.imgPct, desc3, config);
 
   return buildPage(html, 'Collection Buynow', config);
 }
 
-function createCollectionTablesHtml(tokens, numTokensDone, scorePropertyName, level, maxImagePct, desc, config) {
+function createCollectionTablesHtml(tokens, numDone, scoreKey, level, imgPct, desc, config) {
   let html = '';
 
   let buttonsHtml = '';
@@ -312,7 +305,7 @@ function createCollectionTablesHtml(tokens, numTokensDone, scorePropertyName, le
 
   html = html + `
     <div class="level${level}">
-    <span>Calc Supply: <b>${numTokensDone}</b> ({QTY})</span>&nbsp;&nbsp;&nbsp;
+    <span><b>${Math.round(numDone * 100 / config.maxSupply)} %</b> (${numDone} of ${config.maxSupply}): {NUM_INCLUDED} tokens</span>&nbsp;&nbsp;&nbsp;
     ${buttonsHtml}
     `;
 
@@ -330,13 +323,23 @@ function createCollectionTablesHtml(tokens, numTokensDone, scorePropertyName, le
     </tr>`;
 
   const doHilite = level === 1;
-  for (const item of tokens) {
-    const assetLink = `${BASE_ASSET_URL}/${config.contractAddress}/${item.tokenId}`;
-    const imageHtml = item.rankPct <= maxImagePct ? `<a target="_blank" href="${assetLink}"><img class="thumb" src="${convertTokenURI(item.image)}"></a>` : '';
-    const checkboxHtml = `<input type="checkbox" class="checkbox_${level}" ${doHilite ? 'checked' : ''} value="${item.tokenId}">`;
-    const percentHtml = `<a target="id_${item.tokenId}" href="${assetLink}">${(item.rankPct * 100).toFixed(1)} %</a>`;
-    const priceHtml = item.buynow && item.price > 0 ? `${(item.price.toFixed(3))} eth` : '';
-    const rarityHtml = item[scorePropertyName].toFixed(0);
+  let numIncluded = 0;
+  for (const token of tokens) {
+    if (!token.done) {
+      continue;
+    }
+    numIncluded++;
+
+    const score = token[`${scoreKey}`];
+    const rank = token[`${scoreKey}Rank`];
+    const rankPct = token[`${scoreKey}RankPct`];
+
+    const assetLink = `${BASE_ASSET_URL}/${config.contractAddress}/${token.tokenId}`;
+    const imageHtml = rankPct <= imgPct ? `<a target="_blank" href="${assetLink}"><img class="thumb" src="${normalizeURI(token.image)}"></a>` : '';
+    const checkboxHtml = `<input type="checkbox" class="checkbox_${level}" ${doHilite ? 'checked' : ''} value="${token.tokenId}">`;
+    const percentHtml = `<a target="id_${token.tokenId}" href="${assetLink}">${(rankPct * 100).toFixed(1)} %</a>`;
+    const priceHtml = token.buynow && token.price > 0 ? `${(token.price.toFixed(3))} eth` : '';
+    const rarityHtml = score.toFixed(0);
     const rowClass = doHilite ? 'hilite' : '';
     html = html + `
         <tr class="${rowClass}">
@@ -344,14 +347,14 @@ function createCollectionTablesHtml(tokens, numTokensDone, scorePropertyName, le
             <td>${checkboxHtml}</td>
             <td>${percentHtml}</td>
             <td>${priceHtml}</td>
-            <td><b>${item.rank}</b></td>
+            <td><b>${rank}</b></td>
             <td>${rarityHtml}</b></td>
-            <td>:${item.tokenId}</td>
+            <td>:${token.tokenId}</td>
         </tr>`;
   }
   html = html + `</table></div>`;
 
-  html = html.replace('{QTY}', tokens.length.toString());
+  html = html.replace('{NUM_INCLUDED}', numIncluded);
 
   return html;
 }

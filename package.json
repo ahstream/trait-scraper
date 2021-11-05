@@ -33,7 +33,7 @@
     "node-fetch": "^3.0.0",
     "node-json-db": "^1.4.1",
     "node-libcurl": "^2.3.3",
-    "opn": "^6.0.0",
+    "open": "^8.4.0",
     "winston": "^3.3.3"
   },
   "devDependencies": {

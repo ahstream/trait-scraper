@@ -6,8 +6,8 @@ import {
 } from "./count.js";
 
 import { createLogger } from "./lib/loggerlib.js";
-import * as poll from "./poll.js";
-import * as collection from "./collection.js";
+import { pollForReveal } from "./reveal.js";
+import { fetchCollectionTokens } from "./collection.js";
 
 const log = createLogger();
 
@@ -24,7 +24,7 @@ export async function testCollection({ projectId, doSample = false, debug = fals
     subConfig.isTest = true;
     subConfig.threshold.buynow = true;
 
-    const myTimer = timer.createTimer();
+    const myTimer = timer.create();
     await testFetchCollection(projectId, subConfig);
     results.push([numConcurrentKey, myTimer.getSeconds()]);
   }
@@ -37,8 +37,8 @@ async function testFetchCollection(projectId, config) {
 
   collection.prepareTokens(config);
 
-  await poll.pollForReveal(config);
-  await collection.fetchCollectionTokens(config);
+  await pollForReveal(config);
+  await fetchCollectionTokens(config);
 
   log.info(`Finished testing collection "${projectId}", ${countDoneConfig(config)} ok, ${countSkippedConfig(config)} skipped!`);
 }

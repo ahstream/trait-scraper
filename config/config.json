@@ -1,94 +1,188 @@
 {
-  "projects": [
-    "testflight",
-    "alpies",
-    "fatapeclub",
-    "smiles",
-    "ethertroopers",
-    "playboy"
-  ],
-  "pollForRevealIntervalMsec": 1000,
-  "numConcurrent": 50,
-  "openWebPage": {
-    "firstResultPage": true,
-    "maxRarityPct": 0.005,
-    "maxTokenPages": 10
+  "projects": {
+    "modz": {
+      "enabled": false,
+      "tokenIdRange": [1, 5555],
+      "contractAddress": "0x50e712b3a260d7639179e8277836253461418f23"
+    },
+    "goons": {
+      "enabled": false,
+      "tokenIdRange": [1, 9696],
+      "contractAddress": "0x8442DD3e5529063B43C69212d64D5ad67B726Ea6"
+    },
+    "cupcat": {
+      "enabled": false,
+      "tokenIdRange": [1, 5000],
+      "contractAddress": "0x8Cd8155e1af6AD31dd9Eec2cEd37e04145aCFCb3"
+    },
+    "pandadynasty": {
+      "enabled": false,
+      "tokenIdRange": [1, 8888],
+      "contractAddress": "0x8e0543Eacd5078ba9Db88F34e2cBc24b7c2Eb790"
+    },
+    "wickedmonsters": {
+      "enabled": false,
+      "tokenIdRange": [1, 6666],
+      "contractAddress": "0x0b35406f0215422ae1fd33560f11e92799150ad6"
+    },
+    "pandaparadise": {
+      "enabled": false,
+      "tokenIdRange": [1, 8888],
+      "contractAddress": "0x24998f0A028d197413EF57C7810f7a5EF8B9FA55"
+    },
+    "skullx": {
+      "enabled": false,
+      "tokenIdRange": [1, 10000],
+      "contractAddress": "0x1DC5d3b2162F9500D7dDeC14eb0ba9Ccb43bc20c"
+    },
+    "testflight": {
+      "enabled": false,
+      "tokenIdRange": [1, 10000],
+      "contractAddress": "0xFDb760b4DE27fd1a3377840bF502EbC0732A5D9d"
+    },
+    "alpies": {
+      "enabled": false,
+      "tokenIdRange": [1, 5026],
+      "contractAddress": "0x57a7c5d10c3f87f5617ac1c60da60082e44d539e"
+    },
+    "fatapeclub": {
+      "enabled": false,
+      "tokenIdRange": [1, 9999],
+      "contractAddress": "0xF3114DD5c5b50a573E66596563D15A630ED359b4",
+      "numConcurrent": 2,
+      "fetchTokensSleepMsec": 20
+    },
+    "smiles": {
+      "enabled": false,
+      "tokenIdRange": [1, 8888],
+      "contractAddress": "0x177EF8787CEb5D4596b6f011df08C86eb84380dC"
+    },
+    "ethertroopers": {
+      "enabled": false,
+      "tokenIdRange": [1, 8888],
+      "contractAddress": "0xe0a2e8a4d94e0c395e88aad7c9074d73a115885d"
+    },
+    "playboyrabbits": {
+      "enabled": false,
+      "tokenIdRange": [1, 11953],
+      "contractAddress": "0x65c234d041f9ef96e2f126263727dfa582206d82"
+    },
+    "humanoids": {
+      "enabled": true,
+      "tokenIdRange": [1, 10000],
+      "contractAddress": "0x3a5051566b2241285be871f650c445a88a970edd"
+    },
+    "platypunks": {
+      "enabled": true,
+      "tokenIdRange": [1, 3567],
+      "contractAddress": "0x495f947276749ce646f68ac8c248420045cb7b5e"
+    },
+    "bushidos": {
+      "enabled": true,
+      "tokenIdRange": [1, 8888],
+      "contractAddress": "0xd2aad45015090f8d45ad78e456b58dd61fb7cd79"
+    },
+    "fckface": {
+      "enabled": true,
+      "tokenIdRange": [1, 5555],
+      "contractAddress": "0x495f947276749ce646f68ac8c248420045cb7b5e"
+    },
+    "dreamers": {
+      "enabled": true,
+      "tokenIdRange": [1, 13505],
+      "contractAddress": "0x10064373e248bc7253653ca05df73cf226202956"
+    },
+    "coolkitty": {
+      "enabled": true,
+      "tokenIdRange": [1, 3852],
+      "contractAddress": "0x78ad336e577c99774618a470f14a9fefdb371d2d"
+    },
+    "apewives": {
+      "enabled": true,
+      "tokenIdRange": [1, 10000],
+      "contractAddress": "0xf1268733c6fb05ef6be9cf23d24436dcd6e0b35e"
+    },
+    "richgator": {
+      "enabled": true,
+      "tokenIdRange": [1, 2222],
+      "contractAddress": "0xe80b2538f33b15c8070db18b1a1cd3bb961c34f1"
+    },
+    "babyapes": {
+      "enabled": true,
+      "tokenIdRange": [1, 2173],
+      "contractAddress": "0x6efd52cb0eb89151f859e6cb152e199ec1045961"
+    },
+    "waw": {
+      "enabled": true,
+      "tokenIdRange": [1, 10000],
+      "contractAddress": "0x338866f8ba75bb9d7a00502e11b099a2636c2c18"
+    },
+    "partydegenerates": {
+      "enabled": true,
+      "tokenIdRange": [1, 10000],
+      "contractAddress": "0x4be3223f8708ca6b30d1e8b8926cf281ec83e770"
+    },
+    "nfteams": {
+      "enabled": true,
+      "tokenIdRange": [1, 10000],
+      "contractAddress": "0x03f5cee0d698c24a42a396ec6bdaee014057d4c8",
+      "rules": {
+        "requiredTraitTypes": ["Character"],
+        "numberValues": false,
+        "traitCount": false,
+        "scoreKey": "rarity",
+        "weight": [
+          ["Character", 5.0]
+        ]
+      }
+    }
   },
-  "milestones": [
-    250,
-    500,
-    1000,
-    3000,
-    5000,
-    7000
-  ],
+  "rules": {
+    "numberValues": true,
+    "traitCount": false,
+    "scoreKey": "rarity",
+    "weight": []
+  },
+  "numConcurrent": 50,
+  "fetchTokensSleepMsec": 50,
+  "pollForRevealMsec": 1000,
+  "fetchTokenTimeoutMsec": 10000,
+  "freqInfoLogSecs": 5,
+  "onlyStringTraitValues": false,
+  "ignoreTraitCount": false,
+  "autoOpen": {
+    "firstResultPage": true, "hotPct": 0.005, "maxHotItems": 10
+  },
+  "milestones": {
+    "createResultEverySecs": 120, "donePct": [0.1, 0.5], "saveDBEverySecs": 60
+  },
   "analyze": [
-    0.05,
-    0.10,
-    0.15,
-    0.20,
-    0.25,
-    0.30,
-    0.35,
-    0.40,
-    0.45,
-    0.50,
-    0.55,
-    0.60,
-    0.65,
-    0.70,
-    0.75,
-    0.80,
-    0.85,
-    0.90,
-    0.95,
-    1
+    0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50,
+    0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1
   ],
-  "threshold": {
-    "buynow": false,
-    "level": 0.10,
-    "image": 0.10,
-    "level1": 0.02,
-    "level2": 0.04,
-    "level3": 0.10,
-    "image1": 0.02,
-    "image2": 0.3,
-    "image3": 0.03,
-    "price1": 2,
-    "price2": 3,
-    "price3": 4
+  "output": {
+    "all": {
+      "rankPct": 0.1, "imgPct": 0.1, "price": null
+    },
+    "buynow1": {
+      "rankPct": 0.02, "imgPct": 0.1, "price": 0.3
+    },
+    "buynow2": {
+      "rankPct": 0.04, "imgPct": 0.1, "price": 0.3
+    },
+    "buynow3": {
+      "rankPct": 0.20, "imgPct": 0.2, "price": 10.0
+    }
   },
   "buttons": [
-    10,
-    20,
-    30,
-    40,
-    50
+    10, 20, 30
   ],
   "pollTokenIds": [
     1234
   ],
-  "testSamples": {
-    "numConcurrent": [
-      10,
-      25,
-      50,
-      75,
-      100,
-      125,
-      150,
-      175,
-      200,
-      225,
-      250,
-      275,
-      300,
-      325,
-      350,
-      375,
-      400
-    ]
-  },
+  "numConcurrentTest": [
+    10, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400
+  ],
   "minTraitsNeeded": 2,
   "minDifferentTraitValuesNeeded": 2,
   "etherscanURI": "http://node1.web3api.com/",

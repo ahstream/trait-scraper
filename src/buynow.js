@@ -1,21 +1,61 @@
 import { readFile, writeJSONFile, fileExists, toAbsFilepath } from "./fileutil.js";
 import { createLogger } from "./lib/loggerlib.js";
+import { createToken } from './token.js';
+import { getBuynow } from './opensea.js';
 
 const log = createLogger();
 
-export function prepareBuynow(config) {
-  config.buynowList = getBuynowList(config);
-  config.buynowMap = new Map();
-  config.buynowList.forEach((item) => {
-    config.buynowMap.set(item.tokenId, item);
+export async function createBuynow(config) {
+  let buynowList;
+  if (config.args.all) {
+    log.info('Get BuyNow from config');
+    buynowList = getBuynowListFromConfig(config);
+  } else if (config.args.getbuynow) {
+    log.info('Get BuyNow from OpenSea');
+    buynowList = await getBuynow(config.contractAddress, config.maxSupply);
+  } else {
+    log.info('Get BuyNow from config');
+    buynowList = getBuynowListFromConfig(config);
+    if (buynowList.length < 1) {
+      log.info('Get BuyNow from OpenSea');
+      buynowList = await getBuynow(config.contractAddress, config.maxSupply);
+    }
+  }
+
+  const buynow = {
+    itemList: buynowList,
+    itemMap: new Map(),
+  };
+
+  buynow.itemList.forEach((item) => {
+    buynow.itemMap.set(item.tokenId, item);
   });
 
-  const path = toAbsFilepath(`../config/projects/${config.projectId}/buynow.json`);
-  writeJSONFile(path, { data: config.buynowList });
+  const outputFilepath = `${config.buynowFolder}${config.projectId}.json`;
+  writeJSONFile(outputFilepath, { data: buynow.itemList });
+
+  return buynow;
 }
 
-function getBuynowList(config) {
-  const filepath = toAbsFilepath(`../config/projects/${config.projectId}/buynow.txt`);
+export function createBuynowBAK(config) {
+  const inputFilepath = `${config.buynowFolder}${config.projectId}.txt`;
+  const outputFilepath = `${config.buynowFolder}${config.projectId}.json`;
+
+  const buynow = {
+    itemList: parseBuynowSourceFile(inputFilepath),
+    itemMap: new Map(),
+  };
+
+  buynow.itemList.forEach((item) => {
+    buynow.itemMap.set(item.tokenId, item);
+  });
+
+  writeJSONFile(outputFilepath, { data: buynow.itemList });
+
+  return buynow;
+}
+
+function parseBuynowSourceFile(filepath) {
   if (!fileExists(filepath)) {
     return [];
   }
@@ -28,7 +68,8 @@ function getBuynowList(config) {
   let priceResult = [...data.matchAll(/\\"quantityInEth\\":\\"([0-9]+)\\"/gim)];
 
   if (tokenIdResult.length < 1) {
-    throw new Error('BuyNow: Empty result!');
+    log.error('BuyNow: Empty result!');
+    return [];
   }
 
   if (tokenIdResult.length !== priceResult.length) {
@@ -41,16 +82,31 @@ function getBuynowList(config) {
   const tokenList = [];
   const tokenMap = new Map();
   for (let i = 0; i < tokenIdResult.length; i++) {
-    const thisId = parseInt(tokenIdResult[i][1]);
+    const thisId = tokenIdResult[i][1];
     const thisToken = tokenMap.get(thisId);
     if (thisToken) {
       continue;
     }
     const thisPrice = fakePrice ?? parseInt(priceResult[i][1]) / Math.pow(10, 18);
-    const thisItem = { tokenId: thisId, price: thisPrice };
+    const thisItem = createToken({ tokenId: thisId, price: thisPrice });
     tokenMap.set(thisId, thisItem);
     tokenList.push(thisItem);
   }
 
   return tokenList;
+}
+
+export function hasBuynow(config) {
+  return config.buynow.itemList.length > 0;
+}
+
+function getBuynowListFromConfig(config) {
+  const buynowList = [];
+  config.data.collection.tokens.forEach(token => {
+      if (token.done && token.price) {
+        buynowList.push({ tokenId: token.tokenId, price: token.price });
+      }
+    }
+  );
+  return buynowList;
 }

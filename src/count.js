@@ -1,6 +1,6 @@
-export function countDone(tokenList) {
+export function countDone(tokens) {
   let count = 0;
-  tokenList.forEach(token => {
+  tokens.forEach(token => {
     if (token.done) {
       count++;
     }
@@ -8,9 +8,9 @@ export function countDone(tokenList) {
   return count;
 }
 
-export function countSkip(tokenList) {
+export function countSkip(tokens) {
   let count = 0;
-  tokenList.forEach(token => {
+  tokens.forEach(token => {
     if (token.skip) {
       count++;
     }
@@ -18,9 +18,9 @@ export function countSkip(tokenList) {
   return count;
 }
 
-export function countDoneOrSkip(tokenList) {
+export function countDoneOrSkip(tokens) {
   let count = 0;
-  tokenList.forEach(token => {
+  tokens.forEach(token => {
     if (token.done || token.skip) {
       count++;
     }
@@ -28,9 +28,9 @@ export function countDoneOrSkip(tokenList) {
   return count;
 }
 
-export function countActiveFetchRequests(tokenList) {
+export function countActiveFetchRequests(tokens) {
   let count = 0;
-  tokenList.forEach(token => {
+  tokens.forEach(token => {
     if (token.status === 'fetch') {
       count++;
     }
@@ -40,7 +40,7 @@ export function countActiveFetchRequests(tokenList) {
 
 export function countDoneConfig(config) {
   let count = 0;
-  for (var token of config.data.tokenList) {
+  for (var token of config.data.collection.tokens) {
     if (token.done) {
       count++;
     }
@@ -50,7 +50,7 @@ export function countDoneConfig(config) {
 
 export function countSkippedConfig(config) {
   let count = 0;
-  for (var token of config.data.tokenList) {
+  for (var token of config.data.collection.tokens) {
     if (token.skip) {
       count++;
     }
@@ -60,7 +60,7 @@ export function countSkippedConfig(config) {
 
 export function countFinishedBuynowConfig(config) {
   let count = 0;
-  for (var token of config.data.tokenList) {
+  for (var token of config.data.collection.tokens) {
     if (token.buynow && token.done) {
       count++;
     }
