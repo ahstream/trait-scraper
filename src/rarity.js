@@ -40,6 +40,7 @@ function calcGlobalTraitsRarity(collection) {
       collection.traits.data[traitType].data[traitValue].freq = freq;
       collection.traits.data[traitType].data[traitValue].rarity = 1 / freq;
     }
+
     collection.traits.data[traitType].numTraitValues = numTraitValuesInTraitType;
   }
 
@@ -53,7 +54,6 @@ function calcGlobalTraitsRarity(collection) {
     }
     for (let traitValue of Object.keys(collection.traits.data[traitType].data)) {
       const normFactor = (collection.traits.avgNumTraitValuesPerTraitType / collection.traits.data[traitType].numTraitValues);
-      collection.traits.data[traitType].data[traitValue].freqNorm = collection.traits.data[traitType].data[traitValue].freq * normFactor;
       collection.traits.data[traitType].data[traitValue].rarityNorm = collection.traits.data[traitType].data[traitValue].rarity * normFactor;
     }
   }
@@ -68,7 +68,6 @@ function calcGlobalTraitCountsRarity(collection) {
     const freq = collection.traitCounts.data[trait].count / numTokens;
     const rarity = 1 / freq;
     collection.traitCounts.data[trait].freq = freq;
-    collection.traitCounts.data[trait].freqNorm = freq * normFactor;
     collection.traitCounts.data[trait].rarity = rarity;
     collection.traitCounts.data[trait].rarityNorm = rarity * normFactor;
   }
@@ -80,12 +79,15 @@ export function calcTokenRarity(collection, config) {
     if (!token.done) {
       continue;
     }
+
     numTokens++;
-    let sumFreq = 0;
-    let sumFreqNorm = 0;
     let sumRarity = 0;
+    let sumRarityCount = 0;
     let sumRarityNorm = 0;
+    let sumRarityCountNorm = 0;
+
     let traitCount = 0;
+
     for (const trait of token.traits) {
       const traitType = trait.trait_type;
       const traitValue = trait.value;
@@ -94,27 +96,31 @@ export function calcTokenRarity(collection, config) {
         traitCount++;
       }
 
-      if (traitType === TRAIT_COUNT_TYPE && !config.rules.traitCount) {
-        continue;
-      }
-
       trait.numWithThisTrait = collection.traits.data[traitType].data[traitValue].count;
       trait.freq = collection.traits.data[traitType].data[traitValue].freq;
-      trait.freqNorm = collection.traits.data[traitType].data[traitValue].freqNorm;
       trait.rarity = collection.traits.data[traitType].data[traitValue].rarity;
       trait.rarityNorm = collection.traits.data[traitType].data[traitValue].rarityNorm;
 
-      sumFreq = sumFreq + trait.freq;
-      sumFreqNorm = sumFreqNorm + trait.freqNorm;
-      sumRarity = sumRarity + trait.rarity;
-      sumRarityNorm = sumRarityNorm + trait.rarityNorm;
+      if (traitType === TRAIT_COUNT_TYPE) {
+        sumRarityCount = sumRarityCount + trait.rarity;
+        sumRarityCountNorm = sumRarityCountNorm + trait.rarityNorm;
+      } else {
+        sumRarity = sumRarity + trait.rarity;
+        sumRarityNorm = sumRarityNorm + trait.rarityNorm;
+        sumRarityCount = sumRarityCount + trait.rarity;
+        sumRarityCountNorm = sumRarityCountNorm + trait.rarityNorm;
+      }
     }
 
     token.traitCount = traitCount;
-    token.freq = sumFreq;
-    token.freqNorm = sumFreqNorm;
+
     token.rarity = sumRarity;
     token.rarityNorm = sumRarityNorm;
+    token.rarityCount = sumRarityCount;
+    token.rarityCountNorm = sumRarityCountNorm;
+
+    token.score = token[`${config.rules.scoreKey}`];
+
     token.hasRarity = token.rarity > 0;
   }
 }
@@ -170,6 +176,29 @@ export function addTokenTraits(token, attributes, collection, config) {
   }
 }
 
+export function addTokenNoneTrait(collection) {
+  for (let traitType of Object.keys(collection.traits.data)) {
+    if (typeof collection.traits.data[traitType] !== 'object') {
+      continue;
+    }
+    for (let token of collection.tokens) {
+      if (!token.done) {
+        continue;
+      }
+      if (typeof token.traits.find !== 'function') {
+        log.info('ERROR token.traits.find:', token);
+        log.info('ERROR typeof token.traits.find:', typeof token.traits.find);
+      }
+      const item = token.traits.find(o => o.trait_type === traitType);
+      if (!item) {
+        // log.info('Add None:', trait, token.tokenId);
+        token.traits.push({ trait_type: traitType, value: TRAIT_NONE_VALUE });
+        addGlobalTrait({ trait_type: traitType, value: TRAIT_NONE_VALUE }, collection);
+      }
+    }
+  }
+}
+
 function addGlobalTrait(attribute, collection, tokenId) {
   if (attribute.value === '') {
     attribute.value = TRAIT_NONE_VALUE;
@@ -216,8 +245,11 @@ export function addGlobalTraitCount(count, collection, tokenId) {
 
 export function calcRanks(collection) {
   const numDone = countDone(collection.tokens);
+  calcRank(collection.tokens, numDone, 'score', false);
   calcRank(collection.tokens, numDone, 'rarity', false);
   calcRank(collection.tokens, numDone, 'rarityNorm', false);
+  calcRank(collection.tokens, numDone, 'rarityCount', false);
+  calcRank(collection.tokens, numDone, 'rarityCountNorm', false);
 }
 
 function calcRank(tokens, numDone, sortKey, ascending) {
@@ -237,28 +269,5 @@ function calcRank(tokens, numDone, sortKey, ascending) {
     item[rankKey] = thisRank;
     item[`${rankKey}Pct`] = rank / numDone;
     rank++;
-  }
-}
-
-export function addTokenNoneTrait(collection) {
-  for (let traitType of Object.keys(collection.traits.data)) {
-    if (typeof collection.traits.data[traitType] !== 'object') {
-      continue;
-    }
-    for (let token of collection.tokens) {
-      if (!token.done) {
-        continue;
-      }
-      if (typeof token.traits.find !== 'function') {
-        log.info('ERROR token.traits.find:', token);
-        log.info('ERROR typeof token.traits.find:', typeof token.traits.find);
-      }
-      const item = token.traits.find(o => o.trait_type === traitType);
-      if (!item) {
-        // log.info('Add None:', trait, token.tokenId);
-        token.traits.push({ trait_type: traitType, value: TRAIT_NONE_VALUE });
-        addGlobalTrait({ trait_type: traitType, value: TRAIT_NONE_VALUE }, collection);
-      }
-    }
   }
 }

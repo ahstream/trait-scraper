@@ -140,7 +140,7 @@
   "rules": {
     "numberValues": true,
     "traitCount": true,
-    "scoreKey": "rarityNorm",
+    "scoreKey": "rarityCountNorm",
     "weight": []
   },
   "numConcurrent": 50,

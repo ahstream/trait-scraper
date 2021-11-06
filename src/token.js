@@ -256,11 +256,9 @@ export function createToken(args) {
     traits: [],
     traitCount: null,
     freq: null,
-    freqNorm: null,
     rarity: null,
     rarityNorm: null,
     freqRank: null,
-    freqNormRank: null,
     rarityRank: null,
     rarityNormRank: null,
   };

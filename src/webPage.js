@@ -10,11 +10,14 @@ import open from "open";
 
 const BASE_ASSET_URL = 'https://opensea.io/assets/';
 
-function buildPage(html, title, config) {
-  return pageTemplate(title, config).replace('{CONTENT}', html);
+function buildPage(config, title, pageNavHtml, pageHeadHtml, pageContentHtml) {
+  return pageTemplate(config, title)
+    .replace('{PAGE_NAV}', pageNavHtml)
+    .replace('{PAGE_HEAD}', pageHeadHtml)
+    .replace('{PAGE_CONTENT}', pageContentHtml);
 }
 
-function pageTemplate(title, config) {
+function pageTemplate(config, title) {
   return `
     <html><head><title>${title}</title>
     <script>
@@ -123,8 +126,9 @@ function pageTemplate(title, config) {
     </style>
     </head>
     <body>
-    <span><b>Collection: ${config.projectId}</b></span><br>
-    {CONTENT}
+    {PAGE_NAV}
+    {PAGE_HEAD}
+    {PAGE_CONTENT}
     </body>
     </html>
     `;
@@ -143,10 +147,176 @@ export function createCollectionWebPage(config) {
   const path = `${config.dataFolder}html/tokens-by-rarity.html`;
   const showBuynow = config.args.command === 'poll' || config.args.forceBuynow;
   const html = showBuynow
-    ? createCollectionBuynowHtml(config)
-    : createCollectionAllHtml(config);
+    ? createCollectionBuynow(config, config.rules.scoreKey, 'Collection Buynow')
+    : createCollectionAll(config, config.rules.scoreKey, 'Collection All');
   fileutil.writeFile(path, html);
   return path;
+}
+
+function createPageNavHtml() {
+  let html = '';
+
+  html = html + `
+    [<a href='collection-all'>Projects Start</a>]
+    &nbsp;&nbsp;
+    [<a href='collection-all'>All Default</a> -
+    <a href='collection-all'>Rarity CN</a> -
+    <a href='collection-all'>Rarity C</a> -
+    <a href='collection-all'>Rarity N</a> -
+    <a href='collection-all'>Rarity</a>]
+    &nbsp;&nbsp;
+    [<a href='collection-all'>Buynow Default</a> -
+    <a href='collection-all'>Rarity CN</a> -
+    <a href='collection-all'>Rarity C</a> -
+    <a href='collection-all'>Rarity N</a> -
+    <a href='collection-all'>Rarity</a>]
+    <br><br>`;
+
+  return html;
+}
+
+function createPageHeadHtml(config, title) {
+  return `<span><b>${title}: ${config.projectId}</b></span><br>`;
+}
+
+function createCollectionAll(config, scoreKey, title) {
+  return buildPage(config, title, createPageNavHtml(), createPageHeadHtml(config, title), createCollectionAllHtml(config, scoreKey));
+}
+
+function createCollectionBuynow(config, scoreKey, title) {
+  return buildPage(config, title, createPageNavHtml(), createPageHeadHtml(config, title), createCollectionBuynowHtml(config, scoreKey));
+}
+
+function createCollectionAllHtml(config, scoreKey) {
+  let html = '';
+  const numDone = countDone(config.data.collection.tokens);
+  miscutil.sortBy1Key(config.data.collection.tokens, scoreKey, false);
+
+  const tokens1 = [];
+  for (const token of config.data.collection.tokens) {
+    if (token[`${scoreKey}RankPct`] <= config.output.all.rankPct) {
+      tokens1.push(token);
+    }
+  }
+
+  const desc = `All [${scoreKey === 'score' ? config.rules.scoreKey : scoreKey}]`;
+  html = html + createCollectionTablesHtml(config, tokens1, numDone, scoreKey, 1, config.output.all.imgPct, desc, true, true);
+
+  return html;
+}
+
+function createCollectionBuynowHtml(config, scoreKey) {
+  let html = '';
+  const numDone = countDone(config.data.collection.tokens);
+  miscutil.sortBy1Key(config.data.collection.tokens, config.rules.scoreKey, false);
+
+  const tokensLevel1 = [];
+  const tokensLevel2 = [];
+  const tokensLevel3 = [];
+  for (const token of config.data.collection.tokens) {
+    if (!token.isBuynow || !token.done) {
+      continue;
+    }
+    const rankPct = token[`${scoreKey}RankPct`];
+    if (rankPct <= config.output.buynow1.rankPct && token.price <= config.output.buynow1.price) {
+      tokensLevel1.push(token);
+    } else if (rankPct <= config.output.buynow2.rankPct && token.price <= config.output.buynow2.price) {
+      tokensLevel2.push(token);
+    } else if (rankPct <= config.output.buynow3.rankPct && token.price <= config.output.buynow3.price) {
+      tokensLevel3.push(token);
+    } else {
+    }
+  }
+
+  const scoreDesc = `${scoreKey === 'score' ? config.rules.scoreKey : scoreKey}`;
+
+  const desc1 = `Rank < ${(config.output.buynow1.rankPct * 100).toFixed(1)}%, Price < ${config.output.buynow1.price} ETH (${scoreDesc})`;
+  html = html + createCollectionTablesHtml(config, tokensLevel1, numDone, scoreKey, 1, config.output.buynow1.imgPct, desc1, true, false);
+
+  const desc2 = `Rank < ${(config.output.buynow2.rankPct * 100).toFixed(1)}%, Price < ${config.output.buynow2.price} ETH (${scoreDesc})`;
+  html = html + createCollectionTablesHtml(config, tokensLevel2, numDone, scoreKey, 2, config.output.buynow2.imgPct, desc2, true, false);
+
+  const desc3 = `Rank < ${(config.output.buynow3.rankPct * 100).toFixed(1)}%, Price < ${config.output.buynow3.price} ETH (${scoreDesc})`;
+  html = html + createCollectionTablesHtml(config, tokensLevel3, numDone, scoreKey, 3, config.output.buynow3.imgPct, desc3, true, false);
+
+  return html;
+}
+
+function createCollectionTablesHtml(config, tokens, numDone, scoreKey, level, imgPct, desc, showAllRanks = false, showLastPrice = false) {
+  let html = '';
+
+  let buttonsHtml = '';
+  let lastButtonVal = 1;
+  for (let buttonVal of config.buttons) {
+    buttonsHtml = buttonsHtml + `<button onClick="openLinks('checkbox_${level}', ${lastButtonVal}, ${buttonVal})">${buttonVal}</button>&nbsp;&nbsp;`;
+    lastButtonVal = buttonVal;
+  }
+
+  html = html + `
+    <div class="level${level}">
+    <span><b>${Math.round(numDone * 100 / config.maxSupply)} %</b> (${numDone} of ${config.maxSupply}): {NUM_INCLUDED} tokens</span>&nbsp;&nbsp;&nbsp;
+    ${buttonsHtml}
+    `;
+
+  html = html + `
+    <table>
+    <tr style="background: black; color: white"><td colspan="100%">${desc}</td></tr>
+    <tr>
+        <th>Image</th>
+        <th></th>
+        <th>Pct</th>
+        <th>Price</th>
+        ${!showLastPrice ? '' : '<th>Last</th>'}
+        <th>Rank&nbsp;&nbsp;</th>
+        ${!showAllRanks ? '' : '<th>RCN</th><th>RC</th><th>RN</th><th>R</th>'}
+        <th>Score&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+        <th>ID</th>
+    </tr>`;
+
+  const doHilite = level === 1;
+  let numIncluded = 0;
+  for (const token of tokens) {
+    if (!token.done) {
+      continue;
+    }
+    numIncluded++;
+
+    const score = token[`${scoreKey}`];
+    const rankPct = token[`${scoreKey}RankPct`];
+
+    const rowClass = doHilite ? 'hilite' : '';
+    const assetLink = `${BASE_ASSET_URL}/${config.contractAddress}/${token.tokenId}`;
+    const imageHtml = rankPct <= imgPct ? `<a target="_blank" href="${assetLink}"><img class="thumb" src="${normalizeURI(token.image)}"></a>` : '';
+    const checkboxHtml = `<input type="checkbox" class="checkbox_${level}" ${doHilite ? 'checked' : ''} value="${token.tokenId}">`;
+    const percentHtml = `<a target="id_${token.tokenId}" href="${assetLink}">${(rankPct * 100).toFixed(1)} %</a>`;
+    const priceHtml = token.price > 0 ? `${(token.price.toFixed(2))}` : '';
+    const lastPriceText = token.lastPrice > 0 ? `${(token.lastPrice.toFixed(2))}` : '';
+    const lastPriceHtml = !showLastPrice ? '' : `<td class="blur">${lastPriceText}</td>`;
+    const scoreHtml = score.toFixed(0);
+    const allRanksHtml = !showAllRanks ? '' : `
+        <td class="blur">${token.rarityCountNormRank}</td>
+        <td class="blur">${token.rarityCountRank}</td>
+        <td class="blur">${token.rarityNormRank}</td>
+        <td class="blur">${token.rarityRank}</td>`;
+
+    html = html + `
+        <tr class="${rowClass}">
+            <td>${imageHtml}</td>
+            <td>${checkboxHtml}</td>
+            <td>${percentHtml}</td>
+            <td>${priceHtml}</td>
+            ${lastPriceHtml}
+            <td><b>${token[`${scoreKey}Rank`]}</b></td>
+            ${allRanksHtml}
+            <td>${scoreHtml}</b></td>
+            <td>:${token.tokenId}</td>
+        </tr>`;
+  }
+  html = html + `</table></div>`;
+
+  html = html.replace('{NUM_INCLUDED}', numIncluded);
+
+  return html;
 }
 
 function createAnalyzeWebPageHtml(config, results) {
@@ -225,141 +395,4 @@ function createAnalyzeWebPageHtml(config, results) {
   add(`</table>`);
 
   return buildPage(html, 'Analyze Results', config);
-}
-
-function createCollectionAllHtml(config) {
-  let html = '';
-
-  const numDone = countDone(config.data.collection.tokens);
-
-  const tokens1 = [];
-  miscutil.sortBy1Key(config.data.collection.tokens, 'rarity', false);
-  for (const token of config.data.collection.tokens) {
-    if (token.rarityRankPct <= config.output.all.rankPct) {
-      tokens1.push(token);
-    }
-  }
-  html = html + createCollectionTablesHtml(tokens1, numDone, 'rarity', 1, config.output.all.imgPct, "All: Rarity (not normalized)", config);
-
-  const tokens2 = [];
-  miscutil.sortBy1Key(config.data.collection.tokens, 'rarityNorm', false);
-  for (const token of config.data.collection.tokens) {
-    if (token.rarityNormRankPct <= config.output.all.rankPct) {
-      tokens2.push(token);
-    }
-  }
-  html = html + createCollectionTablesHtml(tokens2, numDone, 'rarityNorm', 1, config.output.all.imgPct, "All: Rarity Normalized", config);
-
-  return buildPage(html, 'Collection All', config);
-}
-
-function createCollectionBuynowHtml(config) {
-  let html = '';
-
-  const numDone = countDone(config.data.collection.tokens);
-
-  miscutil.sortBy1Key(config.data.collection.tokens, config.rules.scoreKey, false);
-
-  const rankPctKey = `${config.rules.scoreKey}RankPct`;
-
-  const tokensLevel1 = [];
-  const tokensLevel2 = [];
-  const tokensLevel3 = [];
-  for (const token of config.data.collection.tokens) {
-    if (!token.isBuynow || !token.done) {
-      continue;
-    }
-    const rankPct = token[rankPctKey];
-    if (rankPct <= config.output.buynow1.rankPct && token.price > 0 && token.price <= config.output.buynow1.price) {
-      tokensLevel1.push(token);
-    } else if (rankPct <= config.output.buynow2.rankPct && token.price > 0 && token.price <= config.output.buynow2.price) {
-      tokensLevel2.push(token);
-    } else if (rankPct <= config.output.buynow3.rankPct && token.price > 0 && token.price <= config.output.buynow3.price) {
-      tokensLevel3.push(token);
-    } else {
-    }
-  }
-
-  // const rulesDesc = `${config.rules.scoreKey}, ${config.rules.traitCount ? 'traitCount' : 'no traitCount'}, ${config.rules.numberValues ? 'numbers' : 'no numbers'}, ${config.rules.requiredTraitTypes ?? 'no requiredTraitTypes'}, ${config.rules.weight ?? 'no weight'}`;
-  const rulesDesc = `${config.rules.scoreKey}, ${config.rules.traitCount ? 'traitCount' : 'no traitCount'}`;
-
-  const desc1 = `Rank < ${(config.output.buynow1.rankPct * 100).toFixed(1)}%, Price < ${config.output.buynow1.price} ETH (${rulesDesc})`;
-  html = html + createCollectionTablesHtml(tokensLevel1, numDone, config.rules.scoreKey, 1, config.output.buynow1.imgPct, desc1, config);
-
-  const desc2 = `Rank < ${(config.output.buynow2.rankPct * 100).toFixed(1)}%, Price < ${config.output.buynow2.price} ETH (${rulesDesc})`;
-  html = html + createCollectionTablesHtml(tokensLevel2, numDone, config.rules.scoreKey, 2, config.output.buynow2.imgPct, desc2, config);
-
-  const desc3 = `Rank < ${(config.output.buynow3.rankPct * 100).toFixed(1)}%, Price < ${config.output.buynow3.price} ETH (${rulesDesc})`;
-  html = html + createCollectionTablesHtml(tokensLevel3, numDone, config.rules.scoreKey, 3, config.output.buynow3.imgPct, desc3, config);
-
-  return buildPage(html, 'Collection Buynow', config);
-}
-
-function createCollectionTablesHtml(tokens, numDone, scoreKey, level, imgPct, desc, config) {
-  let html = '';
-
-  let buttonsHtml = '';
-  let lastButtonVal = 1;
-  for (let buttonVal of config.buttons) {
-    buttonsHtml = buttonsHtml + `<button onClick="openLinks('checkbox_${level}', ${lastButtonVal}, ${buttonVal})">${buttonVal}</button>&nbsp;&nbsp;`;
-    lastButtonVal = buttonVal;
-  }
-
-  html = html + `
-    <div class="level${level}">
-    <span><b>${Math.round(numDone * 100 / config.maxSupply)} %</b> (${numDone} of ${config.maxSupply}): {NUM_INCLUDED} tokens</span>&nbsp;&nbsp;&nbsp;
-    ${buttonsHtml}
-    `;
-
-  html = html + `
-    <table>
-    <tr style="background: black; color: white"><td colspan="100%">${desc}</td></tr>
-    <tr>
-        <th>Image</th>
-        <th></th>
-        <th>Pct</th>
-        <th>Price</th>
-        <th>Last</th>
-        <th>Rank&nbsp;&nbsp;</th>
-        <th>Score&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-        <th>ID</th>
-    </tr>`;
-
-  const doHilite = level === 1;
-  let numIncluded = 0;
-  for (const token of tokens) {
-    if (!token.done) {
-      continue;
-    }
-    numIncluded++;
-
-    const score = token[`${scoreKey}`];
-    const rank = token[`${scoreKey}Rank`];
-    const rankPct = token[`${scoreKey}RankPct`];
-
-    const assetLink = `${BASE_ASSET_URL}/${config.contractAddress}/${token.tokenId}`;
-    const imageHtml = rankPct <= imgPct ? `<a target="_blank" href="${assetLink}"><img class="thumb" src="${normalizeURI(token.image)}"></a>` : '';
-    const checkboxHtml = `<input type="checkbox" class="checkbox_${level}" ${doHilite ? 'checked' : ''} value="${token.tokenId}">`;
-    const percentHtml = `<a target="id_${token.tokenId}" href="${assetLink}">${(rankPct * 100).toFixed(1)} %</a>`;
-    const priceHtml = token.price > 0 ? `${(token.price.toFixed(2))}` : '';
-    const lastPriceHtml = token.lastPrice > 0 ? `${(token.lastPrice.toFixed(2))}` : '';
-    const rarityHtml = score.toFixed(0);
-    const rowClass = doHilite ? 'hilite' : '';
-    html = html + `
-        <tr class="${rowClass}">
-            <td>${imageHtml}</td>
-            <td>${checkboxHtml}</td>
-            <td>${percentHtml}</td>
-            <td>${priceHtml}</td>
-            <td class="blur">${lastPriceHtml}</td>
-            <td><b>${rank}</b></td>
-            <td>${rarityHtml}</b></td>
-            <td>:${token.tokenId}</td>
-        </tr>`;
-  }
-  html = html + `</table></div>`;
-
-  html = html.replace('{NUM_INCLUDED}', numIncluded);
-
-  return html;
 }
