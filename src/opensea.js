@@ -147,6 +147,7 @@ function convertAsset(asset) {
     listingDate: asset?.sell_orders && asset?.sell_orders[0] ? asset.sell_orders[0].created_date ?? null : null,
     lastSalePrice: asset?.last_sale?.total_price ?? null,
     lastSaleDecimals: asset?.last_sale?.payment_token?.decimals ?? null,
+    lastSaleDate: asset?.last_sale?.event_timestamp ?? null,
     currency: asset?.sell_orders && asset?.sell_orders[0] ? asset.sell_orders[0].payment_token_contract?.symbol : null,
   };
   convertedAsset.price = convertedAsset.basePrice && convertedAsset.decimals ? convertedAsset.basePrice / Math.pow(10, convertedAsset.decimals) : null;

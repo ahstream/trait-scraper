@@ -1,5 +1,5 @@
 import * as miscutil from "./miscutil.js";
-import { getTokenById, isTokenRevealed } from "./token.js";
+import { fetchTokenById, isTokenRevealed } from "./token.js";
 import * as fileutil from "./fileutil.js";
 import { getConfig } from "./config.js";
 import * as tokenURI from "./tokenURI.js";
@@ -15,16 +15,13 @@ import {
 import open from "open";
 import { createLogger } from "./lib/loggerlib.js";
 
-import { getTokenByURI } from './token.js';
-import { convertToBaseTokenURI, getTokenURI } from "./tokenURI.js";
-
 const log = createLogger();
 
 export async function pollForReveal(config) {
   const pollForRevealTokenIds = config.pollForRevealTokenIds;
   while (true) {
     for (const tokenId of pollForRevealTokenIds) {
-      const token = await getTokenById(tokenId, config);
+      const token = await fetchTokenById(tokenId, config);
       if (await isTokenRevealed(token, config)) {
         log.info(`(${config.projectId}) Collection is revealed: ${token.tokenURI}`);
         config.data.collection.baseTokenURI = tokenURI.convertToBaseTokenURI(tokenId, token.tokenURI);

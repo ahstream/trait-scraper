@@ -1,8 +1,7 @@
 import * as miscutil from "./miscutil.js";
-import { fetchTokens, createToken } from "./token.js";
+import { updateTokens, createToken } from "./token.js";
 import * as timer from "./timer.js";
 import { getConfig, saveCache, debugToFile } from "./config.js";
-import * as db from "./db.js";
 import { updateAssets } from "./opensea.js";
 import * as rarity from "./rarity.js";
 import * as webPage from "./webPage.js";
@@ -18,7 +17,6 @@ import {
 
 import open from "open";
 import { createLogger } from "./lib/loggerlib.js";
-import { saveToDB } from "./db.js";
 import { getFromCache } from "./cache.js";
 
 const log = createLogger();
@@ -96,9 +94,9 @@ export async function fetchCollectionTokens(config) {
 
   config.runtime.fetchStartTime = new Date();
   config.runtime.nextTimeCreateResults = miscutil.addSecondsToDate(new Date(), config.milestones.createResultEverySecs);
-  config.runtime.nextTimeSaveDB = miscutil.addSecondsToDate(new Date(), config.milestones.saveDBEverySecs);
+  config.runtime.nextTimeSaveCache = miscutil.addSecondsToDate(new Date(), config.milestones.saveCacheEverySecs);
 
-  await fetchTokens(config, fetchCollectionTokensCallback);
+  await updateTokens(config, fetchCollectionTokensCallback);
 
   config.data.collection.fetchedTime = new Date();
   config.data.collection.fetchDuration = myTimer.getSeconds();
@@ -110,10 +108,12 @@ function fetchCollectionTokensCallback(config) {
   const numDone = countDone(config.data.collection.tokens);
   const numFinished = countDoneOrSkip(config.data.collection.tokens);
   const numTokens = config.data.collection.tokens.length;
+
   log.debug(`(${config.projectId}) numDone: ${numDone}, numFinished: ${numFinished}, numTokens: ${numTokens}`);
   log.debug(`(${config.projectId}) stats: ${config.runtime.stats}`);
 
   let flCreateResults = false;
+
   const now = new Date();
   const numDoneMilestone = config.runtime.milestones.donePct.length > 0 ? Math.round(config.runtime.milestones.donePct[0] * config.maxSupply) : Infinity;
   if (numDone >= numDoneMilestone) {
@@ -127,27 +127,26 @@ function fetchCollectionTokensCallback(config) {
   }
 
   if (flCreateResults) {
-    const myTimer = timer.create();
     createResults(config);
     config.runtime.nextTimeCreateResults = miscutil.addSecondsToDate(new Date(), config.milestones.createResultEverySecs);
   }
 
-  // todo save cache
-  let flSaveToDB = (now >= config.runtime.nextTimeSaveDB) && flCreateResults;
-  if (numFinished >= numTokens || flSaveToDB) {
-    config.runtime.nextTimeSaveDB = miscutil.addSecondsToDate(new Date(), config.milestones.firstSaveDBSeconds);
-    const myTimer = timer.create();
-    // todo saveToDB(config);
-    myTimer.ping(`(${config.projectId}) Save to DB`);
+  let flSaveToCache = (now >= config.runtime.nextTimeSaveCache) && flCreateResults;
+
+  if (numFinished >= numTokens || flSaveToCache) {
+    config.runtime.nextTimeSaveCache = miscutil.addSecondsToDate(new Date(), config.milestones.firstSaveDBSeconds);
+    saveCache(config);
   }
-  if (flCreateResults && !flSaveToDB) {
-    log.debug('Skip save to DB');
+  if (flCreateResults && !flSaveToCache) {
+    log.debug('Skip saving cache');
   }
 
-  // todo: open hot pages?
+  if (config.autoOpen.hotPct && config.autoOpen.hotPct > 0) {
+    // todo;
+  }
 
   if (numFinished >= numTokens) {
-    log.info(`${countDone(config.data.collection.tokens)} + ${countSkip(config.data.collection.tokens)} = ${numFinished} (${numTokens})`);
+    log.info(`(${config.projectId}) ${countDone(config.data.collection.tokens)} + ${countSkip(config.data.collection.tokens)} = ${numFinished} (${numTokens})`);
     return true;
   }
 
@@ -164,7 +163,8 @@ export async function createCollectionTokens(config) {
       tokenIdSortKey: id,
       isBuynow: asset?.isBuynow ?? null,
       price: asset?.price ?? null,
-      lastPrice: asset?.lastPrice ?? null
+      lastPrice: asset?.lastPrice ?? null,
+      lastSaleDate: asset?.lastSaleDate ?? null
     });
     token.asset = asset;
     config.data.collection.tokens.push(token);
@@ -199,9 +199,5 @@ function createResults(config) {
     config.runtime.webPageShown = true;
   } else {
     notifyNewResults(config);
-  }
-
-  if (config.autoOpen.hotPct && config.autoOpen.hotPct > 0) {
-    // todo;
   }
 }

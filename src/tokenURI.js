@@ -21,6 +21,14 @@ export async function getTokenURI(tokenId, config) {
   return result;
 }
 
+export async function getTokenURIOrNull(tokenId, config) {
+  const result = await web3.getTokenURIFromContract(tokenId, config.contractAddress);
+  if (result.uri) {
+    return normalizeURI(result.uri);
+  }
+  return null;
+}
+
 export function isValidTokenURI(uri) {
   try {
     if (!uri) {
