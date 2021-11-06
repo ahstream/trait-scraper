@@ -1,7 +1,17 @@
 {
   "projects": {
-    "modz": {
+    "rabbitars": {
       "enabled": false,
+      "tokenIdRange": [1, 11953],
+      "contractAddress": "0x65c234d041f9ef96e2f126263727dfa582206d82"
+    },
+    "smiles": {
+      "enabled": false,
+      "tokenIdRange": [1, 8888],
+      "contractAddress": "0x177EF8787CEb5D4596b6f011df08C86eb84380dC"
+    },
+    "modz": {
+      "enabled": true,
       "tokenIdRange": [1, 5555],
       "contractAddress": "0x50e712b3a260d7639179e8277836253461418f23"
     },
@@ -52,78 +62,68 @@
       "numConcurrent": 2,
       "fetchTokensSleepMsec": 20
     },
-    "smiles": {
-      "enabled": false,
-      "tokenIdRange": [1, 8888],
-      "contractAddress": "0x177EF8787CEb5D4596b6f011df08C86eb84380dC"
-    },
     "ethertroopers": {
       "enabled": false,
       "tokenIdRange": [1, 8888],
       "contractAddress": "0xe0a2e8a4d94e0c395e88aad7c9074d73a115885d"
     },
-    "playboyrabbits": {
-      "enabled": false,
-      "tokenIdRange": [1, 11953],
-      "contractAddress": "0x65c234d041f9ef96e2f126263727dfa582206d82"
-    },
     "humanoids": {
-      "enabled": true,
+      "enabled": false,
       "tokenIdRange": [1, 10000],
       "contractAddress": "0x3a5051566b2241285be871f650c445a88a970edd"
     },
     "platypunks": {
-      "enabled": true,
+      "enabled": false,
       "tokenIdRange": [1, 3567],
       "contractAddress": "0x495f947276749ce646f68ac8c248420045cb7b5e"
     },
     "bushidos": {
-      "enabled": true,
+      "enabled": false,
       "tokenIdRange": [1, 8888],
       "contractAddress": "0xd2aad45015090f8d45ad78e456b58dd61fb7cd79"
     },
     "fckface": {
-      "enabled": true,
+      "enabled": false,
       "tokenIdRange": [1, 5555],
       "contractAddress": "0x495f947276749ce646f68ac8c248420045cb7b5e"
     },
     "dreamers": {
-      "enabled": true,
+      "enabled": false,
       "tokenIdRange": [1, 13505],
       "contractAddress": "0x10064373e248bc7253653ca05df73cf226202956"
     },
     "coolkitty": {
-      "enabled": true,
+      "enabled": false,
       "tokenIdRange": [1, 3852],
       "contractAddress": "0x78ad336e577c99774618a470f14a9fefdb371d2d"
     },
     "apewives": {
-      "enabled": true,
+      "enabled": false,
       "tokenIdRange": [1, 10000],
       "contractAddress": "0xf1268733c6fb05ef6be9cf23d24436dcd6e0b35e"
     },
     "richgator": {
-      "enabled": true,
+      "enabled": false,
       "tokenIdRange": [1, 2222],
       "contractAddress": "0xe80b2538f33b15c8070db18b1a1cd3bb961c34f1"
     },
     "babyapes": {
-      "enabled": true,
+      "enabled": false,
       "tokenIdRange": [1, 2173],
       "contractAddress": "0x6efd52cb0eb89151f859e6cb152e199ec1045961"
     },
     "waw": {
-      "enabled": true,
+      "enabled": false,
       "tokenIdRange": [1, 10000],
       "contractAddress": "0x338866f8ba75bb9d7a00502e11b099a2636c2c18"
     },
     "partydegenerates": {
-      "enabled": true,
+      "enabled": false,
       "tokenIdRange": [1, 10000],
       "contractAddress": "0x4be3223f8708ca6b30d1e8b8926cf281ec83e770"
     },
     "nfteams": {
-      "enabled": true,
+      "enabled": false,
       "tokenIdRange": [1, 10000],
       "contractAddress": "0x03f5cee0d698c24a42a396ec6bdaee014057d4c8",
       "rules": {
@@ -139,8 +139,8 @@
   },
   "rules": {
     "numberValues": true,
-    "traitCount": false,
-    "scoreKey": "rarity",
+    "traitCount": true,
+    "scoreKey": "rarityNorm",
     "weight": []
   },
   "numConcurrent": 50,
@@ -174,17 +174,17 @@
       "rankPct": 0.20, "imgPct": 0.2, "price": 10.0
     }
   },
-  "buttons": [
-    10, 20, 30
-  ],
-  "pollTokenIds": [
-    1234
-  ],
+  "buttons": [10, 20, 30],
+  "pollForRevealTokenIds": [789, 1234, 2345, 3456],
   "numConcurrentTest": [
     10, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400
   ],
   "minTraitsNeeded": 2,
   "minDifferentTraitValuesNeeded": 2,
   "etherscanURI": "http://node1.web3api.com/",
-  "tokenURISignatur": "0xc87b56dd"
+  "tokenURISignatur": "0xc87b56dd",
+  "opensea": {
+    "pollAssetsCheckFreqSecs": 5,
+    "pollAssetsUpdateFreqSecs": 60
+  }
 }

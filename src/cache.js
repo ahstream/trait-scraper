@@ -13,12 +13,32 @@ import { createLogger } from "./lib/loggerlib.js";
 
 const log = createLogger();
 
-export function addToCache(cache, key, value, replace = false) {
+export function createCache(projectId) {
+  const baseCache = {
+    tokens: {
+      lastUpdate: null,
+      lastFullUpdate: null,
+      data: {}
+    },
+    opensea: {
+      assets: {
+        lastUpdate: null,
+        lastFullUpdate: null,
+        data: {}
+      }
+    }
+  };
+  const fileCache = readCache(projectId);
+  return { ...baseCache, ...fileCache };
+}
+
+export function addToCache(cache, key, value, replace = true) {
   try {
     if (get(cache, key) && !replace) {
       return false;
     }
     set(cache, key, value);
+    cache.lastUpdate = new Date();
     return true;
   } catch (error) {
     log.error('Error:', error);
@@ -31,7 +51,7 @@ export function getFromCache(cache, key) {
     return get(cache, key);
   } catch (error) {
     log.error('Error:', error);
-    return undefined;
+    return {};
   }
 }
 
@@ -50,9 +70,9 @@ export function writeCache(projectId, cache) {
 }
 
 function get(cache, key) {
-  return cache[key] ?? null;
+  return cache.data[key] ?? null;
 }
 
 function set(cache, key, value) {
-  return cache[key] = value;
+  return cache.data[key] = value;
 }

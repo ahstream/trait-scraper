@@ -28,6 +28,16 @@ export function countDoneOrSkip(tokens) {
   return count;
 }
 
+export function countBuynow(tokens) {
+  let count = 0;
+  tokens.forEach(token => {
+    if (token.isBuynow) {
+      count++;
+    }
+  });
+  return count;
+}
+
 export function countActiveFetchRequests(tokens) {
   let count = 0;
   tokens.forEach(token => {

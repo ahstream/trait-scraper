@@ -6,8 +6,8 @@ import {
 import { createLogger } from "./lib/loggerlib.js";
 import { AbortController } from "node-abort-controller";
 import { addTokenTraits } from './rarity.js';
-import { addToCache } from './cache.js';
-import { createTokenURI } from './tokenURI.js';
+import { getFromCache, addToCache } from './cache.js';
+import { convertToBaseTokenURI, createTokenURI, getTokenURI } from './tokenURI.js';
 import _ from 'lodash';
 
 const log = createLogger();
@@ -21,8 +21,9 @@ export async function fetchTokens(config, isFinishedCallback) {
   while (true) {
     const nextTokens = getNextTokens(config.data.collection.tokens, config.numConcurrent, config);
     if (nextTokens.length > 0) {
-      log.debug(`Get ${nextTokens.length} tokens (${config.projectId})`);
+      log.debug(`(${config.projectId}) Get ${nextTokens.length} tokens`);
       nextTokens.forEach(token => {
+        // todo: om basetokenuri är tom, hämta tokenuri
         fetchToken(token, config.data.collection.baseTokenURI, config.fetchTokenTimeoutMsec, config.data.collection, config);
       });
     }
@@ -35,25 +36,23 @@ export async function fetchTokens(config, isFinishedCallback) {
 
     config.runtime.numInfoLog++;
     if (config.runtime.numInfoLog % config.freqInfoLog === 0) {
-      log.info(`${numDone} + ${numSkip} = ${numDone + numSkip} (of ${numTokens}) (${config.projectId})`);
+      log.info(`(${config.projectId}) ${numDone} + ${numSkip} = ${numDone + numSkip} (of ${numTokens})`);
     }
   }
 }
 
 export function addTokenData(token, data, collection, config) {
-  if (data.attributes) {
-    token.image = data.image;
-    token.source = data;
-    addTokenTraits(token, data.attributes, collection, config);
-    return true;
+  if (_.isEmpty(data) || _.isEmpty(data.attributes)) {
+    return false;
   }
-  return false;
+  token.image = data.image;
+  token.source = data;
+  addTokenTraits(token, data.attributes, collection, config);
+  return true;
 }
 
-export async function isTokenRevealed(tokenURI, config) {
-  const token = await fetchTokenByURI(tokenURI);
-
-  if (_.isEmpty(token) || _.isEmpty(token.attributes)) {
+export async function isTokenRevealed(token, config) {
+  if (!token || _.isEmpty(token) || _.isEmpty(token.attributes)) {
     return false;
   }
 
@@ -70,7 +69,7 @@ export async function isTokenRevealed(tokenURI, config) {
     }
   }
   if (numTraits >= config.minTraitsNeeded && valueMap.size >= config.minDifferentTraitValuesNeeded) {
-    log.info(`Revealed ${config.projectId} token:`, token);
+    // log.info(`Revealed ${config.projectId} token:`, token);
     return true;
   }
 
@@ -90,14 +89,14 @@ function getNextTokens(tokens, numConcurrent, config) {
     const thisToken = tokens[i];
     if (shouldTokenBeFetched(thisToken)) {
       nextTokens.push(thisToken);
-      log.debug(`${thisToken.tokenId}: ${thisToken.status} (${config.projectId})`);
+      log.debug(`(${config.projectId}) ${thisToken.tokenId}: ${thisToken.status}`);
       numNext--;
     }
   }
   if (nextTokens.length) {
-    log.debug(`Return ${nextTokens.length} (${config.projectId})`);
+    log.debug(`(${config.projectId}) Return ${nextTokens.length}`);
   }
-  log.debug(`Active: ${numActiveRequests} (${numConcurrent}), New: ${nextTokens.length} (${config.projectId})`);
+  log.debug(`(${config.projectId}) Active: ${numActiveRequests} (${numConcurrent}), New: ${nextTokens.length}`);
   return nextTokens;
 }
 
@@ -114,33 +113,47 @@ function addToStats(key, config) {
 }
 
 async function fetchToken(token, baseTokenURI, timeout, collection, config) {
+  let tokenData = {};
+  if (!config.args.forceTokenFetch) {
+    tokenData = getFromCache(config.cache.tokens, token.tokenId);
+  }
+  const foundInCache = !_.isEmpty(tokenData);
+  if (!foundInCache) {
+    tokenData = await fetchTokenDataFromSource(token, baseTokenURI, timeout, collection, config);
+  }
+
+  if (addTokenData(token, tokenData, collection, config)) {
+    token.status = 'ok';
+    token.done = true;
+    addToStats('numOk', config);
+    if (!foundInCache) {
+      addToCache(config.cache.tokens, token.tokenId, tokenData);
+    }
+  } else {
+    token.skip = true;
+    addToStats('numNoAttributes', config);
+  }
+
+  return token;
+}
+
+async function fetchTokenDataFromSource(token, baseTokenURI, timeout, collection, config) {
   try {
     token.status = 'fetch';
-    token.uri = createTokenURI(token.tokenId, baseTokenURI);
+    token.tokenURI = createTokenURI(token.tokenId, baseTokenURI);
 
-    log.debug(`GET ${token.tokenId}: ${token.uri} (${config.projectId})`);
-    const response = await fetchWithTimeout(token.uri, {
+    log.debug(`(${config.projectId}) GET ${token.tokenId}: ${token.tokenURI}`);
+    const response = await fetchWithTimeout(token.tokenURI, {
       timeout: timeout ?? DEFAULT_FETCH_TIMEOUT
     });
 
-    token.statusCode = response.status;
     token.status = response.status;
+    token.statusCode = response.status;
 
-    log.debug(`RESULT ${token.tokenId}: ${token.statusCode} (${config.projectId})`);
+    log.debug(`(${config.projectId}) RESULT ${token.tokenId}: ${token.statusCode}`);
 
     if (response.ok) {
-      const data = await response.json();
-      if (addTokenData(token, data, collection, config)) {
-        token.status = 'ok';
-        token.done = true;
-        addToStats('numOk', config);
-        addToCache(config.cache.tokens, token.tokenId, data);
-      } else {
-        token.skip = true;
-        addToStats('numNoAttributes', config);
-      }
-
-      return token;
+      return await response.json();
     }
 
     if (response.status === 404 || response.status === 403) {
@@ -153,12 +166,12 @@ async function fetchToken(token, baseTokenURI, timeout, collection, config) {
   } catch (error) {
     if (error.name === 'AbortError') {
       token.status = 'timeout';
-      log.info(`Timeout tokenId ${token.tokenId} (${config.projectId})`);
+      log.info(`(${config.projectId}) Timeout tokenId: ${token.tokenId}`);
       // stats.numTimeout++;
       addToStats('numTimeout', config);
     } else {
       token.status = 'error';
-      log.debug(`Error tokenId ${token.tokenId}: ${error} (${config.projectId})`);
+      log.debug(`(${config.projectId}) Error tokenId ${token.tokenId}: ${error}`);
       // stats.numUnknownError++;
       addToStats('numUnknownError', config);
     }
@@ -166,20 +179,44 @@ async function fetchToken(token, baseTokenURI, timeout, collection, config) {
   }
 }
 
-async function fetchTokenByURI(tokenURI, timeout) {
+export async function getTokenByURI(tokenId, tokenURI, timeout = DEFAULT_FETCH_TIMEOUT) {
   try {
-    const token = createToken({ uri: tokenURI });
-    const response = await fetchWithTimeout(tokenURI, {
-      timeout: timeout ?? DEFAULT_FETCH_TIMEOUT
-    });
+    const response = await fetchWithTimeout(tokenURI, { timeout });
     if (response.ok) {
       const tokenData = await response.json();
-      return { ...token, ...tokenData };
+      const token = { ...createToken({}), ...tokenData };
+      return processTokenResult(token, tokenId, tokenURI);
     }
-    return {};
+    return { error: response.status, errorMessage: response.statusText };
   } catch (error) {
-    return {};
+    log.error('Error in getTokenByURI:', error);
+    return { error: true, errorMessage: JSON.stringify(error) };
   }
+}
+
+export async function getTokenById(tokenId, config) {
+  const result = await getTokenURI(tokenId, config);
+  if (result.error) {
+    return { error: result.error, errorMessage: result.errorMessage, errorCode: result.errorCode };
+  }
+
+  const tokenURI = result.uri;
+  const baseTokenURI = convertToBaseTokenURI(tokenId, tokenURI);
+
+  return await getTokenByURI(tokenId, tokenURI, tokenId);
+}
+
+function processTokenResult(token, tokenId, tokenURI) {
+  if (token.error) {
+    return { error: token.error, errorMessage: token.errorMessage };
+  }
+  token.ok = true;
+  token.tokenId = tokenId.toString();
+  token.tokenIdSortKey = Number(tokenId);
+  token.tokenURI = tokenURI;
+  token.baseTokenURI = convertToBaseTokenURI(tokenId, tokenURI);
+
+  return token;
 }
 
 async function fetchWithTimeout(resource, options = {}) {
@@ -195,12 +232,14 @@ async function fetchWithTimeout(resource, options = {}) {
   return response;
 }
 
-export function createToken({ tokenId = null, uri = '', price = null, buynow = null }) {
+export function createToken(args) {
   return {
-    tokenId,
-    uri,
-    price,
-    buynow,
+    tokenId: args.tokenId ?? null,
+    tokenIdSortKey: args.tokenIdSortKey ?? null,
+    tokenURI: args.tokenURI ?? null,
+    price: args.price ?? null,
+    lastPrice: args.lastPrice ?? null,
+    isBuynow: args.isBuynow ?? null,
     traits: [],
     traitCount: null,
     freq: null,

@@ -36,6 +36,7 @@ function pageTemplate(title, config) {
         img.thumb { border: 1px solid black; height:100px; width:100px }
         table, th, td {text-align: left;}
         body, table, th, td {font-size: 18px; }
+        .blur {color: darkgray; }
         .hilite {
           background: lightgray;
         }
@@ -140,9 +141,10 @@ export function createAnalyzeWebPage(config, results, doOpen = false) {
 
 export function createCollectionWebPage(config) {
   const path = `${config.dataFolder}html/tokens-by-rarity.html`;
-  const html = config.forceAll || !hasBuynow(config)
-    ? createCollectionAllHtml(config)
-    : createCollectionBuynowHtml(config);
+  const showBuynow = config.args.command === 'poll' || config.args.forceBuynow;
+  const html = showBuynow
+    ? createCollectionBuynowHtml(config)
+    : createCollectionAllHtml(config);
   fileutil.writeFile(path, html);
   return path;
 }
@@ -264,7 +266,7 @@ function createCollectionBuynowHtml(config) {
   const tokensLevel2 = [];
   const tokensLevel3 = [];
   for (const token of config.data.collection.tokens) {
-    if (!config.buynow.itemMap.get(token.tokenId) || !token.done) {
+    if (!token.isBuynow || !token.done) {
       continue;
     }
     const rankPct = token[rankPctKey];
@@ -317,6 +319,7 @@ function createCollectionTablesHtml(tokens, numDone, scoreKey, level, imgPct, de
         <th></th>
         <th>Pct</th>
         <th>Price</th>
+        <th>Last</th>
         <th>Rank&nbsp;&nbsp;</th>
         <th>Score&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
         <th>ID</th>
@@ -338,7 +341,8 @@ function createCollectionTablesHtml(tokens, numDone, scoreKey, level, imgPct, de
     const imageHtml = rankPct <= imgPct ? `<a target="_blank" href="${assetLink}"><img class="thumb" src="${normalizeURI(token.image)}"></a>` : '';
     const checkboxHtml = `<input type="checkbox" class="checkbox_${level}" ${doHilite ? 'checked' : ''} value="${token.tokenId}">`;
     const percentHtml = `<a target="id_${token.tokenId}" href="${assetLink}">${(rankPct * 100).toFixed(1)} %</a>`;
-    const priceHtml = token.buynow && token.price > 0 ? `${(token.price.toFixed(3))} eth` : '';
+    const priceHtml = token.price > 0 ? `${(token.price.toFixed(2))}` : '';
+    const lastPriceHtml = token.lastPrice > 0 ? `${(token.lastPrice.toFixed(2))}` : '';
     const rarityHtml = score.toFixed(0);
     const rowClass = doHilite ? 'hilite' : '';
     html = html + `
@@ -347,6 +351,7 @@ function createCollectionTablesHtml(tokens, numDone, scoreKey, level, imgPct, de
             <td>${checkboxHtml}</td>
             <td>${percentHtml}</td>
             <td>${priceHtml}</td>
+            <td class="blur">${lastPriceHtml}</td>
             <td><b>${rank}</b></td>
             <td>${rarityHtml}</b></td>
             <td>:${token.tokenId}</td>

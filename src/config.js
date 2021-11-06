@@ -2,71 +2,74 @@ import {
   importJSONFile,
   writeJSONFile,
   toAbsFilepath,
-  folderExists,
-  createFolder,
   ensureFolder
 } from "./fileutil.js";
-import { getFromDB } from "./db.js";
-import { readCache } from "./cache.js";
+import { createCache, writeCache } from "./cache.js";
 import _ from 'lodash';
+import { createCollection } from "./collection.js";
+import { createLogger } from "./lib/loggerlib.js";
+import * as timer from "./timer.js";
 
-export function getConfig({
-                            projectId = null,
-                            debug = false,
-                            fromDB = true,
-                            silent = false,
-                            all = false,
-                            getbuynow = false,
-                          }) {
+const log = createLogger();
+
+// args: command | forceTokenFetch | forceAssetFetch
+export function getConfig(projectId, args) {
   const baseConfig = importJSONFile(`../config/config.json`);
-  baseConfig.args = { projectId, debug, fromDB, silent, all, getbuynow };
+
+  baseConfig.projectId = projectId;
+  baseConfig.args = args;
 
   if (!projectId) {
     return baseConfig;
   }
 
-  baseConfig.configFolder = ensureFolder(toAbsFilepath(`../config/`));
-  baseConfig.buynowFolder = ensureFolder(toAbsFilepath(`../config/buynow/`));
-
   const projectConfig = baseConfig.projects[projectId];
+  if (!projectConfig) {
+    log.error(`Project id ${projectId} does not exist! Program will exit!`);
+    process.exit(0);
+  }
 
   projectConfig.projectId = projectId;
-
   projectConfig.dataFolder = ensureFolder(toAbsFilepath(`../data/projects/${projectId}/`));
   projectConfig.htmlFolder = ensureFolder(toAbsFilepath(`../data/projects/${projectId}/html/`));
 
-  let dbConfig = fromDB ? getFromDB(projectId) : {};
+  const config = { ...baseConfig, ...projectConfig };
 
-  const config = { ...dbConfig, ...baseConfig, ...projectConfig };
+  config.data = { collection: createCollection() };
 
-  // config.debug = debug;
-
-  resetRuntime(config);
-
-  config.freqInfoLog = config.freqInfoLogSecs * 1000 / config.fetchTokensSleepMsec;
-
-  config.data = config.data ?? { collection: {} };
-  config.data.collection.tokens = config.data.collection.tokens ?? [];
-  config.data.collection.traits = config.data.collection.traits ?? { data: {} };
+  config.firstTokenId = config.tokenIdRange[0];
+  config.lastTokenId = config.tokenIdRange[1];
+  config.maxSupply = config.lastTokenId - config.firstTokenId + 1;
 
   config.maxSupply = config.tokenIdRange[1] - config.tokenIdRange[0] + 1;
+  config.freqInfoLog = config.freqInfoLogSecs * 1000 / config.fetchTokensSleepMsec;
 
-  const baseCache = { tokens: {}, opensea: {} };
-  const fileCache = readCache(config.projectId);
-  config.cache = { ...baseCache, ...fileCache };
+  config.cache = createCache(projectId);
+  config.runtime = createRuntime(config);
 
   return config;
 }
 
+export function saveCache(config) {
+  const myTimer = timer.create();
+  writeCache(config.projectId, config.cache);
+  myTimer.ping(`(${config.projectId}) saveCache duration`);
+}
+
+function createRuntime(config) {
+  return {
+    stats: {},
+    milestones: _.cloneDeep(config.milestones),
+    numInfoLog: 0
+  };
+}
+
 export function resetRuntime(config) {
-  config.runtime = {};
-  config.runtime.stats = {};
-  config.runtime.milestones = _.cloneDeep(config.milestones);
-  config.runtime.numInfoLog = 0;
+  config.runtime = createRuntime(config);
 }
 
 export function debugToFile(config, filename = 'debug.json') {
-  const filepath = toAbsFilepath(config.projectId ? `../data/projects/${config.projectId}/${filename}` : `../data/${filename}`);
+  const filepath = toAbsFilepath(config?.projectId ? `../data/projects/${config.projectId}/${filename}` : `../data/${filename}`);
   writeJSONFile(filepath, { debug: config });
 }
 

@@ -5,6 +5,7 @@
 
 import { createLogger } from './lib/loggerlib.js';
 import { curly } from "node-libcurl";
+import { isValidTokenURI } from "./tokenURI.js";
 
 const log = createLogger();
 
@@ -35,7 +36,7 @@ export async function getTokenURIFromContract(id, contractAddress) {
   try {
     return await getTokenURIFromEtherscan(id, contractAddress, ETHERSCAN_API_URL, TOKENURI_METHOD_SIGNATUR);
   } catch (error) {
-    return error;
+    return { error: 'UNKNOWN_ERROR', errorMessage: JSON.stringify(error) };
   }
 }
 
@@ -45,30 +46,60 @@ async function getTokenURIFromEtherscan(id, contractAddress, url, signatur) {
 
   const response = await curly.post(url, { postFields, httpHeader: GET_TOKEN_URI_HEADERS });
 
+  if (response.statusCode !== 200) {
+    if (response.statusCode === 404) {
+      return {
+        error: 'NONEXISTING_TOKEN',
+        errorCode: response.statusCode,
+        errorMessage: response.status
+      };
+    }
+    if (response.statusCode === 429) {
+      return {
+        error: 'SERVER_BUSY',
+        errorCode: response.statusCode,
+        errorMessage: response.status
+      };
+    }
+    if (response.statusCode === 500) {
+      return {
+        error: 'SERVER_BUSY',
+        errorCode: response.statusCode,
+        errorMessage: response.status
+      };
+    }
+    return {
+      error: 'UNKNOWN_ERROR',
+      errorCode: response.statusCode,
+      errorMessage: response.status
+    };
+  }
+
   let data;
   try {
     data = JSON.parse(response.data);
   } catch (error) {
-    // throw new Error('INVALID_JSON');
-    return ('INVALID_JSON');
+    return { error: 'CORRUPT_TOKEN_DATA', errorMessage: JSON.stringify(error) };
   }
 
   if (data.error) {
     if (data.error.message && data.error.message.includes('URI query for nonexistent token')) {
-      // throw new Error('NON_EXISTING_TOKEN');
-      return ('NON_EXISTING_TOKEN');
+      return { error: 'NONEXISTING_TOKEN', errorMessage: data.error.message };
     }
-    // throw new Error('UNKNOWN_ERROR');
-    return ('UNKNOWN_ERROR');
+    return { error: 'UNKNOWN_ERROR', errorMessage: data.error.message };
   }
 
   const { result } = data;
   if (!result || result.length < 130) {
-    // throw new Error('INVALID_URI');
-    return ('INVALID_URI');
+    return { error: 'CORRUPT_TOKEN_DATA', errorMessage: 'result.length < 130' };
   }
 
-  return hex2a(data.result.substring(130)).replace(/\0/g, '').trim();
+  const uri = hex2a(data.result.substring(130)).replace(/\0/g, '').trim();
+  if (!isValidTokenURI(uri)) {
+    return { error: 'CORRUPT_TOKEN_DATA', errorMessage: 'invalidTokenURI' };
+  }
+
+  return { uri };
 }
 
 function createTokenIdData(id, signatur) {

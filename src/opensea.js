@@ -5,43 +5,77 @@
 
 import { createLogger } from './lib/loggerlib.js';
 import * as miscutil from "./miscutil.js";
-import * as timer from "./timer.js";
-import { curly } from "node-libcurl";
+import { addToCache } from "./cache.js";
 import fetch from 'node-fetch';
+import { debugToFile } from "./config.js";
 
 const log = createLogger();
 
-const CURL_HEADERS = [];
+// MAIN FUNCTIONS
 
-// MAIN FUNCTIONS ---
+export async function pollAssets(config, callback) {
+  log.info(`(${config.projectId}) Start Poll Assets`);
+  while (true) {
+    const now = new Date();
+    if (!config.cache.opensea.assets.nextFullUpdate) {
+      config.cache.opensea.assets.nextFullUpdate = now;
+    }
+    if (config.cache.opensea.assets.nextFullUpdate > now) {
+      log.info(`(${config.projectId}) Not ready to update assets, wait ${config.opensea.pollAssetsCheckFreqSecs} secs`);
+      await miscutil.sleepSecs(config.opensea.pollAssetsCheckFreqSecs);
+      continue;
+    }
 
-export async function getAssets(contractAddress, offset = 0, limit = 20, order = 'asc') {
-  const options = { method: 'GET' };
-  const url = `https://api.opensea.io/api/v1/assets?asset_contract_address=${contractAddress}&order_direction=${order}&offset=${offset}&limit=${limit}`;
-  log.debug(`Get assets url: ${url}`);
-  const response = await fetch(url, options);
+    log.info(`(${config.projectId}) Update assets`);
+    await updateAssets(config);
+    config.cache.opensea.assets.lastFullUpdate = new Date();
+    config.cache.opensea.assets.nextFullUpdate = miscutil.addSecondsToDate(new Date(), config.opensea.pollAssetsUpdateFreqSecs);
 
-  try {
-    return await response.json();
-  } catch (error) {
-    log.error('Error:', error);
-    return ({});
+    debugToFile(config, 'pollAssetsConfig.json');
+
+    if (callback && !callback(config)) {
+      break;
+    }
   }
+  log.info(`(${config.projectId}) Exit Poll Assets`);
 }
 
-function assetsURL(contractAddress, offset, limit, order = 'asc') {
-  return `https://api.opensea.io/api/v1/assets?asset_contract_address=${contractAddress}&order_direction=${order}&offset=${offset}&limit=${limit}`;
+export async function getAssets(config) {
+  log.info(`(${config.projectId}) Start Get Assets`);
+
+  const fromTokenId = config.tokenIdRange[0];
+  const toTokenId = config.tokenIdRange[1];
+  const assets = await getAssetsByChunks(config.contractAddress, fromTokenId, toTokenId, config);
+  const tokens = [];
+  assets.forEach(asset => {
+    const token = convertAsset(asset);
+    tokens.push(token);
+    addToCache(config.cache.opensea.assets, token.tokenId, token);
+  });
+  config.cache.opensea.assets.lastFullUpdate = new Date();
+
+  log.info(`(${config.projectId}) Exit Get Assets`);
+
+  return tokens;
 }
 
-export async function getCollection(contractAddress, maxSupply) {
-  return getCollectionByChunks(contractAddress, maxSupply);
+export async function updateAssets(config) {
+  const fromTokenId = config.tokenIdRange[0];
+  const toTokenId = config.tokenIdRange[1];
+  const assets = await getAssetsByChunks(config.contractAddress, fromTokenId, toTokenId, config);
+  assets.forEach(asset => {
+    const token = convertAsset(asset);
+    addToCache(config.cache.opensea.assets, token.tokenId, token);
+  });
+  return true;
 }
 
-export async function getCollectionByChunks(contractAddress, maxSupply, batchSize = Infinity) {
+async function getAssetsByChunks(contractAddress, fromTokenId, toTokenId, config, batchSize = Infinity) {
+  const maxSupply = parseInt(toTokenId) - parseInt(fromTokenId) + 1;
   const limit = 50;
   const times = Math.ceil(maxSupply / limit);
-  const tries = [];
 
+  const tries = [];
   [...Array(times).keys()].map(i => {
     tries.push({ index: i, status: null, url: assetsURL(contractAddress, i * limit, limit) });
   });
@@ -59,23 +93,22 @@ export async function getCollectionByChunks(contractAddress, maxSupply, batchSiz
     if (newTries.length < 1) {
       break;
     }
-    log.debug('getCollectionByChunks, batch size:', newTries.length);
+    log.debug(`(${config.projectId}) getCollectionByChunks, batch size: ${newTries.length}`);
     const results = await Promise.all(newTries.map(obj => obj.promise));
     for (let i = 0; i < results.length; i++) {
       const resultsArrIndex = newTries[i].index;
       const response = results[i];
-      log.debug('Response status:', response.status, response.statusText);
+      log.debug(`(${config.projectId}) Response status: ${response.status} ${response.statusText}`);
       tries[resultsArrIndex].status = response.status.toString();
       if (response.status === 200) {
         finalResult.push((await response.json()).assets);
         tries[resultsArrIndex].status = 'ok';
       } else if (response.status === 429) {
         retryAfter = parseInt(response.headers.get('retry-after'));
-        console.log('retryAfter:', retryAfter);
       } else if (response.status === 400) {
         tries[resultsArrIndex].status = 'skip';
       } else {
-        log.info('Unexpected response status:', response.status, response.statusText);
+        log.info(`(${config.projectId}) Unexpected response status: ${response.status} ${response.statusText}`);
       }
     }
     const numOk = tries.filter(obj => ['ok', 'skip'].includes(obj.status)).length;
@@ -83,115 +116,46 @@ export async function getCollectionByChunks(contractAddress, maxSupply, batchSiz
     const numNotOk = tries.length - numOk;
 
     if (retryAfter > 0) {
-      log.info(`numOk: ${numOk}, numNotOk: ${numNotOk}, num429: ${num429} (retry after ${retryAfter} secs)`);
+      log.info(`(${config.projectId}) numOk: ${numOk}, numNotOk: ${numNotOk}, num429: ${num429} (retry after ${retryAfter} secs)`);
       await miscutil.sleep(retryAfter * 1000);
       retryAfter = 0;
     } else {
-      log.info(`numOk: ${numOk}, numNotOk: ${numNotOk}, num429: ${num429}`);
+      log.info(`(${config.projectId}) numOk: ${numOk}, numNotOk: ${numNotOk}, num429: ${num429}`);
       await miscutil.sleep(50);
     }
   }
   return finalResult.flat();
 }
 
-export async function getBuynow(contractAddress, maxSupply) {
-  const tokens = [];
-  const myTimer = timer.create();
-  const collection = await getCollectionByChunks(contractAddress, maxSupply);
-  myTimer.ping('getCollectionByChunks duration');
-
-  collection.forEach(asset => {
-    // if (!asset || !asset.sell_orders || !asset.sell_orders[0]?.payment_token_contract?.symbol === 'ETH') {
-    //  return;
-    // }
-    const token = convertAssetToToken(asset);
-    if (token.isBuynow) {
-      tokens.push(token);
-    }
-  });
-
-  log.info(`Num BuyNow from OpenSea: ${tokens.length}`);
-  return tokens;
-}
-
-function convertAssetToToken(asset) {
-  const token = {
+function convertAsset(asset) {
+  const convertedAsset = {
     tokenId: asset?.token_id,
+    tokenIdSortKey: asset?.token_id ? Number(asset.token_id) : null,
+    imageThumbnailUrl: asset?.image_thumbnail_url,
+    imageOriginalUrl: asset?.image_original_url,
+    description: asset?.description,
+    collectionSlug: asset?.collection?.slug,
+    tokenMetadata: asset?.token_metadata,
+    traits: asset?.traits,
+    topBid: asset?.top_bid,
+    // listingDate: asset?.listing_date, // this is null even for items on sale, opensea bug?!
     numSales: asset?.num_sales,
     name: asset?.name,
     permalink: asset?.permalink,
     basePrice: asset?.sell_orders && asset?.sell_orders[0] ? asset.sell_orders[0].base_price : null,
     decimals: asset?.sell_orders && asset?.sell_orders[0] ? asset.sell_orders[0].payment_token_contract?.decimals ?? null : null,
+    listingDate: asset?.sell_orders && asset?.sell_orders[0] ? asset.sell_orders[0].created_date ?? null : null,
     lastSalePrice: asset?.last_sale?.total_price ?? null,
     lastSaleDecimals: asset?.last_sale?.payment_token?.decimals ?? null,
     currency: asset?.sell_orders && asset?.sell_orders[0] ? asset.sell_orders[0].payment_token_contract?.symbol : null,
   };
-  token.price = token.basePrice && token.decimals ? token.basePrice / Math.pow(10, token.decimals) : null;
-  token.lastPrice = token.lastSalePrice && token.lastSaleDecimals ? token.lastSalePrice / Math.pow(10, token.lastSaleDecimals) : null;
-  token.isBuynow = token.price && token.currency === 'ETH';
+  convertedAsset.price = convertedAsset.basePrice && convertedAsset.decimals ? convertedAsset.basePrice / Math.pow(10, convertedAsset.decimals) : null;
+  convertedAsset.lastPrice = convertedAsset.lastSalePrice && convertedAsset.lastSaleDecimals ? convertedAsset.lastSalePrice / Math.pow(10, convertedAsset.lastSaleDecimals) : null;
+  convertedAsset.isBuynow = convertedAsset.price && convertedAsset.price > 0 && convertedAsset.currency === 'ETH';
 
-  return token;
+  return convertedAsset;
 }
 
-export async function getBuynowBAK(contractAddress, limit = 50, maxTokens = Infinity) {
-  const tokens = [];
-  const collection = await getCollection(contractAddress, limit, maxTokens);
-
-  collection.forEach(asset => {
-    if (!asset || !asset.sell_orders || !asset.sell_orders[0]?.payment_token_contract?.symbol === 'ETH') {
-      return;
-    }
-    const token = {
-      tokenId: asset.token_id,
-      numSales: asset.num_sales,
-      name: asset.name,
-      permalink: asset.permalink,
-      saleKind: asset.sell_orders[0].sale_kind,
-      basePrice: asset.sell_orders[0].base_price,
-      decimals: asset.sell_orders[0].payment_token_contract.decimals,
-    };
-    token.price = token.basePrice / Math.pow(10, token.decimals);
-    tokens.push(token);
-  });
-
-  return tokens;
-}
-
-export async function getCollectionBAK(contractAddress, limit = 50, maxTokens = Infinity) {
-  const tokens = [];
-  let offset = 0;
-  while (true) {
-    log.info(`Get ${limit} tokens from OpenSea (offset: ${offset})`);
-    const result = await getAssets(contractAddress, offset, limit);
-    if (!result || !result.assets || result.assets.length < 1) {
-      break;
-    }
-    log.debug(`Got ${result.assets.length} tokens`);
-    for (const asset of result.assets) {
-      if (tokens.find(obj => obj.token_id === asset.token_id)) {
-        log.info('Duplicate token:', asset.token_id);
-        continue;
-      }
-      tokens.push(asset);
-    }
-    offset = offset + result.assets.length;
-    if (offset > maxTokens) {
-      break;
-    }
-  }
-
-  return tokens;
-}
-
-export async function pollCollectionData(config, callback) {
-  while (true) {
-    /**
-     * if nextUpdate > now => sleep 1 sec
-     * get chunks for config.contractAddress, config.maxSupply
-     * update config.cache.opensea
-     * run callback?
-     * set config.runtime.openseaLastUpdate, openseaNextUpdate (+60 min?)
-     * end while
-     */
-  }
+function assetsURL(contractAddress, offset, limit, order = 'asc') {
+  return `https://api.opensea.io/api/v1/assets?asset_contract_address=${contractAddress}&order_direction=${order}&offset=${offset}&limit=${limit}`;
 }

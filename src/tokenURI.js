@@ -13,12 +13,12 @@ const IPFS_URL = 'ipfs://';
 
 // MAIN FUNCTIONS ----------------------------------------------------------------------------------
 
-export async function getTokenURIFromContract(id, contractAddress) {
-  const uri = await web3.getTokenURIFromContract(id, contractAddress);
-  log.debug(`getTokenURIFromContract; id, uri:`, id, uri);
-  const normalizedUri = normalizeURI(uri);
-  log.debug(`getTokenURIFromContract; normalizedUri:`, normalizedUri);
-  return normalizedUri;
+export async function getTokenURI(tokenId, config) {
+  const result = await web3.getTokenURIFromContract(tokenId, config.contractAddress);
+  if (result.uri) {
+    return { uri: normalizeURI(result.uri) };
+  }
+  return result;
 }
 
 export function isValidTokenURI(uri) {
@@ -33,24 +33,32 @@ export function isValidTokenURI(uri) {
   }
 }
 
-export function createTokenURI(id, uri) {
-  if (typeof uri !== 'string') {
+export function createTokenURI(tokenId, baseTokenURI) {
+  if (typeof baseTokenURI !== 'string') {
     return '';
   }
-  return uri.replace('{ID}', id);
+  return baseTokenURI.replace('{ID}', tokenId);
 }
 
-export function convertToBaseTokenURI(id, uri) {
-  const idString = id.toString();
-  const count = miscutil.countInstances(uri, idString);
-  if (count === 1) {
-    return uri.replace(idString, '{ID}');
+export function convertToBaseTokenURI(tokenId, tokenURI) {
+  try {
+    if (tokenURI === '') {
+      return '';
+    }
+    const idString = tokenId.toString();
+    const count = miscutil.countInstances(tokenURI, idString);
+    if (count === 1) {
+      return tokenURI.replace(idString, '{ID}');
+    }
+    if (count > 1) {
+      return miscutil.replaceLastOccurrenceOf(tokenURI, idString, '{ID}');
+    }
+    log.debug('Invalid conversion to baseTokenURI:', tokenId, tokenURI);
+    return '';
+  } catch (error) {
+    log.error('Error inconvertToBaseTokenURI:', error);
+    return '';
   }
-  if (count > 1) {
-    return miscutil.replaceLastOccurrenceOf(uri, idString, '{ID}');
-  }
-  log.debug('Invalid conversion to baseTokenURI:', id, uri);
-  return '';
 }
 
 export function normalizeURI(uri) {

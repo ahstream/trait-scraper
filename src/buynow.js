@@ -1,7 +1,6 @@
 import { readFile, writeJSONFile, fileExists, toAbsFilepath } from "./fileutil.js";
 import { createLogger } from "./lib/loggerlib.js";
 import { createToken } from './token.js';
-import { getBuynow } from './opensea.js';
 
 const log = createLogger();
 
@@ -12,13 +11,13 @@ export async function createBuynow(config) {
     buynowList = getBuynowListFromConfig(config);
   } else if (config.args.getbuynow) {
     log.info('Get BuyNow from OpenSea');
-    buynowList = await getBuynow(config.contractAddress, config.maxSupply);
+    buynowList = []; // TODO await getBuynow(config.contractAddress, config.maxSupply);
   } else {
     log.info('Get BuyNow from config');
     buynowList = getBuynowListFromConfig(config);
     if (buynowList.length < 1) {
       log.info('Get BuyNow from OpenSea');
-      buynowList = await getBuynow(config.contractAddress, config.maxSupply);
+      buynowList = []; // TODO  await getBuynow(config.contractAddress, config.maxSupply);
     }
   }
 

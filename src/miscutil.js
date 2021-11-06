@@ -50,7 +50,7 @@ export function sortBy1Key(list, key, ascending = true) {
   }
 }
 
-export function sortBy2Keys(list, key1, key2, ascending1 = true, ascending2 = true) {
+export function sortBy2Keys(list, key1, ascending1 = true, key2, ascending2 = true) {
   list.sort((a, b) => {
     if (a[key1] === b[key1]) {
       return ascending2 ? a[key2] - b[key2] : b[key2] - a[key2];
@@ -143,6 +143,10 @@ export function convertNumberValToLocaleString(val, locale = 'sv_SE') {
 
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function sleepSecs(val) {
+  return new Promise((resolve) => setTimeout(resolve, val * 1000));
 }
 
 export function getRandomInteger(min, max) {

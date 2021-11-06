@@ -11,8 +11,8 @@ import { createLogger } from './lib/loggerlib.js';
 import { fetchCollection, pollCollections } from './collection.js';
 import { testCollection } from './test.js';
 import { analyzeCollection } from './analyze.js';
-import { getBuynow } from './opensea.js';
-import { debugToFile } from './config.js';
+import { getAssets, pollAssets } from './opensea.js';
+import { debugToFile, getConfig } from './config.js';
 
 const log = createLogger();
 
@@ -33,59 +33,70 @@ runProgram();
 
 async function runProgram() {
   log.info('run program');
-  program.option('--id <value>', 'Project ID', '');
+
+  // program.option('--id <value>', 'Project ID', '');
   program.option('--debug', 'Write debug info');
   program.option('--all', 'Output all items instead of only buynow items');
   program.option('--nodb', 'Do not get data from DB');
   program.option('--silent', 'Do not notify events');
   program.option('--sample', 'Use test samples');
-  program.option('--getbuynow', 'Get new buynow tokens from OpenSea');
+  program.option('--forcebuynow', '');
+  program.option('--forcetokenfetch', '');
+  program.option('--skipopensea', '');
   program.option('--value <value>', 'Arbitrary value');
   program.option('--contract <value>', 'Contract address');
   program.parse();
+
   const options = program.opts();
   const cmd = program.args[0];
   const projectId = program.args[1];
+
   log.info('options', options);
+  log.info('cmd', cmd);
+  log.info('projectId', projectId);
+
   switch (cmd) {
     case 'analyze':
       await analyzeCollection({ projectId });
       break;
     case 'fetch':
-      console.log(projectId);
-      await fetchCollection({
-        projectId,
-        all: options.all,
-        debug: options.debug,
-        fromDB: !options.nodb,
+      await fetchCollection(projectId, {
+        forceTokenFetch: options.forcetokenfetch,
+        skipOpensea: options.skipopensea,
         silent: options.silent,
-        getbuynow: options.getbuynow,
+        forceBuynow: options.forcebuynow
       });
       break;
     case 'poll':
-      await pollCollections({
-        projectId,
-        all: options.all,
-        debug: options.debug,
-        fromDB: !options.nodb,
-        silent: options.silent
+      await pollCollections(projectId, {
+        forceTokenFetch: options.forcetokenfetch,
+        skipOpensea: options.skipopensea,
+        silent: options.silent,
       });
       break;
     case 'test':
       await testCollection({ projectId, doSample: options.sample, debug: options.debug });
       break;
     case 'assets':
-      const result = await getBuynow(options.contract);
+      const result = await getAssets(options);
       debugToFile(result, 'getBuynow.json');
       // console.log(result);
       break;
-    case 'getchunks':
-      const result2 = await getBuynow(options.contract, options.value);
-      // console.log(result2[0].length);
-      // console.log(result2[1].length);
-      debugToFile(result2, 'getChunks2.json');
-      // console.log(result);
-      break;
+    /*
+  case 'getassets':
+    const result2 = await getAssets(config);
+    debugToFile(result2, 'getAssets.json');
+    debugToFile(config, 'config2.json');
+    break;
+  case 'pollassets':
+    const result3 = await pollAssets(config, (obj) => {
+      console.log(obj.cache.opensea.assets.lastFullUpdate);
+      return true;
+    });
+    debugToFile(config, 'config3.json');
+    break;
+
+     */
     default:
       log.error(`Unknown command: ${cmd}`);
   }
