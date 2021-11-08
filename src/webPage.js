@@ -1,38 +1,40 @@
-import * as fileutil from "./fileutil.js";
+import { toAbsFilepath, writeFile, getFilesInFolder, deleteFile } from "./fileutil.js";
 import * as rarity from "./rarity.js";
 import * as miscutil from "./miscutil.js";
-import { hasBuynow } from "./buynow.js";
 import { normalizeURI } from './tokenURI.js';
-import {
-  countDone,
-} from "./count.js";
+import { countDone, } from "./count.js";
 import open from "open";
 
 const BASE_ASSET_URL = 'https://opensea.io/assets/';
 
-function buildPage(config, title, pageNavHtml, pageHeadHtml, pageContentHtml) {
-  return pageTemplate(config, title)
-    .replace('{PAGE_NAV}', pageNavHtml)
-    .replace('{PAGE_HEAD}', pageHeadHtml)
+export function cleanWebPages() {
+  const allProjectsFolder = toAbsFilepath(`../data/projects/`);
+  const allProjectsFiles = getFilesInFolder(allProjectsFolder, { withFileTypes: true });
+  allProjectsFiles.forEach(fileObj => {
+    if (!fileObj.isDirectory()) {
+      return;
+    }
+    const folderName = fileObj.name;
+    getFilesInFolder(`${allProjectsFolder}${folderName}/`).forEach(fileName => {
+      if (fileName.toLowerCase().endsWith('.html')) {
+        deleteFile(`${allProjectsFolder}${folderName}/${fileName}`);
+      }
+    });
+  });
+  createStartPage(true);
+}
+
+function buildPage(pageTitle, pageMainNavHtml, pageSubNavHtml, pageHeaderHtml, pageContentHtml) {
+  return pageTemplate(pageTitle)
+    .replace('{PAGE_MAIN_NAV}', pageMainNavHtml)
+    .replace('{PAGE_SUB_NAV}', pageSubNavHtml)
+    .replace('{PAGE_HEADER}', pageHeaderHtml)
     .replace('{PAGE_CONTENT}', pageContentHtml);
 }
 
-function pageTemplate(config, title) {
+function pageTemplate(pageTitle) {
   return `
-    <html><head><title>${title}</title>
-    <script>
-        function openLinks(className, first, last) {
-            var checkboxes = document.querySelectorAll('input[class="' + className + '"]:checked');
-            var links = [];
-            checkboxes.forEach((ck) => { links.push(['${BASE_ASSET_URL}/${config.contractAddress}/'+ck.value, 'id_' + ck.value]);});
-            console.log(links);
-            console.log('---');
-            var links2 = links.slice(first-1, last);
-            console.log(links2);
-            console.log('---');
-            links2.forEach((link) => { console.log(link[1]); window.open(link[0], link[1]); });
-        }
-    </script>
+    <html><head><title>${pageTitle}</title>
     <style>
         tr { vertical-align: top; }
         td { padding-right: 10px; }
@@ -47,7 +49,7 @@ function pageTemplate(config, title) {
         {
             float:left;
             display:inline;
-            margin: 10px 20px 10px 10px;
+            margin: 10px 20px 10px 0px;
         }
 
         .analyze-level1.analyze-final1 {
@@ -123,74 +125,173 @@ function pageTemplate(config, title) {
             background-color: red;
             color: white;
         }
+        a:link {color:blue}
+        a:active {color:red}
+        a:visited {color:blue}
+        a:hover {color:red}
+        .active-page-link {
+            color: black;
+            font-weight: bold;
+            text-decoration: none;
+            font-size:x-large;
+        }
+        .table-desc {
+            margin: 10px 0 8px 0;
+        }
     </style>
     </head>
     <body>
-    {PAGE_NAV}
-    {PAGE_HEAD}
+    {PAGE_MAIN_NAV}
+    {PAGE_HEADER}
+    {PAGE_SUB_NAV}
     {PAGE_CONTENT}
     </body>
-    </html>
-    `;
+    </html>`;
 }
 
-export function createAnalyzeWebPage(config, results, doOpen = false) {
-  const html = createAnalyzeWebPageHtml(config, results);
-  const path = fileutil.toAbsFilepath(`../config/projects/${config.projectId}/analyze.html`);
-  fileutil.writeFile(path, html);
-  if (doOpen) {
-    open(path, { app: 'chrome' });
-  }
-}
-
-export function createCollectionWebPage(config) {
-  const path = `${config.dataFolder}html/tokens-by-rarity.html`;
-  const showBuynow = config.args.command === 'poll' || config.args.forceBuynow;
-  const html = showBuynow
-    ? createCollectionBuynow(config, config.rules.scoreKey, 'Collection Buynow')
-    : createCollectionAll(config, config.rules.scoreKey, 'Collection All');
-  fileutil.writeFile(path, html);
-  return path;
-}
-
-function createPageNavHtml() {
+function createSubNavHtml(allOrBuynow, scoreKey) {
   let html = '';
 
-  html = html + `
-    [<a href='collection-all'>Projects Start</a>]
-    &nbsp;&nbsp;
-    [<a href='collection-all'>All Default</a> -
-    <a href='collection-all'>Rarity CN</a> -
-    <a href='collection-all'>Rarity C</a> -
-    <a href='collection-all'>Rarity N</a> -
-    <a href='collection-all'>Rarity</a>]
-    &nbsp;&nbsp;
-    [<a href='collection-all'>Buynow Default</a> -
-    <a href='collection-all'>Rarity CN</a> -
-    <a href='collection-all'>Rarity C</a> -
-    <a href='collection-all'>Rarity N</a> -
-    <a href='collection-all'>Rarity</a>]
-    <br><br>`;
+  const isSame = (a1, a2, b1, b2) => a1 === a2 && b1 === b2;
 
+  const a1 = allOrBuynow;
+  const b1 = scoreKey;
+
+  html = html + `
+    [<a href='../../start.html'>Start</a>]
+    &nbsp;&nbsp;
+    [<a href='./all-score.html' class="${isSame(a1, 'all', b1, 'score') ? 'active-page-link' : ''}">All</a> |
+    <a href='./all-rarityCountNorm.html' class="${isSame(a1, 'all', b1, 'rarityCountNorm') ? 'active-page-link' : ''}">RarityCountNorm</a> |
+    <a href='./all-rarityCount.html' class="${isSame(a1, 'all', b1, 'rarityCount') ? 'active-page-link' : ''}">RarityCount</a> |
+    <a href='./all-rarityNorm.html' class="${isSame(a1, 'all', b1, 'rarityNorm') ? 'active-page-link' : ''}">RarityNorm</a> |
+    <a href='./all-rarity.html' class="${isSame(a1, 'all', b1, 'rarity') ? 'active-page-link' : ''}">Rarity</a> |
+    <a href='./all-score-last-sale-price.html' class="${isSame(a1, 'all', b1, 'xxx') ? 'active-page-link' : ''}">LastSalePrice</a> |
+    <a href='./all-score-last-sale-date.html' class="${isSame(a1, 'all', b1, 'xxx') ? 'active-page-link' : ''}">LastSaleDate</a>]
+    &nbsp;&nbsp;
+    [<a href='./buynow-score.html' class="${isSame(a1, 'buynow', b1, 'score') ? 'active-page-link' : ''}">Buynow</a> |
+    <a href='./buynow-rarityCountNorm.html' class="${isSame(a1, 'buynow', b1, 'rarityCountNorm') ? 'active-page-link' : ''}">RarityCountNorm</a> |
+    <a href='./buynow-rarityCount.html' class="${isSame(a1, 'buynow', b1, 'rarityCount') ? 'active-page-link' : ''}">RarityCount</a> |
+    <a href='./buynow-rarityNorm.html' class="${isSame(a1, 'buynow', b1, 'rarityNorm') ? 'active-page-link' : ''}">RarityNorm</a> |
+    <a href='./buynow-rarity.html' class="${isSame(a1, 'buynow', b1, 'rarity') ? 'active-page-link' : ''}">Rarity</a> |
+    <a href='./buynow-score-last-sale-price.html' class="${isSame(a1, 'buynow', b1, 'xxx') ? 'active-page-link' : ''}">LastSalePrice</a> |
+    <a href='./buynow-score-last-sale-date.html' class="${isSame(a1, 'buynow', b1, 'xxx') ? 'active-page-link' : ''}">LastSaleDate</a>]
+    <br>`;
   return html;
 }
 
-function createPageHeadHtml(config, title) {
-  return `<span><b>${title}: ${config.projectId}</b></span><br>`;
+function createPageHeaderHtml(header) {
+  return `<h3>${header} (${new Date().toLocaleString()})</h3>`;
 }
 
-function createCollectionAll(config, scoreKey, title) {
-  return buildPage(config, title, createPageNavHtml(), createPageHeadHtml(config, title), createCollectionAllHtml(config, scoreKey));
+export function createStartPage(openWebPage = false) {
+  const filepath = toAbsFilepath(`../data/start.html`);
+  writeFile(filepath, createStartPageHtml());
+  if (openWebPage) {
+    open(filepath, { app: 'chrome' });
+  }
 }
 
-function createCollectionBuynow(config, scoreKey, title) {
-  return buildPage(config, title, createPageNavHtml(), createPageHeadHtml(config, title), createCollectionBuynowHtml(config, scoreKey));
-}
-
-function createCollectionAllHtml(config, scoreKey) {
+export function createStartPageHtml() {
   let html = '';
+
+  html = html + `<ul>`;
+
+  const allProjectsFolder = toAbsFilepath(`../data/projects/`);
+  const allProjectsFiles = getFilesInFolder(allProjectsFolder, { withFileTypes: true });
+  allProjectsFiles.forEach(fileObj => {
+    if (!fileObj.isDirectory()) {
+      return;
+    }
+    const folderName = fileObj.name;
+    html = html + `<li>${folderName}<ul>`;
+    getFilesInFolder(`${allProjectsFolder}${folderName}/`).forEach(fileName => {
+      if (fileName.toLowerCase().endsWith('.html')) {
+        html = html + `<li><a href="./projects/${folderName}/${fileName}">${fileName}</a></li>`;
+      }
+    });
+    html = html + `</ul>`;
+  });
+
+  html = html + `</ul>`;
+
+  return buildPage('Start', 'Main Nav', '', createPageHeaderHtml('Projects'), html);
+}
+
+export function createCollectionWebPage(config, bothFiles) {
+  const showBuynow = config.args.command === 'poll' || config.args.forceBuynow;
+  if (bothFiles) {
+    createCollectionBuynow(config);
+    return createCollectionAll(config);
+  } else if (showBuynow) {
+    return createCollectionBuynow(config);
+  } else {
+    return createCollectionAll(config);
+  }
+}
+
+function createCollectionAll(config) {
+  const createResultFile = (scoreKey, sortByLastSalePrice = false, sortByLastSaleDate = false) => {
+    const sortKey = sortByLastSalePrice ? '-last-sale-price' : sortByLastSaleDate ? '-last-sale-date' : '';
+    const path = `${config.projectFolder}all-${scoreKey}${sortKey}.html`;
+    writeFile(path, buildPage(title, '', createSubNavHtml('all', scoreKey), createPageHeaderHtml(title), createCollectionAllHtml(config, scoreKey, sortByLastSalePrice, sortByLastSaleDate)));
+    return path;
+  };
+
+  const title = `Collection All > ${config.projectId}`;
+
+  const mainFilepath = createResultFile('score');
+  createResultFile('rarityCountNorm');
+  createResultFile('rarityCount');
+  createResultFile('rarityNorm');
+  createResultFile('rarity');
+  createResultFile('score', true, false);
+  createResultFile('score', false, true);
+
+  createStartPage();
+
+  return mainFilepath;
+}
+
+function createCollectionBuynow(config) {
+  const createResultFile = (scoreKey, sortByLastSalePrice = false, sortByLastSaleDate = false) => {
+    const sortKey = sortByLastSalePrice ? '-last-sale-price' : sortByLastSaleDate ? '-last-sale-date' : '';
+    const path = `${config.projectFolder}buynow-${scoreKey}${sortKey}.html`;
+    const content = createCollectionBuynowHtml(config, scoreKey, sortByLastSalePrice, sortByLastSaleDate);
+    writeFile(path, buildPage(title, '', createSubNavHtml('buynow', scoreKey), createPageHeaderHtml(title), content));
+    return path;
+  };
+
+  const title = `Collection Buynow > ${config.projectId}`;
+
+  const mainFilepath = createResultFile('score');
+
+  // Do not slow down process time by writing all files before collection has been finished polling!
+  if (config.data.collection.fetchHasFinished) {
+    createResultFile('rarityCountNorm');
+    createResultFile('rarityCount');
+    createResultFile('rarityNorm');
+    createResultFile('rarity');
+    createResultFile('score', true, false);
+    createResultFile('score', false, true);
+    createStartPage();
+  }
+
+  return mainFilepath;
+}
+
+function createCollectionAllHtml(config, scoreKey, sortByLastSalePrice = false, sortByLastSaleDate = false) {
+  let html = '';
+
+  html = html + createCollectionScriptHtml(config);
+
   const numDone = countDone(config.data.collection.tokens);
-  miscutil.sortBy1Key(config.data.collection.tokens, scoreKey, false);
+  if (sortByLastSalePrice) {
+    miscutil.sortBy2Keys(config.data.collection.tokens, 'lastPrice', true, scoreKey, false);
+  } else if (sortByLastSaleDate) {
+    miscutil.sortBy2Keys(config.data.collection.tokens, 'lastSaleDate', false, scoreKey, false);
+  } else {
+    miscutil.sortBy1Key(config.data.collection.tokens, scoreKey, false);
+  }
 
   const tokens1 = [];
   for (const token of config.data.collection.tokens) {
@@ -200,15 +301,24 @@ function createCollectionAllHtml(config, scoreKey) {
   }
 
   const desc = `All [${scoreKey === 'score' ? config.rules.scoreKey : scoreKey}]`;
-  html = html + createCollectionTablesHtml(config, tokens1, numDone, scoreKey, 1, config.output.all.imgPct, desc, true, true);
+  html = html + createCollectionTablesHtml(config, tokens1, numDone, scoreKey, 1, config.output.all.imgPct, desc, true, true, true);
 
   return html;
 }
 
-function createCollectionBuynowHtml(config, scoreKey) {
+function createCollectionBuynowHtml(config, scoreKey, sortByLastSalePrice = false, sortByLastSaleDate = false) {
   let html = '';
+
+  html = html + createCollectionScriptHtml(config);
+
   const numDone = countDone(config.data.collection.tokens);
-  miscutil.sortBy1Key(config.data.collection.tokens, config.rules.scoreKey, false);
+  if (sortByLastSalePrice) {
+    miscutil.sortBy2Keys(config.data.collection.tokens, 'lastPrice', true, scoreKey, false);
+  } else if (sortByLastSaleDate) {
+    miscutil.sortBy2Keys(config.data.collection.tokens, 'lastSaleDate', false, scoreKey, false);
+  } else {
+    miscutil.sortBy1Key(config.data.collection.tokens, scoreKey, false);
+  }
 
   const tokensLevel1 = [];
   const tokensLevel2 = [];
@@ -231,18 +341,18 @@ function createCollectionBuynowHtml(config, scoreKey) {
   const scoreDesc = `${scoreKey === 'score' ? config.rules.scoreKey : scoreKey}`;
 
   const desc1 = `Rank < ${(config.output.buynow1.rankPct * 100).toFixed(1)}%, Price < ${config.output.buynow1.price} ETH (${scoreDesc})`;
-  html = html + createCollectionTablesHtml(config, tokensLevel1, numDone, scoreKey, 1, config.output.buynow1.imgPct, desc1, true, false);
+  html = html + createCollectionTablesHtml(config, tokensLevel1, numDone, scoreKey, 1, config.output.buynow1.imgPct, desc1, true, sortByLastSalePrice || sortByLastSaleDate);
 
   const desc2 = `Rank < ${(config.output.buynow2.rankPct * 100).toFixed(1)}%, Price < ${config.output.buynow2.price} ETH (${scoreDesc})`;
-  html = html + createCollectionTablesHtml(config, tokensLevel2, numDone, scoreKey, 2, config.output.buynow2.imgPct, desc2, true, false);
+  html = html + createCollectionTablesHtml(config, tokensLevel2, numDone, scoreKey, 2, config.output.buynow2.imgPct, desc2, true, sortByLastSalePrice || sortByLastSaleDate);
 
   const desc3 = `Rank < ${(config.output.buynow3.rankPct * 100).toFixed(1)}%, Price < ${config.output.buynow3.price} ETH (${scoreDesc})`;
-  html = html + createCollectionTablesHtml(config, tokensLevel3, numDone, scoreKey, 3, config.output.buynow3.imgPct, desc3, true, false);
+  html = html + createCollectionTablesHtml(config, tokensLevel3, numDone, scoreKey, 3, config.output.buynow3.imgPct, desc3, true, sortByLastSalePrice || sortByLastSaleDate);
 
   return html;
 }
 
-function createCollectionTablesHtml(config, tokens, numDone, scoreKey, level, imgPct, desc, showAllRanks = false, showLastPrice = false) {
+function createCollectionTablesHtml(config, tokens, numDone, scoreKey, level, imgPct, desc, showAllRanks = false, showLastSale = false) {
   let html = '';
 
   let buttonsHtml = '';
@@ -254,8 +364,9 @@ function createCollectionTablesHtml(config, tokens, numDone, scoreKey, level, im
 
   html = html + `
     <div class="level${level}">
-    <span><b>${Math.round(numDone * 100 / config.maxSupply)} %</b> (${numDone} of ${config.maxSupply}): {NUM_INCLUDED} tokens</span>&nbsp;&nbsp;&nbsp;
+    <div class="table-desc"><span><b>${Math.round(numDone * 100 / config.maxSupply)} %</b> (${numDone} of ${config.maxSupply}): {NUM_INCLUDED} tokens</span>&nbsp;&nbsp;&nbsp;
     ${buttonsHtml}
+    </div>
     `;
 
   html = html + `
@@ -266,7 +377,8 @@ function createCollectionTablesHtml(config, tokens, numDone, scoreKey, level, im
         <th></th>
         <th>Pct</th>
         <th>Price</th>
-        ${!showLastPrice ? '' : '<th>Last</th>'}
+        ${!showLastSale ? '' : '<th>Last</th>'}
+        ${!showLastSale ? '' : '<th>LastDate</th>'}
         <th>Rank&nbsp;&nbsp;</th>
         ${!showAllRanks ? '' : '<th>RCN</th><th>RC</th><th>RN</th><th>R</th>'}
         <th>Score&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
@@ -291,7 +403,9 @@ function createCollectionTablesHtml(config, tokens, numDone, scoreKey, level, im
     const percentHtml = `<a target="id_${token.tokenId}" href="${assetLink}">${(rankPct * 100).toFixed(1)} %</a>`;
     const priceHtml = token.price > 0 ? `${(token.price.toFixed(2))}` : '';
     const lastPriceText = token.lastPrice > 0 ? `${(token.lastPrice.toFixed(2))}` : '';
-    const lastPriceHtml = !showLastPrice ? '' : `<td class="blur">${lastPriceText}</td>`;
+    const lastPriceHtml = !showLastSale ? '' : `<td class="blur">${lastPriceText}</td>`;
+    const lastSaleDate = !showLastSale || !token.lastSaleDate ? '' : new Date(token.lastSaleDate).toLocaleDateString();
+    const lastSaleDateHtml = !showLastSale ? '' : `<td class="blur">${lastSaleDate ?? '-'}</td>`;
     const scoreHtml = score.toFixed(0);
     const allRanksHtml = !showAllRanks ? '' : `
         <td class="blur">${token.rarityCountNormRank}</td>
@@ -306,6 +420,7 @@ function createCollectionTablesHtml(config, tokens, numDone, scoreKey, level, im
             <td>${percentHtml}</td>
             <td>${priceHtml}</td>
             ${lastPriceHtml}
+            ${lastSaleDateHtml}
             <td><b>${token[`${scoreKey}Rank`]}</b></td>
             ${allRanksHtml}
             <td>${scoreHtml}</b></td>
@@ -317,6 +432,23 @@ function createCollectionTablesHtml(config, tokens, numDone, scoreKey, level, im
   html = html.replace('{NUM_INCLUDED}', numIncluded);
 
   return html;
+}
+
+function createCollectionScriptHtml(config) {
+  return `
+    <script>
+        function openLinks(className, first, last) {
+            var checkboxes = document.querySelectorAll('input[class="' + className + '"]:checked');
+            var links = [];
+            checkboxes.forEach((ck) => { links.push(['${BASE_ASSET_URL}/${config.contractAddress}/'+ck.value, 'id_' + ck.value]);});
+            console.log(links);
+            console.log('---');
+            var links2 = links.slice(first-1, last);
+            console.log(links2);
+            console.log('---');
+            links2.forEach((link) => { console.log(link[1]); window.open(link[0], link[1]); });
+        }
+    </script>`;
 }
 
 function createAnalyzeWebPageHtml(config, results) {
@@ -395,4 +527,13 @@ function createAnalyzeWebPageHtml(config, results) {
   add(`</table>`);
 
   return buildPage(html, 'Analyze Results', config);
+}
+
+export function createAnalyzeWebPage(config, results, doOpen = false) {
+  const html = createAnalyzeWebPageHtml(config, results);
+  const path = toAbsFilepath(`../config/projects/${config.projectId}/analyze.html`);
+  writeFile(path, html);
+  if (doOpen) {
+    open(path, { app: 'chrome' });
+  }
 }

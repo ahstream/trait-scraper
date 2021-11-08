@@ -83,6 +83,7 @@ async function getTokenData(tokenId, baseTokenURI, config) {
   if (!config.args.forceTokenFetch) {
     const tokenData = getFromCache(config.cache.tokens, tokenId);
     if (!_.isEmpty(tokenData)) {
+      log.debug('Fetched tokenData from cache!');
       return tokenData;
     }
   }
@@ -98,7 +99,7 @@ async function getTokenData(tokenId, baseTokenURI, config) {
 
   const result = await fetchTokenData(tokenId, tokenURI, config);
   if (!result.error) {
-    addToCache(config.cache.opensea.assets, tokenId, result);
+    addToCache(config.cache.tokens, tokenId, result);
   }
 
   return result;

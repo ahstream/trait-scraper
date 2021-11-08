@@ -4,7 +4,7 @@ import {
   toAbsFilepath,
   folderExists,
   createFolder,
-  ensureFolder, fileExists
+  ensureFolder, fileExists, getFilesInFolder, deleteFile
 } from "./fileutil.js";
 import { getFromDB } from "./db.js";
 import _ from 'lodash';
@@ -75,4 +75,20 @@ function get(cache, key) {
 
 function set(cache, key, value) {
   return cache.data[key] = value;
+}
+
+export function cleanCache() {
+  const allProjectsFolder = toAbsFilepath(`../data/projects/`);
+  const allProjectsFiles = getFilesInFolder(allProjectsFolder, { withFileTypes: true });
+  allProjectsFiles.forEach(fileObj => {
+    if (!fileObj.isDirectory()) {
+      return;
+    }
+    const folderName = fileObj.name;
+    getFilesInFolder(`${allProjectsFolder}${folderName}/`).forEach(fileName => {
+      if (fileName === 'cache.json') {
+        deleteFile(`${allProjectsFolder}${folderName}/${fileName}`);
+      }
+    });
+  });
 }

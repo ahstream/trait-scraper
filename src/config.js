@@ -30,8 +30,7 @@ export function getConfig(projectId, args) {
   }
 
   projectConfig.projectId = projectId;
-  projectConfig.dataFolder = ensureFolder(toAbsFilepath(`../data/projects/${projectId}/`));
-  projectConfig.htmlFolder = ensureFolder(toAbsFilepath(`../data/projects/${projectId}/html/`));
+  projectConfig.projectFolder = ensureFolder(toAbsFilepath(`../data/projects/${projectId}/`));
 
   const config = { ...baseConfig, ...projectConfig };
 

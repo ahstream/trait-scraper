@@ -18,7 +18,7 @@ export function saveToDB(config) {
   const data = {};
   data.collection = config.data.collection;
 
-  const filepath = `${config.dataFolder}db.json`;
+  const filepath = `${config.projectFolder}db.json`;
 
   writeJSONFile(filepath, { data });
 

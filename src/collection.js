@@ -52,7 +52,7 @@ async function doFetchCollection(projectId, args) {
   await setupCollection(config);
   await revealCollection(config);
   await fetchCollectionTokens(config);
-  createResults(config);
+  createResults(config, true);
   saveCache(config);
   // debugToFile(config, 'config1234.json');
 
@@ -98,6 +98,7 @@ export async function fetchCollectionTokens(config) {
 
   await updateTokens(config, fetchCollectionTokensCallback);
 
+  config.data.collection.fetchHasFinished = true;
   config.data.collection.fetchedTime = new Date();
   config.data.collection.fetchDuration = myTimer.getSeconds();
 
@@ -110,7 +111,7 @@ function fetchCollectionTokensCallback(config) {
   const numTokens = config.data.collection.tokens.length;
 
   log.debug(`(${config.projectId}) numDone: ${numDone}, numFinished: ${numFinished}, numTokens: ${numTokens}`);
-  log.debug(`(${config.projectId}) stats: ${config.runtime.stats}`);
+  log.debug(`(${config.projectId}) stats:`, config.runtime.stats);
 
   let flCreateResults = false;
 
@@ -132,6 +133,7 @@ function fetchCollectionTokensCallback(config) {
   }
 
   let flSaveToCache = (now >= config.runtime.nextTimeSaveCache) && flCreateResults;
+  log.debug('flSaveToCache', flSaveToCache);
 
   if (numFinished >= numTokens || flSaveToCache) {
     config.runtime.nextTimeSaveCache = miscutil.addSecondsToDate(new Date(), config.milestones.firstSaveDBSeconds);
@@ -186,11 +188,11 @@ export function createCollection() {
   };
 }
 
-function createResults(config) {
+function createResults(config, bothFiles = false) {
   const myTimer = timer.create();
 
   rarity.calcRarity(config);
-  const path = webPage.createCollectionWebPage(config);
+  const path = webPage.createCollectionWebPage(config, bothFiles);
 
   myTimer.ping(`(${config.projectId}) createResults duration`);
 

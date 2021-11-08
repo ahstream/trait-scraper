@@ -13,6 +13,8 @@ import { testCollection } from './test.js';
 import { analyzeCollection } from './analyze.js';
 import { getAssets, pollAssets } from './opensea.js';
 import { debugToFile, getConfig } from './config.js';
+import { createStartPage, cleanWebPages } from './webPage.js';
+import { cleanCache } from "./cache.js";
 
 const log = createLogger();
 
@@ -79,8 +81,16 @@ async function runProgram() {
       break;
     case 'assets':
       const result = await getAssets(options);
-      debugToFile(result, 'getBuynow.json');
+    // console.log(result);
+    case 'createstartpage':
+      createStartPage(true);
       // console.log(result);
+      break;
+    case 'cleanwebpages':
+      cleanWebPages(true);
+      break;
+    case 'cleancache':
+      cleanCache();
       break;
     /*
   case 'getassets':

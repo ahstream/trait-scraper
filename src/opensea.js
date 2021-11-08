@@ -31,8 +31,6 @@ export async function pollAssets(config, callback) {
     config.cache.opensea.assets.lastFullUpdate = new Date();
     config.cache.opensea.assets.nextFullUpdate = miscutil.addSecondsToDate(new Date(), config.opensea.pollAssetsUpdateFreqSecs);
 
-    debugToFile(config, 'pollAssetsConfig.json');
-
     if (callback && !callback(config)) {
       break;
     }
@@ -87,6 +85,7 @@ async function getAssetsByChunks(contractAddress, fromTokenId, toTokenId, config
       return {
         index: obj.index,
         status: obj.status,
+        url: obj.url,
         promise: fetch(obj.url, { method: 'GET' })
       };
     }).slice(0, batchSize);
@@ -98,7 +97,7 @@ async function getAssetsByChunks(contractAddress, fromTokenId, toTokenId, config
     for (let i = 0; i < results.length; i++) {
       const resultsArrIndex = newTries[i].index;
       const response = results[i];
-      log.debug(`(${config.projectId}) Response status: ${response.status} ${response.statusText}`);
+      log.debug(`(${config.projectId}) Response status: ${response.status} ${response.statusText} (${newTries[i]})`);
       tries[resultsArrIndex].status = response.status.toString();
       if (response.status === 200) {
         finalResult.push((await response.json()).assets);
@@ -108,7 +107,7 @@ async function getAssetsByChunks(contractAddress, fromTokenId, toTokenId, config
       } else if (response.status === 400) {
         tries[resultsArrIndex].status = 'skip';
       } else {
-        log.info(`(${config.projectId}) Unexpected response status: ${response.status} ${response.statusText}`);
+        log.info(`(${config.projectId}) Unexpected response status: ${response.status} ${response.statusText} (${newTries[i]})`);
       }
     }
     const numOk = tries.filter(obj => ['ok', 'skip'].includes(obj.status)).length;

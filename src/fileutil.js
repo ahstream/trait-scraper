@@ -40,12 +40,20 @@ export function writeJSONFile(path, data) {
   writeFile(path, JSON.stringify(data, null, 2));
 }
 
+export function deleteFile(path) {
+  return fs.unlinkSync(path);
+}
+
 export function fileExists(path) {
   return fs.existsSync(path);
 }
 
 export function folderExists(path) {
   return fileExists(path);
+}
+
+export function getFilesInFolder(path, options) {
+  return fs.readdirSync(path, options);
 }
 
 export function createFolder(path, recursive = true) {
