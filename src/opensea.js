@@ -97,7 +97,7 @@ async function getAssetsByChunks(contractAddress, fromTokenId, toTokenId, config
     for (let i = 0; i < results.length; i++) {
       const resultsArrIndex = newTries[i].index;
       const response = results[i];
-      log.debug(`(${config.projectId}) Response status: ${response.status} ${response.statusText} (${newTries[i]})`);
+      log.debug(`(${config.projectId}) Response status: ${response.status} ${response.statusText} (${newTries[i].url})`);
       tries[resultsArrIndex].status = response.status.toString();
       if (response.status === 200) {
         finalResult.push((await response.json()).assets);
@@ -107,7 +107,7 @@ async function getAssetsByChunks(contractAddress, fromTokenId, toTokenId, config
       } else if (response.status === 400) {
         tries[resultsArrIndex].status = 'skip';
       } else {
-        log.info(`(${config.projectId}) Unexpected response status: ${response.status} ${response.statusText} (${newTries[i]})`);
+        log.info(`(${config.projectId}) Unexpected response status: ${response.status} ${response.statusText} (${newTries[i].url})`);
       }
     }
     const numOk = tries.filter(obj => ['ok', 'skip'].includes(obj.status)).length;
@@ -149,6 +149,8 @@ function convertAsset(asset) {
     lastSaleDate: asset?.last_sale?.event_timestamp ?? null,
     currency: asset?.sell_orders && asset?.sell_orders[0] ? asset.sell_orders[0].payment_token_contract?.symbol : null,
   };
+  // todo convertedAsset.lastSaleDate = convertedAsset.lastSaleDate ? new Date(convertedAsset.lastSaleDate) : new Date('1900-01-01');
+
   convertedAsset.price = convertedAsset.basePrice && convertedAsset.decimals ? convertedAsset.basePrice / Math.pow(10, convertedAsset.decimals) : null;
   convertedAsset.lastPrice = convertedAsset.lastSalePrice && convertedAsset.lastSaleDecimals ? convertedAsset.lastSalePrice / Math.pow(10, convertedAsset.lastSaleDecimals) : null;
   convertedAsset.isBuynow = convertedAsset.price && convertedAsset.price > 0 && convertedAsset.currency === 'ETH';

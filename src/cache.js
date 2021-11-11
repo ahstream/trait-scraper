@@ -55,6 +55,10 @@ export function getFromCache(cache, key) {
   }
 }
 
+export function existsInCache(cache, key) {
+  return cache?.data[key] !== undefined;
+}
+
 export function readCache(projectId) {
   const filepath = toAbsFilepath(`../data/projects/${projectId}/cache.json`);
   if (fileExists(filepath)) {

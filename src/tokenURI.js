@@ -13,20 +13,16 @@ const IPFS_URL = 'ipfs://';
 
 // MAIN FUNCTIONS ----------------------------------------------------------------------------------
 
-export async function getTokenURI(tokenId, config) {
-  const result = await web3.getTokenURIFromContract(tokenId, config.contractAddress);
+export async function getTokenURI(tokenId, contractAddress) {
+  return getTokenURIByContract(tokenId, contractAddress);
+}
+
+export async function getTokenURIByContract(tokenId, contractAddress) {
+  const result = await web3.getTokenURIFromContract(tokenId, contractAddress);
   if (result.uri) {
     return { uri: normalizeURI(result.uri) };
   }
   return result;
-}
-
-export async function getTokenURIOrNull(tokenId, config) {
-  const result = await web3.getTokenURIFromContract(tokenId, config.contractAddress);
-  if (result.uri) {
-    return normalizeURI(result.uri);
-  }
-  return null;
 }
 
 export function isValidTokenURI(uri) {

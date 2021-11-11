@@ -6,5 +6,6 @@ export const ERRORCODES = {
   timeout: 2,
   tokenURI: 3,
   corruptTokenData: 4,
+  connectionRefused: 5,
   unknown: 99,
 };

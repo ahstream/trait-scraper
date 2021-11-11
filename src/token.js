@@ -1,24 +1,17 @@
 import fetch from 'node-fetch';
 import * as miscutil from './miscutil.js';
-import {
-  countActiveFetchRequests, countDone, countSkip
-} from "./count.js";
+import { countActiveFetchRequests, countDone, countSkip } from "./count.js";
 import { createLogger } from "./lib/loggerlib.js";
 import { AbortController } from "node-abort-controller";
 import { addTokenTraits } from './rarity.js';
-import { getFromCache, addToCache } from './cache.js';
-import {
-  convertToBaseTokenURI,
-  createTokenURI,
-  getTokenURI,
-  getTokenURIOrNull
-} from './tokenURI.js';
+import { addToCache, getFromCache, existsInCache } from './cache.js';
+import { convertToBaseTokenURI, createTokenURI, getTokenURI, } from './tokenURI.js';
 import _ from 'lodash';
 import { ERRORCODES } from "./error.js";
 
 const log = createLogger();
 
-const DEFAULT_FETCH_TIMEOUT = 8000;
+const DEFAULT_FETCH_TIMEOUT = 10000;
 
 // EXPORTED
 
@@ -26,29 +19,40 @@ export async function updateTokens(config, isFinishedCallback) {
   const numTokens = config.data.collection.tokens.length;
 
   while (true) {
-    const nextTokens = getNextTokens(config.data.collection.tokens, config.numConcurrent, config);
+    const nextTokens = getNextTokens(config.data.collection.tokens, config.fetchConcurrentAndSleep[0], config);
+    let isInCache = false;
     if (nextTokens.length > 0) {
       log.debug(`(${config.projectId}) Get ${nextTokens.length} tokens`);
+      isInCache = existsInCache(config.cache.tokens, nextTokens[0].tokenId);
       nextTokens.forEach(token => {
         updateToken(token, config.data.collection.baseTokenURI, config.data.collection, config);
       });
     }
-    await miscutil.sleep(config.fetchTokensSleepMsec);
-    if (isFinishedCallback(config)) {
+    if (!isInCache || config.args.forceTokenFetch) {
+      // Only pause if tokens have been fetched from source!
+      await miscutil.sleep(config.fetchConcurrentAndSleep[1]);
+    }
+
+    if (await isFinishedCallback(config)) {
       break;
     }
     const numDone = countDone(config.data.collection.tokens);
     const numSkip = countSkip(config.data.collection.tokens);
 
+    log.info(`(${config.projectId}) ${numDone} + ${numSkip} = ${numDone + numSkip} (of ${numTokens})`);
+
+    /*
     config.runtime.numInfoLog++;
     if (config.runtime.numInfoLog % config.freqInfoLog === 0) {
       log.info(`(${config.projectId}) ${numDone} + ${numSkip} = ${numDone + numSkip} (of ${numTokens})`);
     }
+     */
   }
 }
 
 async function updateToken(token, baseTokenURI, collection, config) {
-  const tokenData = await getTokenData(token.tokenId, baseTokenURI, config);
+  log.debug('updateToken', token.tokenId);
+  const tokenData = await getTokenData(token.tokenId, baseTokenURI, config.contractAddress, config.args.forceTokenFetch, config.cache.tokens);
 
   if (tokenData.error) {
     handleTokenDataError(token, tokenData, config);
@@ -76,19 +80,28 @@ function handleTokenDataError(token, tokenData, config) {
     || tokenData.errorCode === ERRORCODES.corruptTokenData
     || tokenData.errorCode === ERRORCODES.tokenURI) {
     token.skip = true;
+  } else if (tokenData.errorCode === 429) {
+    if (tokenData.retryAfter) {
+      config.runtime.tokenDataRetryAfter = tokenData.retryAfter;
+      config.runtime.tokenDataRetryNextTime = miscutil.addSecondsToDate(new Date(), tokenData.retryAfter);
+    }
+  } else if (tokenData.errorCode === ERRORCODES.connectionRefused) {
+    config.runtime.tokenDataRetryAfter = 10;
   }
 }
 
-async function getTokenData(tokenId, baseTokenURI, config) {
-  if (!config.args.forceTokenFetch) {
-    const tokenData = getFromCache(config.cache.tokens, tokenId);
+async function getTokenData(tokenId, baseTokenURI, contractAddress, forceTokenFetch, cache = null) {
+  if (!forceTokenFetch && cache !== null) {
+    const tokenData = getFromCache(cache, tokenId);
     if (!_.isEmpty(tokenData)) {
-      log.debug('Fetched tokenData from cache!');
+      log.verbose('Fetched tokenData from cache!');
       return tokenData;
     }
   }
 
-  const tokenURI = createTokenURI(tokenId, baseTokenURI) ?? await getTokenURI(tokenId, config);
+  const tokenURI = createTokenURI(tokenId, baseTokenURI) ?? await getTokenURI(tokenId, contractAddress);
+
+  log.debug('tokenURI:', tokenURI);
 
   if (!tokenURI) {
     return { error: true, errorCode: ERRORCODES.tokenURI };
@@ -97,27 +110,35 @@ async function getTokenData(tokenId, baseTokenURI, config) {
     return { error: true, errorCode: ERRORCODES.tokenURI };
   }
 
-  const result = await fetchTokenData(tokenId, tokenURI, config);
-  if (!result.error) {
-    addToCache(config.cache.tokens, tokenId, result);
+  const result = await fetchTokenData(tokenId, tokenURI);
+  if (!result.error && cache !== null) {
+    addToCache(cache, tokenId, result);
   }
 
   return result;
 }
 
-export async function fetchTokenById(tokenId, config) {
-  const result = await getTokenURI(tokenId, config);
+export async function fetchTokenById(tokenId, contractAddress) {
+  const result = await getTokenURI(tokenId, contractAddress);
 
   if (result.error) {
-    return { error: result.error, errorMessage: result.errorMessage, errorCode: result.errorCode };
+    return result;
   }
 
-  return await fetchTokenByURI(tokenId, result.uri, config);
+  return await fetchTokenByURI(tokenId, result.uri);
 }
 
-async function fetchTokenByURI(tokenId, tokenURI, config) {
+export async function fetchTokenDataById(tokenId, contractAddress) {
+  const result = await getTokenURI(tokenId, contractAddress);
+  if (result.error) {
+    return result;
+  }
+  return await fetchTokenData(tokenId, result.uri);
+}
+
+async function fetchTokenByURI(tokenId, tokenURI) {
   try {
-    const tokenData = await fetchTokenData(tokenId, tokenURI, config);
+    const tokenData = await fetchTokenData(tokenId, tokenURI);
     if (tokenData.error) {
       return tokenData;
     }
@@ -129,25 +150,34 @@ async function fetchTokenByURI(tokenId, tokenURI, config) {
   }
 }
 
-async function fetchTokenData(tokenId, tokenURI, config) {
-  return fetchWithTimeoutWrapper(tokenURI, { timeout: config.fetchTokenTimeoutMsec ?? DEFAULT_FETCH_TIMEOUT }, config);
+async function fetchTokenData(tokenId, tokenURI, timeout = DEFAULT_FETCH_TIMEOUT) {
+  return fetchWithTimeoutWrapper(tokenURI, { timeout });
 }
 
-async function fetchWithTimeoutWrapper(uri, options, config) {
+async function fetchWithTimeoutWrapper(uri, options) {
   try {
+    // log.debug('fetchWithTimeout:', uri);
     const response = await fetchWithTimeout(uri, options);
+    // log.info('fetchWithTimeout:', response.ok, uri);
     if (response.ok) {
       return await response.json();
     }
-    return { error: true, errorCode: response.status, errorMessage: response.statusText };
+    return {
+      error: true,
+      errorCode: response.status,
+      errorMessage: response.statusText,
+      retryAfter: response.status === 429 ? parseInt(response.headers.get('retry-after')) : null
+    };
   } catch (error) {
     if (error.name === 'AbortError') {
-      log.info(`(${config.projectId}) Timeout: ${uri}`);
-      addToStats('numTimeout', config);
+      log.debug(`Timeout: ${uri}`);
       return { error: true, errorCode: ERRORCODES.timeout };
     }
-    log.debug(`(${config.projectId}) Error, uri: ${uri}, error: ${error}`);
-    addToStats('numUnknownError', config);
+    if (error.code === 'ECONNREFUSED') {
+      log.debug(`Timeout: ${uri}`);
+      return { error: true, errorCode: ERRORCODES.connectionRefused };
+    }
+    log.debug(`Error, uri: ${uri}, name: ${error.name}, error:`, error);
     return { error: true, errorCode: ERRORCODES.unknown };
   }
 }
@@ -173,6 +203,53 @@ export function addTokenData(token, data, collection, config) {
   token.source = data;
   addTokenTraits(token, data.attributes, collection, config);
   return true;
+}
+
+function isIterable(obj) {
+  // checks for null and undefined
+  if (obj == null) {
+    return false;
+  }
+  return typeof obj[Symbol.iterator] === 'function';
+}
+
+export async function getTokenRevealStatus(token, config) {
+  if (!token || _.isEmpty(token) || !token.attributes || token.attributes.length < 1 || _.isEmpty(token.attributes)) {
+    return -1;
+  }
+
+  if (!isIterable(token.attributes)) {
+    return -1;
+  }
+
+  let numTraits = 0;
+  const valueMap = new Map();
+  for (let attr of token.attributes) {
+    if (attr.trait_type) {
+      if (attr.display_type) {
+        // Dont count other types than normal (string) traits!
+        continue;
+      }
+      numTraits++;
+      valueMap.set(attr.value, true);
+    }
+  }
+
+  if (numTraits > 1 && valueMap.size === 1) {
+    // All traits have same value => not revealed!
+    return -1;
+  }
+
+  if (numTraits > 1) {
+    return 1;
+  }
+
+  if (numTraits === 1) {
+    // Might be revealed! Need to check if image property is valid by comparing with other tokens.
+    return 0;
+  }
+
+  return -1;
 }
 
 export async function isTokenRevealed(token, config) {
@@ -213,7 +290,7 @@ function getNextTokens(tokens, numConcurrent, config) {
     const thisToken = tokens[i];
     if (shouldTokenBeFetched(thisToken)) {
       nextTokens.push(thisToken);
-      log.debug(`(${config.projectId}) ${thisToken.tokenId}: ${thisToken.status}`);
+      // log.debug(`(${config.projectId}) ${thisToken.tokenId}: ${thisToken.status}`);
       numNext--;
     }
   }
@@ -225,8 +302,7 @@ function getNextTokens(tokens, numConcurrent, config) {
 }
 
 function shouldTokenBeFetched(token) {
-  const result = !(token.done || token.skip || token.status === 'fetch');
-  return result;
+  return !(token.done || token.skip || token.status === 'fetch');
 }
 
 function addToStats(key, config) {
@@ -263,105 +339,4 @@ export function createToken(args) {
     rarityRank: null,
     rarityNormRank: null,
   };
-}
-
-export async function updateTokensBAK(config, isFinishedCallback) {
-  const numTokens = config.data.collection.tokens.length;
-
-  while (true) {
-    const nextTokens = getNextTokens(config.data.collection.tokens, config.numConcurrent, config);
-    if (nextTokens.length > 0) {
-      log.debug(`(${config.projectId}) Get ${nextTokens.length} tokens`);
-      nextTokens.forEach(token => {
-        updateToken(token, config.data.collection.baseTokenURI, config.fetchTokenTimeoutMsec, config.data.collection, config);
-      });
-    }
-    await miscutil.sleep(config.fetchTokensSleepMsec);
-    if (isFinishedCallback(config)) {
-      break;
-    }
-    const numDone = countDone(config.data.collection.tokens);
-    const numSkip = countSkip(config.data.collection.tokens);
-
-    config.runtime.numInfoLog++;
-    if (config.runtime.numInfoLog % config.freqInfoLog === 0) {
-      log.info(`(${config.projectId}) ${numDone} + ${numSkip} = ${numDone + numSkip} (of ${numTokens})`);
-    }
-  }
-}
-
-async function updateTokenBAK(token, baseTokenURI, timeout, collection, config) {
-  let tokenData = {};
-  if (!config.args.forceTokenFetch) {
-    tokenData = getFromCache(config.cache.tokens, token.tokenId);
-  }
-  const foundInCache = !_.isEmpty(tokenData);
-  if (!foundInCache) {
-    token.status = 'fetch';
-    const result = await fetchTokenData2(token, baseTokenURI, timeout, collection, config);
-    if (result.error) {
-      token.status = result.errorCode.toString();
-      if (result.errorCode === 404 || result.errorCode === 403) {
-        token.skip = true;
-      }
-      return token;
-    }
-    tokenData = tokenData.data;
-  }
-
-  if (addTokenData(token, tokenData, collection, config)) {
-    token.status = 'ok';
-    token.done = true;
-    addToStats('numOk', config);
-    if (!foundInCache) {
-      addToCache(config.cache.tokens, token.tokenId, tokenData);
-    }
-  } else {
-    token.skip = true;
-    addToStats('numNoAttributes', config);
-  }
-
-  return token;
-}
-
-async function fetchTokenDataBAK2(token, baseTokenURI, timeout, collection, config) {
-  try {
-    token.status = 'fetch';
-    token.tokenURI = createTokenURI(token.tokenId, baseTokenURI);
-
-    log.debug(`(${config.projectId}) GET ${token.tokenId}: ${token.tokenURI}`);
-    const response = await fetchWithTimeout(token.tokenURI, {
-      timeout: timeout ?? DEFAULT_FETCH_TIMEOUT
-    });
-
-    token.status = response.status;
-    token.statusCode = response.status;
-
-    log.debug(`(${config.projectId}) RESULT ${token.tokenId}: ${token.statusCode}`);
-
-    if (response.ok) {
-      return await response.json();
-    }
-
-    if (response.status === 404 || response.status === 403) {
-      token.skip = true;
-    }
-
-    addToStats(`num${response.status}`, config);
-
-    return {};
-  } catch (error) {
-    if (error.name === 'AbortError') {
-      token.status = 'timeout';
-      log.info(`(${config.projectId}) Timeout tokenId: ${token.tokenId}`);
-      // stats.numTimeout++;
-      addToStats('numTimeout', config);
-    } else {
-      token.status = 'error';
-      log.debug(`(${config.projectId}) Error tokenId ${token.tokenId}: ${error}`);
-      // stats.numUnknownError++;
-      addToStats('numUnknownError', config);
-    }
-    return {};
-  }
 }

@@ -26,7 +26,6 @@ export function getConfig(projectId, args) {
   const projectConfig = baseConfig.projects[projectId];
   if (!projectConfig) {
     log.error(`Project id ${projectId} does not exist! Program will exit!`);
-    process.exit(0);
   }
 
   projectConfig.projectId = projectId;
@@ -41,7 +40,7 @@ export function getConfig(projectId, args) {
   config.maxSupply = config.lastTokenId - config.firstTokenId + 1;
 
   config.maxSupply = config.tokenIdRange[1] - config.tokenIdRange[0] + 1;
-  config.freqInfoLog = config.freqInfoLogSecs * 1000 / config.fetchTokensSleepMsec;
+  config.freqInfoLog = config.freqInfoLogSecs * 1000 / config.fetchSleepBetween;
 
   config.cache = createCache(projectId);
   config.runtime = createRuntime(config);

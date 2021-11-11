@@ -51,7 +51,8 @@ async function getTokenURIFromEtherscan(id, contractAddress, url, signatur) {
     return {
       error: true,
       errorCode: response.statusCode,
-      errorMessage: response.status
+      errorMessage: response.status,
+      retryAfter: response.statusCode === 429 && response.headers[0] ? parseInt(response.headers[0]['retry-after']) : null
     };
   }
 
@@ -62,19 +63,18 @@ async function getTokenURIFromEtherscan(id, contractAddress, url, signatur) {
     return {
       error: true,
       errorCode: ERRORCODES.corruptTokenData,
+      errorData: response.data,
       errorMessage: JSON.stringify(error)
     };
   }
 
   if (data.error) {
-    if (data.error.message && data.error.message.includes('URI query for nonexistent token')) {
-      return {
-        error: true,
-        errorCode: ERRORCODES.nonExistingToken,
-        errorMessage: data.error.message
-      };
-    }
-    return { error: true, errorCode: ERRORCODES.unknown, errorMessage: data.error.message };
+    return {
+      error: true,
+      errorCode: ERRORCODES.nonExistingToken,
+      errorCode2: data.error?.code,
+      errorMessage: data.error?.message
+    };
   }
 
   const { result } = data;
@@ -82,13 +82,19 @@ async function getTokenURIFromEtherscan(id, contractAddress, url, signatur) {
     return {
       error: true,
       errorCode: ERRORCODES.corruptTokenData,
+      errorData: data,
       errorMessage: 'result.length < 130'
     };
   }
 
   const uri = hex2a(data.result.substring(130)).replace(/\0/g, '').trim();
   if (!isValidTokenURI(uri)) {
-    return { error: true, errorCode: ERRORCODES.corruptTokenData, errorMessage: 'invalidTokenURI' };
+    return {
+      error: true,
+      errorCode: ERRORCODES.corruptTokenData,
+      errorData: data,
+      errorMessage: 'invalidTokenURI'
+    };
   }
 
   return { uri };

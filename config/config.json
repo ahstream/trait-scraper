@@ -1,129 +1,135 @@
 {
   "projects": {
-    "rabbitars": {
-      "enabled": false,
-      "tokenIdRange": [1, 11953],
-      "contractAddress": "0x65c234d041f9ef96e2f126263727dfa582206d82"
+    "horizon": {
+      "poll": true,
+      "tokenIdRange": [1, 6999],
+      "contractAddress": "0x36A52262a85Bf8FE213267DA4Ed85e42e1eFeD82"
     },
-    "smiles": {
-      "enabled": false,
-      "tokenIdRange": [1, 8888],
-      "contractAddress": "0x177EF8787CEb5D4596b6f011df08C86eb84380dC"
+    "divineanarchy": {
+      "poll": true,
+      "tokenIdRange": [1, 10001],
+      "contractAddress": "0xc631164B6CB1340B5123c9162f8558c866dE1926"
     },
-    "modz": {
-      "enabled": true,
-      "tokenIdRange": [1, 5555],
-      "contractAddress": "0x50e712b3a260d7639179e8277836253461418f23"
-    },
-    "goons": {
-      "enabled": false,
-      "tokenIdRange": [1, 9696],
-      "contractAddress": "0x8442DD3e5529063B43C69212d64D5ad67B726Ea6"
-    },
-    "cupcat": {
-      "enabled": false,
-      "tokenIdRange": [1, 5000],
-      "contractAddress": "0x8Cd8155e1af6AD31dd9Eec2cEd37e04145aCFCb3"
-    },
-    "pandadynasty": {
-      "enabled": false,
-      "tokenIdRange": [1, 8888],
-      "contractAddress": "0x8e0543Eacd5078ba9Db88F34e2cBc24b7c2Eb790"
-    },
-    "wickedmonsters": {
-      "enabled": false,
-      "tokenIdRange": [1, 6666],
-      "contractAddress": "0x0b35406f0215422ae1fd33560f11e92799150ad6"
-    },
-    "pandaparadise": {
-      "enabled": false,
-      "tokenIdRange": [1, 8888],
-      "contractAddress": "0x24998f0A028d197413EF57C7810f7a5EF8B9FA55"
-    },
-    "skullx": {
-      "enabled": false,
+    "goatsociety": {
+      "poll": true,
       "tokenIdRange": [1, 10000],
-      "contractAddress": "0x1DC5d3b2162F9500D7dDeC14eb0ba9Ccb43bc20c"
+      "contractAddress": "0x2F14F1b6c350C41801b2b7BA9445670D7E2FFc70"
+    },
+    "sipherian": {
+      "poll": true,
+      "tokenIdRange": [1, 10000],
+      "contractAddress": "0x09E0dF4aE51111CA27d6B85708CFB3f1F7cAE982"
     },
     "testflight": {
-      "enabled": false,
+      "poll": true,
       "tokenIdRange": [1, 10000],
       "contractAddress": "0xFDb760b4DE27fd1a3377840bF502EbC0732A5D9d"
     },
     "alpies": {
-      "enabled": false,
+      "poll": true,
       "tokenIdRange": [1, 5026],
       "contractAddress": "0x57a7c5d10c3f87f5617ac1c60da60082e44d539e"
     },
+    "smiles": {
+      "poll": true,
+      "tokenIdRange": [1, 8888],
+      "contractAddress": "0x177EF8787CEb5D4596b6f011df08C86eb84380dC"
+    },
+    "notarug": {
+      "poll": true,
+      "tokenIdRange": [1, 5000],
+      "contractAddress": "0x5f7cEdF538262661F06F9F5a0D9230c7B65a3f3f"
+    },
+    "rabbitars": {
+      "tokenIdRange": [1, 11953],
+      "contractAddress": "0x65c234d041f9ef96e2f126263727dfa582206d82",
+      "fetchConcurrentAndSleep": [25, 250]
+    },
+    "modz": {
+      "tokenIdRange": [1, 5555],
+      "contractAddress": "0x50e712b3a260d7639179e8277836253461418f23"
+    },
+    "goons": {
+      "tokenIdRange": [1, 9696],
+      "contractAddress": "0x8442DD3e5529063B43C69212d64D5ad67B726Ea6"
+    },
+    "cupcat": {
+      "tokenIdRange": [1, 5000],
+      "contractAddress": "0x8Cd8155e1af6AD31dd9Eec2cEd37e04145aCFCb3"
+    },
+    "pandadynasty": {
+      "tokenIdRange": [0, 8887],
+      "contractAddress": "0x8e0543Eacd5078ba9Db88F34e2cBc24b7c2Eb790",
+      "fetchNumConcurrent": 50
+    },
+    "wickedmonsters": {
+      "tokenIdRange": [1, 6666],
+      "contractAddress": "0x0b35406f0215422ae1fd33560f11e92799150ad6"
+    },
+    "pandaparadise": {
+      "tokenIdRange": [1, 8888],
+      "contractAddress": "0x24998f0A028d197413EF57C7810f7a5EF8B9FA55"
+    },
+    "skullx": {
+      "tokenIdRange": [1, 10000],
+      "contractAddress": "0x1DC5d3b2162F9500D7dDeC14eb0ba9Ccb43bc20c"
+    },
     "fatapeclub": {
-      "enabled": false,
       "tokenIdRange": [1, 9999],
       "contractAddress": "0xF3114DD5c5b50a573E66596563D15A630ED359b4",
       "numConcurrent": 2,
       "fetchTokensSleepMsec": 20
     },
     "ethertroopers": {
-      "enabled": false,
       "tokenIdRange": [1, 8888],
       "contractAddress": "0xe0a2e8a4d94e0c395e88aad7c9074d73a115885d"
     },
     "humanoids": {
-      "enabled": false,
       "tokenIdRange": [1, 10000],
       "contractAddress": "0x3a5051566b2241285be871f650c445a88a970edd"
     },
     "platypunks": {
-      "enabled": false,
       "tokenIdRange": [1, 3567],
       "contractAddress": "0x495f947276749ce646f68ac8c248420045cb7b5e"
     },
     "bushidos": {
-      "enabled": false,
-      "tokenIdRange": [1, 8888],
+      "tokenIdRange": [0, 8887],
       "contractAddress": "0xd2aad45015090f8d45ad78e456b58dd61fb7cd79"
     },
     "fckface": {
-      "enabled": false,
       "tokenIdRange": [1, 5555],
       "contractAddress": "0x495f947276749ce646f68ac8c248420045cb7b5e"
     },
     "dreamers": {
-      "enabled": false,
       "tokenIdRange": [1, 13505],
       "contractAddress": "0x10064373e248bc7253653ca05df73cf226202956"
     },
     "coolkitty": {
-      "enabled": false,
       "tokenIdRange": [1, 3852],
       "contractAddress": "0x78ad336e577c99774618a470f14a9fefdb371d2d"
     },
     "apewives": {
-      "enabled": false,
       "tokenIdRange": [1, 10000],
-      "contractAddress": "0xf1268733c6fb05ef6be9cf23d24436dcd6e0b35e"
+      "contractAddress": "0xf1268733c6fb05ef6be9cf23d24436dcd6e0b35e",
+      "fetchConcurrentAndSleep": [10, 300]
     },
     "richgator": {
-      "enabled": false,
       "tokenIdRange": [1, 2222],
       "contractAddress": "0xe80b2538f33b15c8070db18b1a1cd3bb961c34f1"
     },
     "babyapes": {
-      "enabled": false,
       "tokenIdRange": [1, 2173],
       "contractAddress": "0x6efd52cb0eb89151f859e6cb152e199ec1045961"
     },
     "waw": {
-      "enabled": false,
       "tokenIdRange": [1, 10000],
       "contractAddress": "0x338866f8ba75bb9d7a00502e11b099a2636c2c18"
     },
     "partydegenerates": {
-      "enabled": false,
-      "tokenIdRange": [1, 10000],
+      "tokenIdRange": [0, 9999],
       "contractAddress": "0x4be3223f8708ca6b30d1e8b8926cf281ec83e770"
     },
     "nfteams": {
-      "enabled": false,
       "tokenIdRange": [1, 10000],
       "contractAddress": "0x03f5cee0d698c24a42a396ec6bdaee014057d4c8",
       "rules": {
@@ -138,23 +144,23 @@
     }
   },
   "rules": {
-    "numberValues": true,
+    "numberValues": false,
     "traitCount": true,
     "scoreKey": "rarityCountNorm",
     "weight": []
   },
-  "numConcurrent": 50,
-  "fetchTokensSleepMsec": 50,
-  "pollForRevealMsec": 1000,
-  "fetchTokenTimeoutMsec": 10000,
+  "fetchConcurrentAndSleep": [25, 250],
+  "fetchNumConcurrent": 20,
+  "fetchSleepBetween": 250,
+  "pollSleepBetweenReveal": 1000,
+  "pollForRevealTokenIds": [296, 452, 526, 789, 1234, 2345, 3456],
   "freqInfoLogSecs": 5,
-  "onlyStringTraitValues": false,
-  "ignoreTraitCount": false,
   "autoOpen": {
     "firstResultPage": true, "hotPct": 0.005, "maxHotItems": 10
   },
   "milestones": {
-    "createResultEverySecs": 120, "donePct": [0.1, 0.5], "saveCacheEverySecs": 60
+    "createResultEverySecs": 120, "donePct": [0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5],
+    "saveCacheEverySecs": 60
   },
   "analyze": [
     0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50,
@@ -162,7 +168,7 @@
   ],
   "output": {
     "all": {
-      "rankPct": 0.1, "imgPct": 0.1, "price": null
+      "rankPct": 1, "imgPct": 0.1, "price": null
     },
     "buynow1": {
       "rankPct": 0.02, "imgPct": 0.1, "price": 0.3
@@ -175,7 +181,6 @@
     }
   },
   "buttons": [10, 20, 30],
-  "pollForRevealTokenIds": [789, 1234, 2345, 3456],
   "numConcurrentTest": [
     10, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400
   ],

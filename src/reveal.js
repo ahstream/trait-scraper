@@ -1,5 +1,5 @@
 import * as miscutil from "./miscutil.js";
-import { fetchTokenById, isTokenRevealed } from "./token.js";
+import { fetchTokenById, isTokenRevealed, getTokenRevealStatus } from "./token.js";
 import * as fileutil from "./fileutil.js";
 import { getConfig } from "./config.js";
 import * as tokenURI from "./tokenURI.js";
@@ -17,26 +17,54 @@ import { createLogger } from "./lib/loggerlib.js";
 
 const log = createLogger();
 
-export async function pollForReveal(config) {
-  const pollForRevealTokenIds = config.pollForRevealTokenIds;
-  while (true) {
-    for (const tokenId of pollForRevealTokenIds) {
-      const token = await fetchTokenById(tokenId, config);
-      if (await isTokenRevealed(token, config)) {
-        log.info(`(${config.projectId}) Collection is revealed: ${token.tokenURI}`);
-        config.data.collection.baseTokenURI = tokenURI.convertToBaseTokenURI(tokenId, token.tokenURI);
-        config.runtime.isRevealed = true;
-        config.runtime.revealTime = new Date();
-        return true;
-      }
-    }
-    config.runtime.numInfoLog++;
-    if (config.runtime.numInfoLog % config.freqInfoLog === 0) {
-      log.info(`(${config.projectId}) .`);
-    }
+export async function isRevealed(config) {
+  const token = await getRevealedToken(config);
+  return typeof token?.tokenId !== 'undefined';
+}
 
-    await miscutil.sleep(config.pollForRevealMsec);
+export async function pollForReveal(config) {
+  while (true) {
+    const token = await getRevealedToken(config);
+    if (token !== null) {
+      revealToken(token, config);
+      return true;
+    }
+    log.info(`(${config.projectId}) .`);
+    await miscutil.sleep(config.pollSleepBetweenReveal);
   }
+}
+
+async function getRevealedToken(config) {
+  const pollForRevealTokenIds = config.pollForRevealTokenIds;
+  const tokens = [];
+  for (const tokenId of pollForRevealTokenIds) {
+    const token = await fetchTokenById(tokenId, config.contractAddress);
+    const revealStatus = await getTokenRevealStatus(token, config);
+    if (revealStatus > 0) {
+      return token;
+    } else if (revealStatus === 0) {
+      // Push token and later analyze all tokens to see if collection is revealed!
+      tokens.push(token);
+    }
+  }
+  if (tokens.length > 1) {
+    const imageURIs = tokens.map(obj => obj.image);
+    const uniqueURIs = [...new Set(imageURIs)];
+    if (uniqueURIs.length < 2) {
+      return null;
+    } else {
+      // Otherwise revealed!
+      return tokens[0];
+    }
+  }
+  return null;
+}
+
+function revealToken(token, config) {
+  log.info(`(${config.projectId}) Collection is revealed: ${token.tokenURI}`);
+  config.data.collection.baseTokenURI = tokenURI.convertToBaseTokenURI(token.tokenId, token.tokenURI);
+  config.runtime.isRevealed = true;
+  config.runtime.revealTime = new Date();
 }
 
 export function notifyRevealed(config) {

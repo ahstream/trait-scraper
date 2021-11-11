@@ -5,7 +5,7 @@ import { getConfig, saveCache, debugToFile } from "./config.js";
 import { updateAssets } from "./opensea.js";
 import * as rarity from "./rarity.js";
 import * as webPage from "./webPage.js";
-import { pollForReveal, notifyRevealed, notifyNewResults } from "./reveal.js";
+import { pollForReveal, notifyRevealed, notifyNewResults, isRevealed } from "./reveal.js";
 import {
   countDone,
   countDoneConfig,
@@ -18,15 +18,20 @@ import {
 import open from "open";
 import { createLogger } from "./lib/loggerlib.js";
 import { getFromCache } from "./cache.js";
+import { calcRanks } from "./rarity.js";
 
 const log = createLogger();
 
 export async function pollCollections(projectId, args) {
   log.info(`Start polling collections...`);
 
+  if (projectId) {
+    return pollCollection(projectId, args);
+  }
+
   const config = getConfig(projectId, args);
   Object.keys(config.projects).forEach((projectId) => {
-    if (config.projects[projectId].enabled) {
+    if (config.projects[projectId].poll) {
       pollCollection(projectId, args);
     }
   });
@@ -38,20 +43,51 @@ export async function pollCollection(projectId, args) {
   await doFetchCollection(projectId, args);
 }
 
-export async function fetchCollection(projectId, args) {
-  args.command = 'fetch';
-  await doFetchCollection(projectId, args);
+export async function fetchCollections(projectId, args) {
+  if (projectId) {
+    return fetchCollection(projectId, args);
+  }
+
+  const config = getConfig(projectId, args);
+  const projects = [];
+  Object.keys(config.projects).forEach((projectId) => {
+    if (!config.projects[projectId].poll) {
+      projects.push(projectId);
+    }
+  });
+
+  for (const [index, projectId] of projects.entries()) {
+    log.info(`Fetching project ${index} of ${projects.length}: ${projectId}`);
+    try {
+      await fetchCollection(projectId, args, true);
+    } catch (error) {
+      log.error('Error:', JSON.stringify(error));
+    }
+  }
 }
 
-async function doFetchCollection(projectId, args) {
+export async function fetchCollection(projectId, args, skipNotRevealed = false) {
+  args.command = 'fetch';
+  await doFetchCollection(projectId, args, skipNotRevealed);
+}
+
+async function doFetchCollection(projectId, args, skipNotRevealed) {
   const myTimer = timer.create();
 
   log.info(`(${projectId}) Start fetching collection...`);
 
   const config = getConfig(projectId, args);
+
+  if (skipNotRevealed && !(await isRevealed(config))) {
+    log.info(`Skip not revealed project: ${projectId}`);
+    return config;
+  }
+
   await setupCollection(config);
   await revealCollection(config);
   await fetchCollectionTokens(config);
+  // await miscutil.sleep(5000);
+  calcRanks(config.data.collection);
   createResults(config, true);
   saveCache(config);
   // debugToFile(config, 'config1234.json');
@@ -59,6 +95,28 @@ async function doFetchCollection(projectId, args) {
   myTimer.ping(`(${config.projectId}) fetchCollection duration`);
 
   log.info(`(${config.projectId}) Finished fetching collection: ${countDoneConfig(config)} ok, ${countSkippedConfig(config)} skipped`);
+
+  // webPage.foo(config);
+  miscutil.sortBy1Key(config.data.collection.tokens, 'score', false);
+  debugToFile(config, 'config-debug.json');
+
+  console.log('done1!!!');
+  calcRanks(config.data.collection);
+  console.log('done2!!!');
+
+  debugToFile({
+    data: config.data.collection.tokens.map(obj => {
+      return {
+        score: obj.score,
+        scoreRank: obj.scoreRank,
+        rarityCountNorm: obj.rarityCountNorm,
+        rarityCountNormRank: obj.rarityCountNormRank,
+        tokenId: obj.tokenId
+      };
+    })
+  }, 'config-debug2.json');
+
+  console.log('done3!!!');
 
   return config;
 }
@@ -71,6 +129,7 @@ async function setupCollection(config) {
     log.info(`(${config.projectId}) Update OpenSea Assets...`);
     await updateAssets(config);
     myTimer2.ping(`(${config.projectId}) updateAssets duration`);
+    saveCache(config);
   }
 
   await createCollectionTokens(config);
@@ -82,6 +141,7 @@ async function revealCollection(config) {
   const myTimer = timer.create();
 
   if (!config.runtime.isRevealed) {
+    log.info(`(${config.projectId}) Check for reveal...`);
     await pollForReveal(config);
     notifyRevealed(config);
   }
@@ -105,12 +165,14 @@ export async function fetchCollectionTokens(config) {
   myTimer.ping(`(${config.projectId}) fetchCollectionTokens duration`);
 }
 
-function fetchCollectionTokensCallback(config) {
+async function fetchCollectionTokensCallback(config) {
   const numDone = countDone(config.data.collection.tokens);
   const numFinished = countDoneOrSkip(config.data.collection.tokens);
   const numTokens = config.data.collection.tokens.length;
 
-  log.debug(`(${config.projectId}) numDone: ${numDone}, numFinished: ${numFinished}, numTokens: ${numTokens}`);
+  // todo check for 429 and sleep, config.runtime.tokenDataRetryAfter?
+
+  log.debug(`(${config.projectId}) numDone: ${numDone}, numFinished: ${numFinished}, numTokens: ${numTokens}, numTimeout: ${config.runtime.stats.num2}, num429: ${config.runtime.stats.num429}, `);
   log.debug(`(${config.projectId}) stats:`, config.runtime.stats);
 
   let flCreateResults = false;
@@ -120,7 +182,6 @@ function fetchCollectionTokensCallback(config) {
   if (numDone >= numDoneMilestone) {
     log.info(`(${config.projectId}) Create results after ${numDoneMilestone} finished tokens`);
     config.runtime.milestones.donePct.splice(0, 1);
-
     flCreateResults = true;
   } else if (now >= config.runtime.nextTimeCreateResults) {
     log.info(`(${config.projectId}) Create results after ${config.milestones.createResultEverySecs} seconds since last time`);
@@ -136,7 +197,7 @@ function fetchCollectionTokensCallback(config) {
   log.debug('flSaveToCache', flSaveToCache);
 
   if (numFinished >= numTokens || flSaveToCache) {
-    config.runtime.nextTimeSaveCache = miscutil.addSecondsToDate(new Date(), config.milestones.firstSaveDBSeconds);
+    config.runtime.nextTimeSaveCache = miscutil.addSecondsToDate(new Date(), config.milestones.saveCacheEverySecs);
     saveCache(config);
   }
   if (flCreateResults && !flSaveToCache) {
@@ -152,6 +213,26 @@ function fetchCollectionTokensCallback(config) {
     return true;
   }
 
+  if (config.runtime.tokenDataRetryAfter) {
+    log.info(`(${config.projectId}) ${numDone} + ${numFinished - numDone} = ${numFinished} (of ${numTokens})`);
+    // log.info(`Sleep ${config.runtime.tokenDataRetryAfter} secs because connection refused...`);
+    // await miscutil.sleepSecs(config.runtime.tokenDataRetryAfter);
+    config.runtime.tokenDataRetryAfter = null;
+  }
+
+  /*
+  if (config.runtime.tokenDataRetryNextTime) {
+    const now = new Date();
+    console.log('retry in:', config.runtime.tokenDataRetryAfter);
+    console.log('now, next', now, config.runtime.tokenDataRetryNextTime);
+    console.log('now < config.runtime.tokenDataRetryNextTime', now < config.runtime.tokenDataRetryNextTime);
+    console.log('now > config.runtime.tokenDataRetryNextTime', now > config.runtime.tokenDataRetryNextTime);
+    if (now < config.runtime.tokenDataRetryNextTime) {
+      log.info(`Sleep until ${config.runtime.tokenDataRetryNextTime} because 429 Too Many Requests error...`);
+      await miscutil.sleepSecs(config.runtime.tokenDataRetryAfter);
+    }
+  } */
+
   return false;
 }
 
@@ -166,8 +247,9 @@ export async function createCollectionTokens(config) {
       isBuynow: asset?.isBuynow ?? null,
       price: asset?.price ?? null,
       lastPrice: asset?.lastPrice ?? null,
-      lastSaleDate: asset?.lastSaleDate ?? null
+      lastSaleDate: asset?.lastSaleDate ? new Date(asset.lastSaleDate) : new Date('1900-01-01')
     });
+
     token.asset = asset;
     config.data.collection.tokens.push(token);
   });

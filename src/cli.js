@@ -8,13 +8,14 @@ import fetch from 'node-fetch';
 
 import { createLogger } from './lib/loggerlib.js';
 
-import { fetchCollection, pollCollections } from './collection.js';
+import { fetchCollections, pollCollections } from './collection.js';
 import { testCollection } from './test.js';
 import { analyzeCollection } from './analyze.js';
 import { getAssets, pollAssets } from './opensea.js';
 import { debugToFile, getConfig } from './config.js';
 import { createStartPage, cleanWebPages } from './webPage.js';
 import { cleanCache } from "./cache.js";
+import { fetchTokenDataById } from './token.js';
 
 const log = createLogger();
 
@@ -46,6 +47,7 @@ async function runProgram() {
   program.option('--forcetokenfetch', '');
   program.option('--skipopensea', '');
   program.option('--value <value>', 'Arbitrary value');
+  program.option('--id <value>', 'Token Id');
   program.option('--contract <value>', 'Contract address');
   program.parse();
 
@@ -62,7 +64,7 @@ async function runProgram() {
       await analyzeCollection({ projectId });
       break;
     case 'fetch':
-      await fetchCollection(projectId, {
+      await fetchCollections(projectId, {
         forceTokenFetch: options.forcetokenfetch,
         skipOpensea: options.skipopensea,
         silent: options.silent,
@@ -82,9 +84,11 @@ async function runProgram() {
     case 'assets':
       const result = await getAssets(options);
     // console.log(result);
+    case 'fetchtokendata':
+      console.log(await fetchTokenDataById(options.id, options.contract));
+      break;
     case 'createstartpage':
       createStartPage(true);
-      // console.log(result);
       break;
     case 'cleanwebpages':
       cleanWebPages(true);

@@ -4,6 +4,7 @@ import * as miscutil from "./miscutil.js";
 import { normalizeURI } from './tokenURI.js';
 import { countDone, } from "./count.js";
 import open from "open";
+import { debugToFile } from "./config.js";
 
 const BASE_ASSET_URL = 'https://opensea.io/assets/';
 
@@ -149,7 +150,7 @@ function pageTemplate(pageTitle) {
     </html>`;
 }
 
-function createSubNavHtml(allOrBuynow, scoreKey) {
+function createSubNavHtml(allOrBuynow, scoreKey, lastSaleKey) {
   let html = '';
 
   const isSame = (a1, a2, b1, b2) => a1 === a2 && b1 === b2;
@@ -165,16 +166,16 @@ function createSubNavHtml(allOrBuynow, scoreKey) {
     <a href='./all-rarityCount.html' class="${isSame(a1, 'all', b1, 'rarityCount') ? 'active-page-link' : ''}">RarityCount</a> |
     <a href='./all-rarityNorm.html' class="${isSame(a1, 'all', b1, 'rarityNorm') ? 'active-page-link' : ''}">RarityNorm</a> |
     <a href='./all-rarity.html' class="${isSame(a1, 'all', b1, 'rarity') ? 'active-page-link' : ''}">Rarity</a> |
-    <a href='./all-score-last-sale-price.html' class="${isSame(a1, 'all', b1, 'xxx') ? 'active-page-link' : ''}">LastSalePrice</a> |
-    <a href='./all-score-last-sale-date.html' class="${isSame(a1, 'all', b1, 'xxx') ? 'active-page-link' : ''}">LastSaleDate</a>]
+    <a href='./all-score-last-sale-price.html' class="${isSame(a1, 'all', lastSaleKey, 'price') ? 'active-page-link' : ''}">LastSalePrice</a> |
+    <a href='./all-score-last-sale-date.html' class="${isSame(a1, 'all', lastSaleKey, 'date') ? 'active-page-link' : ''}">LastSaleDate</a>]
     &nbsp;&nbsp;
     [<a href='./buynow-score.html' class="${isSame(a1, 'buynow', b1, 'score') ? 'active-page-link' : ''}">Buynow</a> |
     <a href='./buynow-rarityCountNorm.html' class="${isSame(a1, 'buynow', b1, 'rarityCountNorm') ? 'active-page-link' : ''}">RarityCountNorm</a> |
     <a href='./buynow-rarityCount.html' class="${isSame(a1, 'buynow', b1, 'rarityCount') ? 'active-page-link' : ''}">RarityCount</a> |
     <a href='./buynow-rarityNorm.html' class="${isSame(a1, 'buynow', b1, 'rarityNorm') ? 'active-page-link' : ''}">RarityNorm</a> |
     <a href='./buynow-rarity.html' class="${isSame(a1, 'buynow', b1, 'rarity') ? 'active-page-link' : ''}">Rarity</a> |
-    <a href='./buynow-score-last-sale-price.html' class="${isSame(a1, 'buynow', b1, 'xxx') ? 'active-page-link' : ''}">LastSalePrice</a> |
-    <a href='./buynow-score-last-sale-date.html' class="${isSame(a1, 'buynow', b1, 'xxx') ? 'active-page-link' : ''}">LastSaleDate</a>]
+    <a href='./buynow-score-last-sale-price.html' class="${isSame(a1, 'buynow', lastSaleKey, 'price') ? 'active-page-link' : ''}">LastSalePrice</a> |
+    <a href='./buynow-score-last-sale-date.html' class="${isSame(a1, 'buynow', lastSaleKey, 'date') ? 'active-page-link' : ''}">LastSaleDate</a>]
     <br>`;
   return html;
 }
@@ -217,6 +218,33 @@ export function createStartPageHtml() {
   return buildPage('Start', 'Main Nav', '', createPageHeaderHtml('Projects'), html);
 }
 
+export function foo(config, openWebPage = true) {
+  const filepath = toAbsFilepath(`../data/foo.html`);
+  writeFile(filepath, fooHtml(config));
+  if (openWebPage) {
+    open(filepath, { app: 'chrome' });
+  }
+}
+
+export function fooHtml(config) {
+  debugToFile(config, 'config-foo.json');
+
+  let html = '';
+
+  html = html + `<ul>`;
+
+  const tokens = [];
+  for (let i = 0; i < 100; i++) {
+    tokens.push(config.data.collection.tokens[i]);
+  }
+
+  // tokens.forEach(token => console.log(token.tokenId));
+
+  html = html + `</ul>`;
+
+  return buildPage('Start', 'Main Nav', '', createPageHeaderHtml('Foo'), html);
+}
+
 export function createCollectionWebPage(config, bothFiles) {
   const showBuynow = config.args.command === 'poll' || config.args.forceBuynow;
   if (bothFiles) {
@@ -230,16 +258,22 @@ export function createCollectionWebPage(config, bothFiles) {
 }
 
 function createCollectionAll(config) {
-  const createResultFile = (scoreKey, sortByLastSalePrice = false, sortByLastSaleDate = false) => {
+  const createResultFile = (scoreKey, sortByLastSalePrice = false, sortByLastSaleDate = false, filepathKey = '') => {
     const sortKey = sortByLastSalePrice ? '-last-sale-price' : sortByLastSaleDate ? '-last-sale-date' : '';
-    const path = `${config.projectFolder}all-${scoreKey}${sortKey}.html`;
-    writeFile(path, buildPage(title, '', createSubNavHtml('all', scoreKey), createPageHeaderHtml(title), createCollectionAllHtml(config, scoreKey, sortByLastSalePrice, sortByLastSaleDate)));
+    const path = `${config.projectFolder}all-${scoreKey}${sortKey}${filepathKey}.html`;
+    const content = createCollectionAllHtml(config, scoreKey, sortByLastSalePrice, sortByLastSaleDate);
+    const lastSaleKey = sortByLastSalePrice ? 'price' : sortByLastSaleDate ? 'date' : '';
+    writeFile(path, buildPage(title, '', createSubNavHtml('all', scoreKey, lastSaleKey), createPageHeaderHtml(title), content));
     return path;
   };
 
   const title = `Collection All > ${config.projectId}`;
 
+  const pctDone = (countDone(config.data.collection.tokens) * 1000 / config.maxSupply).toFixed(0);
+  const filepathKey = `-${pctDone}`;
+
   const mainFilepath = createResultFile('score');
+  createResultFile('rarityCountNorm', false, false, filepathKey);
   createResultFile('rarityCountNorm');
   createResultFile('rarityCount');
   createResultFile('rarityNorm');
@@ -257,7 +291,8 @@ function createCollectionBuynow(config) {
     const sortKey = sortByLastSalePrice ? '-last-sale-price' : sortByLastSaleDate ? '-last-sale-date' : '';
     const path = `${config.projectFolder}buynow-${scoreKey}${sortKey}.html`;
     const content = createCollectionBuynowHtml(config, scoreKey, sortByLastSalePrice, sortByLastSaleDate);
-    writeFile(path, buildPage(title, '', createSubNavHtml('buynow', scoreKey), createPageHeaderHtml(title), content));
+    const lastSaleKey = sortByLastSalePrice ? 'price' : sortByLastSaleDate ? 'date' : '';
+    writeFile(path, buildPage(title, '', createSubNavHtml('buynow', scoreKey, lastSaleKey), createPageHeaderHtml(title), content));
     return path;
   };
 
@@ -286,7 +321,7 @@ function createCollectionAllHtml(config, scoreKey, sortByLastSalePrice = false, 
 
   const numDone = countDone(config.data.collection.tokens);
   if (sortByLastSalePrice) {
-    miscutil.sortBy2Keys(config.data.collection.tokens, 'lastPrice', true, scoreKey, false);
+    miscutil.sortBy2Keys(config.data.collection.tokens, 'lastPrice', false, scoreKey, false);
   } else if (sortByLastSaleDate) {
     miscutil.sortBy2Keys(config.data.collection.tokens, 'lastSaleDate', false, scoreKey, false);
   } else {
@@ -295,13 +330,23 @@ function createCollectionAllHtml(config, scoreKey, sortByLastSalePrice = false, 
 
   const tokens1 = [];
   for (const token of config.data.collection.tokens) {
-    if (token[`${scoreKey}RankPct`] <= config.output.all.rankPct) {
-      tokens1.push(token);
+    if (config.output.all.rankPct !== null && token[`${scoreKey}RankPct`] > config.output.all.rankPct) {
+      continue;
     }
+    if (config.output.all.price !== null) {
+      if (token.price === 0 || token.price > config.output.all.price)
+        continue;
+    }
+    tokens1.push(token);
   }
 
-  const desc = `All [${scoreKey === 'score' ? config.rules.scoreKey : scoreKey}]`;
-  html = html + createCollectionTablesHtml(config, tokens1, numDone, scoreKey, 1, config.output.all.imgPct, desc, true, true, true);
+  let rankDesc = config.output.all.rankPct !== null ? `Rank < ${(config.output.all.rankPct * 100).toFixed(1)}%` : '';
+  let priceDesc = config.output.all.price !== null ? `Price < ${config.output.buynow1.price} ETH` : '';
+  const scoreDesc = `${scoreKey === 'score' ? config.rules.scoreKey : scoreKey}`;
+
+  const desc = `${rankDesc} ${priceDesc} (${scoreDesc})`;
+
+  html = html + createCollectionTablesHtml(config, tokens1, numDone, scoreKey, 1, config.output.all.imgPct, desc, true, true);
 
   return html;
 }
@@ -313,7 +358,7 @@ function createCollectionBuynowHtml(config, scoreKey, sortByLastSalePrice = fals
 
   const numDone = countDone(config.data.collection.tokens);
   if (sortByLastSalePrice) {
-    miscutil.sortBy2Keys(config.data.collection.tokens, 'lastPrice', true, scoreKey, false);
+    miscutil.sortBy2Keys(config.data.collection.tokens, 'lastPrice', false, scoreKey, false);
   } else if (sortByLastSaleDate) {
     miscutil.sortBy2Keys(config.data.collection.tokens, 'lastSaleDate', false, scoreKey, false);
   } else {
@@ -352,6 +397,14 @@ function createCollectionBuynowHtml(config, scoreKey, sortByLastSalePrice = fals
   return html;
 }
 
+function getOutlier(tokens, pct, numDone, scoreKey) {
+  const token = tokens.find(obj => obj[`${scoreKey}Rank`] === Math.round(pct * numDone));
+  if (token) {
+    return token[`${scoreKey}OV`].toFixed(1);
+  }
+  return '-';
+}
+
 function createCollectionTablesHtml(config, tokens, numDone, scoreKey, level, imgPct, desc, showAllRanks = false, showLastSale = false) {
   let html = '';
 
@@ -369,6 +422,35 @@ function createCollectionTablesHtml(config, tokens, numDone, scoreKey, level, im
     </div>
     `;
 
+  const ov5 = getOutlier(tokens, 0.005, numDone, scoreKey);
+  const ov10 = getOutlier(tokens, 0.010, numDone, scoreKey);
+  const ov20 = getOutlier(tokens, 0.020, numDone, scoreKey);
+  const ov30 = getOutlier(tokens, 0.030, numDone, scoreKey);
+  const ov40 = getOutlier(tokens, 0.040, numDone, scoreKey);
+  const ov50 = getOutlier(tokens, 0.050, numDone, scoreKey);
+
+  html = html + `<div>
+  <table>
+  <tr>
+    <td>OV 0.5%</td>
+    <td>1.0%</td>
+    <td>2.0%</td>
+    <td>3.0%</td>
+    <td>4.0%</td>
+    <td>5.0%</td>
+  </tr>
+  <tr>
+    <td><b>${ov5}</b></td>
+    <td><b>${ov10}</b></td>
+    <td><b>${ov20}</b></td>
+    <td><b>${ov30}</b></td>
+    <td><b>${ov40}</b></td>
+    <td><b>${ov50}</b></td>
+  </tr>
+  </table>
+    </div>
+    `;
+
   html = html + `
     <table>
     <tr style="background: black; color: white"><td colspan="100%">${desc}</td></tr>
@@ -377,11 +459,20 @@ function createCollectionTablesHtml(config, tokens, numDone, scoreKey, level, im
         <th></th>
         <th>Pct</th>
         <th>Price</th>
-        ${!showLastSale ? '' : '<th>Last</th>'}
-        ${!showLastSale ? '' : '<th>LastDate</th>'}
+        ${showLastSale ? '<th>Last</th>' : ''}
+        ${showLastSale ? '<th>LastDate</th>' : ''}
         <th>Rank&nbsp;&nbsp;</th>
-        ${!showAllRanks ? '' : '<th>RCN</th><th>RC</th><th>RN</th><th>R</th>'}
+        ${showAllRanks ? '<th>rcn</th><th>rc</th><th>rn</th><th>r</th>' : ''}
         <th>Score&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+        <th>OV</th>
+        <th>rcn</th>
+        <th>rc</th>
+        <th>rn</th>
+        <th>r</th>
+        <th>TC</th>
+        <th>TCF</th>
+        <th>min</th>
+        <th>max</th>
         <th>ID</th>
     </tr>`;
 
@@ -396,22 +487,31 @@ function createCollectionTablesHtml(config, tokens, numDone, scoreKey, level, im
     const score = token[`${scoreKey}`];
     const rankPct = token[`${scoreKey}RankPct`];
 
+    // Non sale dates are encoded as 1901-01-01 so make empty dates work with sorting!
+    const normalizedLastSaleDate = token.lastSaleDate <= new Date('1900-01-01') ? null : token.lastSaleDate;
+
     const rowClass = doHilite ? 'hilite' : '';
     const assetLink = `${BASE_ASSET_URL}/${config.contractAddress}/${token.tokenId}`;
     const imageHtml = rankPct <= imgPct ? `<a target="_blank" href="${assetLink}"><img class="thumb" src="${normalizeURI(token.image)}"></a>` : '';
     const checkboxHtml = `<input type="checkbox" class="checkbox_${level}" ${doHilite ? 'checked' : ''} value="${token.tokenId}">`;
-    const percentHtml = `<a target="id_${token.tokenId}" href="${assetLink}">${(rankPct * 100).toFixed(1)} %</a>`;
+    const percentHtml = `<a target="id_${token.tokenId}" href="${assetLink}">${(rankPct * 100).toFixed(2)} %</a>`;
     const priceHtml = token.price > 0 ? `${(token.price.toFixed(2))}` : '';
-    const lastPriceText = token.lastPrice > 0 ? `${(token.lastPrice.toFixed(2))}` : '';
-    const lastPriceHtml = !showLastSale ? '' : `<td class="blur">${lastPriceText}</td>`;
-    const lastSaleDate = !showLastSale || !token.lastSaleDate ? '' : new Date(token.lastSaleDate).toLocaleDateString();
-    const lastSaleDateHtml = !showLastSale ? '' : `<td class="blur">${lastSaleDate ?? '-'}</td>`;
+
+    const ovHtml = `${(token.scoreOV.toFixed(1))}`;
+
+    const lastPriceText = token.lastPrice > 0 ? `${(token.lastPrice.toFixed(2))}` : '-';
+    const lastPriceHtml = showLastSale ? `<td class="blur">${lastPriceText}</td>` : '';
+
+    const lastSaleDateText = showLastSale && normalizedLastSaleDate ? token.lastSaleDate.toLocaleDateString() : '-';
+    const lastSaleDateHtml = showLastSale ? `<td class="blur">${lastSaleDateText}</td>` : '';
+
     const scoreHtml = score.toFixed(0);
-    const allRanksHtml = !showAllRanks ? '' : `
+    const allRanksHtml = showAllRanks ? `
         <td class="blur">${token.rarityCountNormRank}</td>
         <td class="blur">${token.rarityCountRank}</td>
         <td class="blur">${token.rarityNormRank}</td>
-        <td class="blur">${token.rarityRank}</td>`;
+        <td class="blur">${token.rarityRank}</td>`
+      : '';
 
     html = html + `
         <tr class="${rowClass}">
@@ -424,7 +524,16 @@ function createCollectionTablesHtml(config, tokens, numDone, scoreKey, level, im
             <td><b>${token[`${scoreKey}Rank`]}</b></td>
             ${allRanksHtml}
             <td>${scoreHtml}</b></td>
-            <td>:${token.tokenId}</td>
+            <td><b>${ovHtml}</b></td>
+            <td>${token.rarityCountNormOV.toFixed(1)}</td>
+            <td>${token.rarityCountOV.toFixed(1)}</td>
+            <td>${token.rarityNormOV.toFixed(1)}</td>
+            <td>${token.rarityOV.toFixed(1)}</td>
+            <td>${token.traitCount}</td>
+            <td><b>${(token.traitCountFreq * 100).toFixed(2)}</b></td>
+            <td>${token.minTraits}</td>
+            <td>${token.maxTraits}</td>
+            <td>:${token.tokenId}:</td>
         </tr>`;
   }
   html = html + `</table></div>`;

@@ -4,6 +4,7 @@ import {
 } from "./count.js";
 import * as miscutil from "./miscutil.js";
 import { debugToFile } from "./config.js";
+import { Stats } from 'fast-stats';
 
 const log = createLogger();
 
@@ -15,6 +16,34 @@ export function calcRarity(config) {
   calcGlobalRarity(config.data.collection);
   calcTokenRarity(config.data.collection, config);
   calcRanks(config.data.collection);
+  calcOutliers(config);
+}
+
+function calcOutliers(config) {
+  calcOutlier(config, 'score');
+  calcOutlier(config, 'rarityCountNorm');
+  calcOutlier(config, 'rarityCount');
+  calcOutlier(config, 'rarityNorm');
+  calcOutlier(config, 'rarity');
+}
+
+function calcOutlier(config, scoreKey) {
+  const scores = config.data.collection.tokens.map(token => token[scoreKey]).filter(score => typeof score === 'number');
+  miscutil.sortBy1Key(scores, scoreKey, true);
+
+  const stats = new Stats();
+  stats.push(scores);
+
+  const q3 = stats.percentile(75);
+  const q1 = stats.percentile(25);
+  const iqr = q3 - q1;
+
+  const calcOV = val => (val - q3) / iqr;
+
+  config.data.collection.tokens.forEach(token => {
+    token[`${scoreKey}OV`] = calcOV(token[scoreKey]);
+  });
+
 }
 
 export function calcGlobalRarity(collection) {
@@ -75,6 +104,10 @@ function calcGlobalTraitCountsRarity(collection) {
 
 export function calcTokenRarity(collection, config) {
   let numTokens = 0;
+  const numDone = countDone(collection.tokens);
+  const counts = Object.values(collection.traitCounts.data).map(obj => obj.numValue);
+  const minTraits = Math.min(...counts);
+  const maxTraits = Math.max(...counts);
   for (const token of collection.tokens) {
     if (!token.done) {
       continue;
@@ -113,6 +146,10 @@ export function calcTokenRarity(collection, config) {
     }
 
     token.traitCount = traitCount;
+    token.numWithTraitCount = collection.traitCounts.data[traitCount.toString()].count;
+    token.traitCountFreq = token.numWithTraitCount / numDone;
+    token.minTraits = minTraits;
+    token.maxTraits = maxTraits;
 
     token.rarity = sumRarity;
     token.rarityNorm = sumRarityNorm;
@@ -258,7 +295,8 @@ function calcRank(tokens, numDone, sortKey, ascending) {
   let rank = 1;
   let lastRank = 1;
   let lastScore = 0;
-  for (const item of tokens) {
+  for (let i = 0; i < tokens.length; i++) {
+    const item = tokens[i];
     const thisScore = item[sortKey];
     let thisRank = rank;
     if (thisScore === lastScore) {
@@ -267,7 +305,7 @@ function calcRank(tokens, numDone, sortKey, ascending) {
     lastScore = thisScore;
     lastRank = thisRank;
     item[rankKey] = thisRank;
-    item[`${rankKey}Pct`] = rank / numDone;
+    item[`${rankKey}Pct`] = thisRank / numDone;
     rank++;
   }
 }
