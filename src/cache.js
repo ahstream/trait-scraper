@@ -2,12 +2,11 @@ import {
   importJSONFile,
   writeJSONFile,
   toAbsFilepath,
-  folderExists,
-  createFolder,
-  ensureFolder, fileExists, getFilesInFolder, deleteFile
+  fileExists,
+  getFilesInFolder,
+  deleteFile
 } from "./fileutil.js";
-import { getFromDB } from "./db.js";
-import _ from 'lodash';
+import { debugToFile } from './config.js';
 
 import { createLogger } from "./lib/loggerlib.js";
 

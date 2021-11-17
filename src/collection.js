@@ -18,7 +18,8 @@ import {
 import open from "open";
 import { createLogger } from "./lib/loggerlib.js";
 import { getFromCache } from "./cache.js";
-import { calcRanks } from "./rarity.js";
+import { calcRanks, calcRarityFromTokens } from "./rarity.js";
+import { createAnalyzeOVPage } from "./webPage.js";
 
 const log = createLogger();
 
@@ -98,11 +99,9 @@ async function doFetchCollection(projectId, args, skipNotRevealed) {
 
   // webPage.foo(config);
   miscutil.sortBy1Key(config.data.collection.tokens, 'score', false);
-  debugToFile(config, 'config-debug.json');
+  // debugToFile(config, 'config-debug.json');
 
-  console.log('done1!!!');
   calcRanks(config.data.collection);
-  console.log('done2!!!');
 
   debugToFile({
     data: config.data.collection.tokens.map(obj => {
@@ -116,9 +115,49 @@ async function doFetchCollection(projectId, args, skipNotRevealed) {
     })
   }, 'config-debug2.json');
 
-  console.log('done3!!!');
-
   return config;
+}
+
+function createPrepConfig(baseConfig) {
+  return {
+    contractAddress: baseConfig.contractAddress,
+    projectFolder: baseConfig.projectFolder,
+    maxSupply: baseConfig.maxSupply,
+    autoOpen: {
+      firstResultPage: false
+    },
+    rules: {
+      scoreKey: baseConfig.scoreKey,
+    },
+    data: {
+      collection: createCollection()
+    }
+  };
+
+}
+
+export async function analyzeOV(projectId, args) {
+  const baseConfig = await doFetchCollection(projectId, args);
+
+  miscutil.sortBy1Key(baseConfig.data.collection.tokens, 'rarityCountNormRank', true);
+  baseConfig.data.collection.tokens.forEach(obj => obj.finalRank = obj.rarityCountNormRank);
+
+  const baseTokens = baseConfig.data.collection.tokens.filter(obj => obj.done);
+
+  miscutil.sortBy1Key(baseTokens, 'tokenIdSortKey', true);
+  miscutil.shuffle(baseTokens);
+
+  let path;
+  for (let i = 0; i < 100; i++) {
+    const prepConfig = createPrepConfig(baseConfig);
+    const config = { ...prepConfig };
+    config.data.collection.tokens = [...baseTokens.slice(0, i + 1)];
+    const newToken = config.data.collection.tokens[i];
+    calcRarityFromTokens(config);
+    path = createAnalyzeOVPage(config, i + 1, newToken);
+  }
+  open(path, { app: 'chrome' });
+
 }
 
 async function setupCollection(config) {
@@ -159,7 +198,7 @@ export async function fetchCollectionTokens(config) {
   await updateTokens(config, fetchCollectionTokensCallback);
 
   config.data.collection.fetchHasFinished = true;
-  config.data.collection.fetchedTime = new Date();
+  config.data.collection.fetchTime = new Date();
   config.data.collection.fetchDuration = myTimer.getSeconds();
 
   myTimer.ping(`(${config.projectId}) fetchCollectionTokens duration`);

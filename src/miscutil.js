@@ -42,12 +42,20 @@ export function range(start, stop, step) {
   return Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + (i * step));
 }
 
+export function sort(list, key1, ascending1, key2 = null, ascending2 = null) {
+  if (key2) {
+    return sortBy1Key(list, key1, ascending1);
+  }
+  return sortBy2Keys(list, key1, ascending1, key2, ascending2);
+}
+
 export function sortBy1Key(list, key, ascending = true) {
   if (ascending) {
     list.sort((a, b) => (b[key] < a[key]) ? 1 : ((a[key] < b[key]) ? -1 : 0));
   } else {
     list.sort((a, b) => (a[key] < b[key]) ? 1 : ((b[key] < a[key]) ? -1 : 0));
   }
+  return list;
 }
 
 export function sortBy2Keys(list, key1, ascending1 = true, key2, ascending2 = true) {
@@ -57,6 +65,7 @@ export function sortBy2Keys(list, key1, ascending1 = true, key2, ascending2 = tr
     }
     return ascending1 ? (a[key1] > b[key1] ? 1 : -1) : (b[key1] > a[key1] ? 1 : -1);
   });
+  return list;
 }
 
 export function addToListIfNotPresent(item, list) {

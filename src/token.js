@@ -11,6 +11,13 @@ import { ERRORCODES } from "./error.js";
 
 const log = createLogger();
 
+import http from 'http';
+import https from 'https';
+
+const httpAgent = new http.Agent({ keepAlive: true });
+const httpsAgent = new https.Agent({ keepAlive: true });
+const agent = (_parsedURL) => _parsedURL.protocol === 'http:' ? httpAgent : httpsAgent;
+
 const DEFAULT_FETCH_TIMEOUT = 10000;
 
 // EXPORTED
@@ -19,7 +26,7 @@ export async function updateTokens(config, isFinishedCallback) {
   const numTokens = config.data.collection.tokens.length;
 
   while (true) {
-    const nextTokens = getNextTokens(config.data.collection.tokens, config.fetchConcurrentAndSleep[0], config);
+    const nextTokens = getNextTokens(config.data.collection.tokens, config.fetchNumConcurrentDelayTimeout[0], config);
     let isInCache = false;
     if (nextTokens.length > 0) {
       log.debug(`(${config.projectId}) Get ${nextTokens.length} tokens`);
@@ -30,7 +37,7 @@ export async function updateTokens(config, isFinishedCallback) {
     }
     if (!isInCache || config.args.forceTokenFetch) {
       // Only pause if tokens have been fetched from source!
-      await miscutil.sleep(config.fetchConcurrentAndSleep[1]);
+      await miscutil.sleep(config.fetchNumConcurrentDelayTimeout[1]);
     }
 
     if (await isFinishedCallback(config)) {
@@ -189,7 +196,8 @@ async function fetchWithTimeout(resource, options = {}) {
   const id = setTimeout(() => controller.abort(), timeout);
   const response = await fetch(resource, {
     ...options,
-    signal: controller.signal
+    signal: controller.signal,
+    agent
   });
   clearTimeout(id);
   return response;

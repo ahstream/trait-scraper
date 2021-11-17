@@ -37,14 +37,50 @@ function pageTemplate(pageTitle) {
   return `
     <html><head><title>${pageTitle}</title>
     <style>
+      .flex-container {
+        display: flex;
+        // background-color: #bbdefb;
+        // height: 100%;
+        padding-top: 10px;
+        gap: 15px;
+        }
+      .flex-container > div {
+          // background: #ffecb3;
+          border: 3px solid black;
+          border-radius: 5px;
+          padding: 5px;
+      }
+      .normal-list {
+          // background: #ffecb3;
+      }
+      .hot-list {
+          background: lawngreen;
+      }
+      .thumb-list {
+          // background: #ffecb3;
+      }
         tr { vertical-align: top; }
-        td { padding-right: 10px; }
-        img.thumb { border: 1px solid black; height:100px; width:100px }
-        table, th, td {text-align: left;}
-        body, table, th, td {font-size: 18px; }
+        td { padding-right: 5px; }
+        img.thumb { border: 1px solid black; height:120px; width:120px }
+        img.ov-thumb { border: 1px solid black; margin: 1px; height:200px; width:200px;}
+        img.ov-thumb-size-1 { height:140px; width:140px; }
+        img.ov-thumb-size-2 { height:200px; width:200px; }
+
+        table, th, td {text-align: left; white-space: nowrap;}
+        body, table, th, td { font-size: 18px; }
         .blur {color: darkgray; }
         .hilite {
           background: lightgray;
+        }
+        .hilite-hot {
+          // background: forestgreen;
+          // color: white;
+          // border: 1px solid forestgreen;
+          background: lightgray;
+          font-weight: bold;
+        }
+        .lolite {
+          color: darkgray;
         }
         .level1, .level2, .level3, .level4, .level5
         {
@@ -139,6 +175,19 @@ function pageTemplate(pageTitle) {
         .table-desc {
             margin: 10px 0 8px 0;
         }
+        .left {
+            width:40%;
+            float: left;
+        }
+
+        .right {
+            width:60%;
+            float: right;
+        }
+
+        .container { width:100%; }
+
+
     </style>
     </head>
     <body>
@@ -255,6 +304,155 @@ export function createCollectionWebPage(config, bothFiles) {
   } else {
     return createCollectionAll(config);
   }
+}
+
+export function createAnalyzeOVPage(config, numTokens, newToken) {
+  const content = createAnalyzeOVHtml(config, numTokens, newToken);
+  const path = `${config.projectFolder}ov-${numTokens}.html`;
+  const title = `${numTokens.toString()} tokens OV analysis`;
+  writeFile(path, buildPage(title, 'mainNav', 'subNav', createPageHeaderHtml(title), content));
+
+  return path;
+}
+
+export function createAnalyzeOVHtml(config, numTokens, newToken) {
+  let html = '';
+
+  const scoreKey = 'rarityCountNorm';
+
+  html = html + createCollectionScriptHtml(config);
+  miscutil.sortBy1Key(config.data.collection.tokens, `${scoreKey}OV`, false);
+
+  const finalRanks = config.data.collection.tokens.map(obj => obj.finalRank).sort((a, b) => {
+    return a - b;
+  });
+
+  html = html + `<div>`;
+  html = html + `<span>Num tokens: ${numTokens} (of ${config.maxSupply})</span>`;
+  html = html + `New token ID: ${newToken.tokenId}, Final rank: ${newToken.finalRank}, rank: ${newToken.rarityCountNormRank}, OV: ${newToken.rarityCountNormOV.toFixed(0)}`;
+  html = html + `<br>Final ranks: ${finalRanks.slice(0, 10).join(', ')}`;
+  html = html + `<div><a href="./ov-${numTokens - 1}.html">Prev</a> | <a href="./ov-${numTokens + 1}.html">Next</a></div>`;
+  html = html + `</div>`;
+
+  html = html + `<div class="flex-container">`;
+
+  html = html + `
+    <div class="normal-list">
+    <table>
+    <tr style="background: black; color: white"><td colspan="100%">DESC</td></tr>
+    <tr>
+        <!--<th>ID</th>-->
+        <th>Image</th>
+        <th>Pct</th>
+        <th>OV</th>
+        <th>TF&nbsp;</th>
+        <th>T</th>
+        <th>Pr</th>
+        <th>Sc</th>
+        <th>Rnk</th>
+    </tr>`;
+
+  let numIncluded = 0;
+  for (const token of config.data.collection.tokens) {
+    if (!token.done) {
+      continue;
+    }
+    numIncluded++;
+
+    const score = token[`${scoreKey}`];
+    const rankPct = token[`${scoreKey}RankPct`];
+
+    const assetLink = `${BASE_ASSET_URL}/${config.contractAddress}/${token.tokenId}`;
+    const imageHtml = `<a target="_blank" href="${assetLink}"><img class="thumb" src="${normalizeURI(token.image)}"></a>`;
+
+    const rank = token[`${scoreKey}Rank`];
+    const rankHtml = `${rank}`;
+    const finalRankHtml = ''; // todo  token.finalRank ? ` <span class="lolite">(${token.finalRank})</span>` : '';
+
+    const rankPctHtml = `<a target="id_${token.tokenId}" href="${assetLink}">${normalizePctHtml(rankPct * 100)}</a>`;
+    const finalRankPctHtml = token.finalRankPct ? ` <span class="lolite">(${normalizePctHtml(token.finalRankPct * 100)})</span>` : '';
+
+    const traitCountminMaxHtml = `${token.minTraits}-${token.maxTraits}`;
+    const traitCountHtml = `${token.traitCount}`;
+    const traitCountFreqHtml = `${normalizePctHtml(token.traitCountFreq * 100)}`;
+
+    const ov = token[`${scoreKey}OV`];
+    const ovHtml = `${ov.toFixed(1)}`;
+
+    const scoreHtml = score.toFixed(0);
+
+    const priceHtml = '0.99'; // todo  token.price ? token.price.toFixed(2) : '-';
+
+    html = html + `
+        <tr class="hilite">
+            <!--<td>${token.tokenId}&nbsp;</td>-->
+            <td>${imageHtml}</td>
+            <td>${rankPctHtml}${finalRankPctHtml}</td>
+            <td><b>${ovHtml}</b></td>
+            <td><b>${traitCountFreqHtml}</b></td>
+            <td>${traitCountHtml}<!-- todo <span class="lolite">[${traitCountminMaxHtml}]</span>--></td>
+            <td>${priceHtml}</td>
+            <td class="lolite">${scoreHtml}</td>
+            <td>${rankHtml}${finalRankHtml}</td>
+        </tr>`;
+  }
+  html = html + `</table></div>`;
+
+  const token = config.data.collection.tokens[0];
+
+  const titleText = `Rank: 123 (2 % of 10000)\nFinal rank: 34 (1%)\nOV: 23.4\nTraits: 4 (7%, 3-8)\nScore: 345\nID: 1234\nPrice: 0.11 eth`;
+
+  html = html + `
+    <div class="hot-list">
+    <table>
+    <tr style="background: black; color: white"><td colspan="100%">DESC</td></tr>
+    <tr>
+        <!--<th>ID</th>-->
+        <th>Image</th>
+        <!--<th>OV</th>-->
+        <!--<th>TF</th>-->
+        <!--<th>Pr</th>-->
+        <th>Reason</th>
+    </tr>`;
+
+  const assetLink = `${BASE_ASSET_URL}/${config.contractAddress}/${token.tokenId}`;
+  const imageHtml = `<a target="_blank" href="${assetLink}"><img title="${titleText}" class="thumb" src="${normalizeURI(token.image)}"></a>`;
+
+  const ov = token[`${scoreKey}OV`];
+  const ovHtml = `${ov.toFixed(1)}`;
+  const traitFreqHtml = '2';
+  const priceHtml = '0.25';
+
+  html = html + `
+        <tr class="hilite-hot">
+            <!--<td>${token.tokenId}&nbsp;</td>-->
+            <td>${imageHtml}</td>
+            <!--<td><b>${ovHtml}</b></td>-->
+            <!--<td><b>${traitFreqHtml}</b></td>-->
+            <!--<td>${priceHtml}</td>-->
+            <td>Only 1 trait (23%)<br>OV 14.9<br>Price 0.99</td>
+        </tr>`;
+  html = html + `</table></div>`;
+
+  html = html + `<div class="thumb-list">`;
+  for (const token of config.data.collection.tokens) {
+    if (!token.done) {
+      continue;
+    }
+    0;
+    const titleText = `Rank: 123 (2 % of 10000)\nFinal rank: 34 (1%)\nOV: 23.4\nTraits: 4 (7%, 3-8)\nScore: 345\nID: 1234\nPrice: 0.11 eth`;
+    const assetLink = `${BASE_ASSET_URL}/${config.contractAddress}/${token.tokenId}`;
+    html = html + `<a target="_blank" href="${assetLink}"><img title="${token.finalRank}\n${titleText}" class="ov-thumb" src="${normalizeURI(token.image)}"></a>`;
+  }
+  html = html + `</div>`;
+
+  html = html + `</div>`;
+
+  return html;
+}
+
+function normalizePctHtml(val) {
+  return val >= 1 ? val.toFixed(0) : val.toFixed(1);
 }
 
 function createCollectionAll(config) {

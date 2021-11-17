@@ -1,16 +1,9 @@
 {
   "projects": {
-    "apewives": {
-      "tokenIdRange": [1, 10000],
-      "contractAddress": "0xf1268733c6fb05ef6be9cf23d24436dcd6e0b35e",
-      "fetchTokenOptions": {"concurrent": 150, "delay": 150, "timeout": 8000},
-      "includeNonStringValues": false
-    },
     "horizon": {
       "poll": true,
       "tokenIdRange": [1, 6999],
-      "contractAddress": "0x36A52262a85Bf8FE213267DA4Ed85e42e1eFeD82",
-      "reveal": [123, "xxxxxx"]
+      "contractAddress": "0x36A52262a85Bf8FE213267DA4Ed85e42e1eFeD82"
     },
     "divineanarchy": {
       "poll": true,
@@ -83,7 +76,9 @@
     },
     "fatapeclub": {
       "tokenIdRange": [1, 9999],
-      "contractAddress": "0xF3114DD5c5b50a573E66596563D15A630ED359b4"
+      "contractAddress": "0xF3114DD5c5b50a573E66596563D15A630ED359b4",
+      "numConcurrent": 2,
+      "fetchTokensSleepMsec": 20
     },
     "ethertroopers": {
       "tokenIdRange": [1, 8888],
@@ -112,6 +107,11 @@
     "coolkitty": {
       "tokenIdRange": [1, 3852],
       "contractAddress": "0x78ad336e577c99774618a470f14a9fefdb371d2d"
+    },
+    "apewives": {
+      "tokenIdRange": [1, 10000],
+      "contractAddress": "0xf1268733c6fb05ef6be9cf23d24436dcd6e0b35e",
+      "fetchConcurrentAndSleep": [10, 300]
     },
     "richgator": {
       "tokenIdRange": [1, 2222],
@@ -143,15 +143,15 @@
       }
     }
   },
-  "includeNonStringValues": false,
   "rules": {
     "numberValues": false,
     "traitCount": true,
     "scoreKey": "rarityCountNorm",
     "weight": []
   },
-  "fetchTokenOptions": {"concurrent": 50, "delay": 100, "timeout": 5000},
-  "fetchNumConcurrentDelayTimeout": [50, 100, 5000],
+  "fetchConcurrentAndSleep": [50, 100],
+  "fetchNumConcurrent": 20,
+  "fetchSleepBetween": 250,
   "pollSleepBetweenReveal": 1000,
   "pollForRevealTokenIds": [296, 452, 526, 789, 1234, 2345, 3456],
   "freqInfoLogSecs": 5,

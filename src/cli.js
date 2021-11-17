@@ -8,7 +8,8 @@ import fetch from 'node-fetch';
 
 import { createLogger } from './lib/loggerlib.js';
 
-import { fetchCollections, pollCollections } from './collection.js';
+import { fetchCollections, pollCollections, analyzeOV } from './collection.js';
+import { reveal } from './collection2.js';
 import { testCollection } from './test.js';
 import { analyzeCollection } from './analyze.js';
 import { getAssets, pollAssets } from './opensea.js';
@@ -60,6 +61,13 @@ async function runProgram() {
   log.info('projectId', projectId);
 
   switch (cmd) {
+    case 'reveal':
+      await reveal(projectId, {
+        forceTokenFetch: options.forcetokenfetch,
+        skipOpensea: options.skipopensea,
+        silent: options.silent,
+      });
+      break;
     case 'analyze':
       await analyzeCollection({ projectId });
       break;
@@ -76,6 +84,13 @@ async function runProgram() {
         forceTokenFetch: options.forcetokenfetch,
         skipOpensea: options.skipopensea,
         silent: options.silent,
+      });
+      break;
+    case 'ov':
+      await analyzeOV(projectId, {
+        forceTokenFetch: false,
+        skipOpensea: true,
+        silent: true,
       });
       break;
     case 'test':

@@ -143,16 +143,17 @@ function convertAsset(asset) {
     permalink: asset?.permalink,
     basePrice: asset?.sell_orders && asset?.sell_orders[0] ? asset.sell_orders[0].base_price : null,
     decimals: asset?.sell_orders && asset?.sell_orders[0] ? asset.sell_orders[0].payment_token_contract?.decimals ?? null : null,
+    currency: asset?.sell_orders && asset?.sell_orders[0] ? asset.sell_orders[0].payment_token_contract?.symbol : null,
     listingDate: asset?.sell_orders && asset?.sell_orders[0] ? asset.sell_orders[0].created_date ?? null : null,
     lastSalePrice: asset?.last_sale?.total_price ?? null,
     lastSaleDecimals: asset?.last_sale?.payment_token?.decimals ?? null,
     lastSaleDate: asset?.last_sale?.event_timestamp ?? null,
-    currency: asset?.sell_orders && asset?.sell_orders[0] ? asset.sell_orders[0].payment_token_contract?.symbol : null,
+    lastSaleCurrency: asset?.last_sale?.payment_token?.symbol ?? null,
   };
   // todo convertedAsset.lastSaleDate = convertedAsset.lastSaleDate ? new Date(convertedAsset.lastSaleDate) : new Date('1900-01-01');
 
-  convertedAsset.price = convertedAsset.basePrice && convertedAsset.decimals ? convertedAsset.basePrice / Math.pow(10, convertedAsset.decimals) : null;
-  convertedAsset.lastPrice = convertedAsset.lastSalePrice && convertedAsset.lastSaleDecimals ? convertedAsset.lastSalePrice / Math.pow(10, convertedAsset.lastSaleDecimals) : null;
+  convertedAsset.price = convertedAsset.basePrice && convertedAsset.decimals && convertedAsset.currency === 'ETH' ? convertedAsset.basePrice / Math.pow(10, convertedAsset.decimals) : null;
+  convertedAsset.lastPrice = convertedAsset.lastSalePrice && convertedAsset.lastSaleDecimals && convertedAsset.lastSaleCurrency === 'ETH' ? convertedAsset.lastSalePrice / Math.pow(10, convertedAsset.lastSaleDecimals) : null;
   convertedAsset.isBuynow = convertedAsset.price && convertedAsset.price > 0 && convertedAsset.currency === 'ETH';
 
   return convertedAsset;

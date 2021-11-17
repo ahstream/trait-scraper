@@ -14,7 +14,21 @@ const TRAIT_COUNT_TYPE = 'xxTraitCountxx';
 export function calcRarity(config) {
   addTokenNoneTrait(config.data.collection);
   calcGlobalRarity(config.data.collection);
-  calcTokenRarity(config.data.collection, config);
+  calcTokenRarity(config.data.collection, config.rules.scoreKey);
+  calcRanks(config.data.collection);
+  calcOutliers(config);
+}
+
+export function calcRarityFromTokens(config) {
+  for (const token of config.data.collection.tokens) {
+    addGlobalTraitCount(token.traitCount, config.data.collection, token.tokenId);
+    for (const trait of token.traits) {
+      addGlobalTrait(trait, config.data.collection, token.tokenId);
+    }
+  }
+
+  calcGlobalRarity(config.data.collection);
+  calcTokenRarity(config.data.collection, config.rules.scoreKey);
   calcRanks(config.data.collection);
   calcOutliers(config);
 }
@@ -102,7 +116,7 @@ function calcGlobalTraitCountsRarity(collection) {
   }
 }
 
-export function calcTokenRarity(collection, config) {
+export function calcTokenRarity(collection, scoreKey) {
   let numTokens = 0;
   const numDone = countDone(collection.tokens);
   const counts = Object.values(collection.traitCounts.data).map(obj => obj.numValue);
@@ -151,12 +165,20 @@ export function calcTokenRarity(collection, config) {
     token.minTraits = minTraits;
     token.maxTraits = maxTraits;
 
+    /*
+    if (collection.tokens.length === 3) {
+      log.info(`-------------------------------${traitCount}, ${collection.traitCounts.data[traitCount.toString()].count}, ${token.traitCountFreq}`);
+      log.info(collection.tokens);
+      log.info(collection.traitCounts);
+    }
+     */
+
     token.rarity = sumRarity;
     token.rarityNorm = sumRarityNorm;
     token.rarityCount = sumRarityCount;
     token.rarityCountNorm = sumRarityCountNorm;
 
-    token.score = token[`${config.rules.scoreKey}`];
+    token.score = token[`${scoreKey}`];
 
     token.hasRarity = token.rarity > 0;
   }
