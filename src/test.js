@@ -7,7 +7,6 @@ import {
 
 import { createLogger } from "./lib/loggerlib.js";
 import { pollForReveal } from "./reveal.js";
-import { fetchCollectionTokens } from "./collection.js";
 
 const log = createLogger();
 

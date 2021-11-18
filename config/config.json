@@ -1,138 +1,114 @@
 {
   "projects": {
     "apewives": {
+      "disabled": false,
       "tokenIdRange": [1, 10000],
       "contractAddress": "0xf1268733c6fb05ef6be9cf23d24436dcd6e0b35e",
-      "fetchTokenOptions": {"concurrent": 150, "delay": 150, "timeout": 8000},
-      "includeNonStringValues": false
-    },
-    "horizon": {
-      "poll": true,
-      "tokenIdRange": [1, 6999],
-      "contractAddress": "0x36A52262a85Bf8FE213267DA4Ed85e42e1eFeD82",
-      "reveal": [123, "xxxxxx"]
-    },
-    "divineanarchy": {
-      "poll": true,
-      "tokenIdRange": [1, 10001],
-      "contractAddress": "0xc631164B6CB1340B5123c9162f8558c866dE1926"
-    },
-    "goatsociety": {
-      "poll": true,
-      "tokenIdRange": [1, 10000],
-      "contractAddress": "0x2F14F1b6c350C41801b2b7BA9445670D7E2FFc70"
-    },
-    "sipherian": {
-      "poll": true,
-      "tokenIdRange": [1, 10000],
-      "contractAddress": "0x09E0dF4aE51111CA27d6B85708CFB3f1F7cAE982"
-    },
-    "testflight": {
-      "poll": true,
-      "tokenIdRange": [1, 10000],
-      "contractAddress": "0xFDb760b4DE27fd1a3377840bF502EbC0732A5D9d"
-    },
-    "alpies": {
-      "poll": true,
-      "tokenIdRange": [1, 5026],
-      "contractAddress": "0x57a7c5d10c3f87f5617ac1c60da60082e44d539e"
-    },
-    "smiles": {
-      "poll": true,
-      "tokenIdRange": [1, 8888],
-      "contractAddress": "0x177EF8787CEb5D4596b6f011df08C86eb84380dC"
-    },
-    "notarug": {
-      "poll": true,
-      "tokenIdRange": [1, 5000],
-      "contractAddress": "0x5f7cEdF538262661F06F9F5a0D9230c7B65a3f3f"
-    },
-    "rabbitars": {
-      "tokenIdRange": [1, 11953],
-      "contractAddress": "0x65c234d041f9ef96e2f126263727dfa582206d82",
-      "fetchConcurrentAndSleep": [25, 250]
+      "fetchTokenOptions": {"concurrent": 100, "delayBetweenBatches": 250, "timeout": 5000},
+      "rules": {
+        "scoreKey": "rarityCountNorm",
+        "ignoreNumberTraits": true,
+        "maxPrice": 22.7,
+        "maxTokens": 100,
+        "hotMaxTraits": 1,
+        "hotMinOV": 20,
+        "hotTraits": ["gold", "dots", "laser eyes"]
+      },
+      "milestones": {
+        "createResultEverySecs": [5, 20],
+        "createResultOnTokenNum": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+        "createResultOnNthToken": [100, 500],
+        "saveCacheEverySecs": 120,
+        "updateAssetsEverySecs": 3600
+      }
     },
     "modz": {
+      "disabled": false,
       "tokenIdRange": [1, 5555],
       "contractAddress": "0x50e712b3a260d7639179e8277836253461418f23"
     },
-    "goons": {
-      "tokenIdRange": [1, 9696],
-      "contractAddress": "0x8442DD3e5529063B43C69212d64D5ad67B726Ea6"
+    "pixelnauts": {
+      "tokenIdRange": [1, 10000],
+      "contractAddress": "0x27cC171B16FdD2224E1f93eD7DccFcc6790cA4BF"
     },
-    "cupcat": {
+    "strongapeclub": {
       "tokenIdRange": [1, 5000],
-      "contractAddress": "0x8Cd8155e1af6AD31dd9Eec2cEd37e04145aCFCb3"
+      "contractAddress": "0xbf3EB06c55709674504C2181362D09b51AEaF0AA",
+      "rules": {
+        "maxPrice": 0.5,
+        "maxTokens": 300,
+        "hotMaxTraits": 1,
+        "hotMinOV": 55,
+        "hotTraits": [
+          "the sealer man", "sealer man", "the jinn appearing",
+          "jinn appearing", "the wolf", "wolf", "the leader", "leader", "the mad titan",
+          "mad titan", "gold", "dots", "laser eyes"
+        ]
+      }
     },
-    "pandadynasty": {
-      "tokenIdRange": [0, 8887],
-      "contractAddress": "0x8e0543Eacd5078ba9Db88F34e2cBc24b7c2Eb790",
-      "fetchNumConcurrent": 50
+    "angryapearmy": {
+      "tokenIdRange": [0, 3333],
+      "contractAddress": "0x77640cf3F89A4F1B5CA3A1e5c87f3F5B12ebf87e"
     },
-    "wickedmonsters": {
-      "tokenIdRange": [1, 6666],
-      "contractAddress": "0x0b35406f0215422ae1fd33560f11e92799150ad6"
-    },
-    "pandaparadise": {
-      "tokenIdRange": [1, 8888],
-      "contractAddress": "0x24998f0A028d197413EF57C7810f7a5EF8B9FA55"
-    },
-    "skullx": {
+    "bricktopians": {
       "tokenIdRange": [1, 10000],
-      "contractAddress": "0x1DC5d3b2162F9500D7dDeC14eb0ba9Ccb43bc20c"
+      "contractAddress": "0x9eEeAF684E228C2D5C89435e010acC02c41Dc86B",
+      "hotTraitsEquals": [
+        "kanyetopian", "draketopian", "youngthugtopian", "kanye", "drake", "youngthug", "gold",
+        "dots", "laser eyes"
+      ],
+      "hotTraits2": [
+        ["body", "decapitated"], ["hat", "preposterotopian hat"], "preposterotopian hat",
+        "translucetopian"
+      ],
+      "hotTraitsContains": [
+        "translucetopian",
+        ["other", "translucetopian pigeon", 10, 10],
+        ["mask", "visorhelmet", 13, 100],
+        ["skin", "alien.a", 100, 100],
+        ["haircolour", "alien", 100], ["skin", "skull", 100, 100],
+        ["other", "bananapeel", 100, 100],
+        ["other", "snakenecklace", 100, 100],
+        "preposterotopian",
+        "preposterotopian hat",
+        ["hat", "preposterotopian hat", 10, 10],
+        ["other", "bubble-gum blow", 200, 200],
+        ["*", "goldtopian", 20, 20],
+        ["body", "brickhead", 1],
+        ["other", "octopus", 100],
+        ["other", "cryingtears", 100, 100],
+        ["body", "trafficcone"],
+        ["body", "decapitated"],
+        ["skin", "skull", 100, 100]
+      ]
     },
-    "fatapeclub": {
-      "tokenIdRange": [1, 9999],
-      "contractAddress": "0xF3114DD5c5b50a573E66596563D15A630ED359b4"
-    },
-    "ethertroopers": {
-      "tokenIdRange": [1, 8888],
-      "contractAddress": "0xe0a2e8a4d94e0c395e88aad7c9074d73a115885d"
-    },
-    "humanoids": {
-      "tokenIdRange": [1, 10000],
-      "contractAddress": "0x3a5051566b2241285be871f650c445a88a970edd"
-    },
-    "platypunks": {
-      "tokenIdRange": [1, 3567],
-      "contractAddress": "0x495f947276749ce646f68ac8c248420045cb7b5e"
-    },
-    "bushidos": {
-      "tokenIdRange": [0, 8887],
-      "contractAddress": "0xd2aad45015090f8d45ad78e456b58dd61fb7cd79"
-    },
-    "fckface": {
-      "tokenIdRange": [1, 5555],
-      "contractAddress": "0x495f947276749ce646f68ac8c248420045cb7b5e"
-    },
-    "dreamers": {
-      "tokenIdRange": [1, 13505],
-      "contractAddress": "0x10064373e248bc7253653ca05df73cf226202956"
-    },
-    "coolkitty": {
-      "tokenIdRange": [1, 3852],
-      "contractAddress": "0x78ad336e577c99774618a470f14a9fefdb371d2d"
-    },
-    "richgator": {
-      "tokenIdRange": [1, 2222],
-      "contractAddress": "0xe80b2538f33b15c8070db18b1a1cd3bb961c34f1"
-    },
-    "babyapes": {
-      "tokenIdRange": [1, 2173],
-      "contractAddress": "0x6efd52cb0eb89151f859e6cb152e199ec1045961"
-    },
-    "waw": {
-      "tokenIdRange": [1, 10000],
-      "contractAddress": "0x338866f8ba75bb9d7a00502e11b099a2636c2c18"
-    },
-    "partydegenerates": {
-      "tokenIdRange": [0, 9999],
-      "contractAddress": "0x4be3223f8708ca6b30d1e8b8926cf281ec83e770"
+    "partygrandpa": {
+      "urls": [
+        "https://discord.com/channels/900373453784350781/900373454581297232",
+        "https://retirementclubnft.com/"
+      ],
+      "tokenIdRange": [0, 10000],
+      "contractAddress": "0x60d9b4F9d85695274a5777537F204675082Bd745",
+      "rules": {
+        "maxPrice": 0.3,
+        "maxTokens": 300,
+        "hotMaxTraits": 1,
+        "hotMinOV": 20,
+        "hotTraits": [
+          "santa", "the prisoner ", "the party guy", "the astronaut ", "the farmer ",
+          "the French DJ ", "the Hippie ", "the Hipster", "the Sheriff", "the Joker",
+          "001",
+          "the Rapper", "the Playboy", "the Superstar", "the Influencer", "the Wrestler", "the MVP",
+          "RC7", "the Pirate", "the GOAT", "the King", "the Visionary",
+          "gold", "dots", "laser eyes"
+        ]
+      }
     },
     "nfteams": {
+      "disabled": false,
       "tokenIdRange": [1, 10000],
       "contractAddress": "0x03f5cee0d698c24a42a396ec6bdaee014057d4c8",
-      "rules": {
+      "___rules": {
         "requiredTraitTypes": ["Character"],
         "numberValues": false,
         "traitCount": false,
@@ -143,25 +119,30 @@
       }
     }
   },
-  "includeNonStringValues": false,
-  "rules": {
-    "numberValues": false,
-    "traitCount": true,
-    "scoreKey": "rarityCountNorm",
-    "weight": []
-  },
-  "fetchTokenOptions": {"concurrent": 50, "delay": 100, "timeout": 5000},
-  "fetchNumConcurrentDelayTimeout": [50, 100, 5000],
-  "pollSleepBetweenReveal": 1000,
   "pollForRevealTokenIds": [296, 452, 526, 789, 1234, 2345, 3456],
-  "freqInfoLogSecs": 5,
   "autoOpen": {
     "firstResultPage": true, "hotPct": 0.005, "maxHotItems": 10
   },
-  "milestones": {
-    "createResultEverySecs": 120, "donePct": [0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5],
-    "saveCacheEverySecs": 60
+  "DIVIDER": "------------------------------------------------------------------------",
+  "fetchTokenOptions": {"concurrent": 100, "delayBetweenBatches": 250, "timeout": 5000},
+  "rules": {
+    "scoreKey": "rarityCountNorm",
+    "ignoreNumberTraits": true,
+    "maxPrice": 0.5,
+    "maxTokens": 100,
+    "hotMaxTraits": 1,
+    "hotMinOV": 20,
+    "hotTraits": ["gold", "dots", "laser eyes"]
   },
+  "milestones": {
+    "createResultEverySecs": [5, 20],
+    "createResultOnTokenNum": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+    "createResultOnNthToken": [100, 500],
+    "saveCacheEverySecs": 120,
+    "updateAssetsEverySecs": 3600
+  },
+  "pollSleepBetweenReveal": 1000,
+  "freqInfoLogSecs": 5,
   "analyze": [
     0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50,
     0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1
@@ -184,10 +165,6 @@
   "numConcurrentTest": [
     10, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400
   ],
-  "minTraitsNeeded": 2,
-  "minDifferentTraitValuesNeeded": 2,
-  "etherscanURI": "http://node1.web3api.com/",
-  "tokenURISignatur": "0xc87b56dd",
   "opensea": {
     "pollAssetsCheckFreqSecs": 5,
     "pollAssetsUpdateFreqSecs": 60

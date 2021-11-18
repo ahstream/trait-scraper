@@ -23,7 +23,14 @@ async function fetch(uri, method, options = {}, responseFormat = 'json') {
   try {
     const response = await fetchWithTimeout(uri, { method, ...options });
     if (response.ok) {
-      const responseData = responseFormat === 'json' ? await response.json() : await response.text();
+      let responseData;
+      if (responseFormat === 'json') {
+        responseData = await response.json();
+      } else if (responseFormat === 'blob') {
+        responseData = await response.blob();
+      } else {
+        responseData = await response.text();
+      }
       return { status: '200', data: responseData, headers: response.headers };
     }
     return { status: response.status.toString(), data: null, headers: response.headers };
@@ -38,7 +45,7 @@ async function fetch(uri, method, options = {}, responseFormat = 'json') {
       return { status: 'connectionReset', data: error, headers: null };
     }
     if (error.code === 'ETIMEDOUT') {
-      return { status: 'timeout', data: error, headers: null };
+      return { status: 'connectionTimeout', data: error, headers: null };
     }
     return { status: 'unknownError', data: error, headers: null };
   }

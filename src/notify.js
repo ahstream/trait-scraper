@@ -8,3 +8,7 @@ export function notifyRevealed() {
 export function notifyNewResults() {
   open(fileutil.toAbsFilepath('./audio/new-results-notification.mp3'), { app: { name: 'firefox' } });
 }
+
+export function notifyHotToken() {
+  open(fileutil.toAbsFilepath('./audio/new-results-notification.mp3'), { app: { name: 'firefox' } });
+}

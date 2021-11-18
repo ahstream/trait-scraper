@@ -2,7 +2,6 @@ import * as miscutil from "./miscutil.js";
 import * as timer from "./timer.js";
 import { getConfig, debugToFile } from "./config.js";
 import * as db from "./db.js";
-import { addTokenData } from "./token.js";
 import * as rarity from "./rarity.js";
 import * as webPage from "./webPage.js";
 import {
@@ -13,11 +12,8 @@ import {
   countSkip
 } from "./count.js";
 
-import { fetchCollection, createCollectionTokens } from './collection.js';
-
 import open from "open";
 import { createLogger } from "./lib/loggerlib.js";
-import { createAnalyzeWebPage } from "./webPage.js";
 
 const log = createLogger();
 

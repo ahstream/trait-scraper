@@ -1,6 +1,10 @@
 import { sleep } from "./miscutil.js";
 import { get } from "./fetch.js";
 
+import { createLogger } from "./lib/loggerlib.js";
+
+const log = createLogger();
+
 import _ from 'lodash';
 
 const queue = [];
@@ -16,45 +20,52 @@ require('events').EventEmitter.prototype._maxListeners = 125;
 // EXPORTED FUNCTIONS
 
 export async function fetchTokenURIs(projectId, inputArray, outputArray, fetchOptions, cacheRef = null, fetchFromCache = true, statsRef = null) {
-  console.log(inputArray[0]);
+  try {
+    queue.push(projectId);
+    if (queue && queue[0] !== projectId) {
+      log.info(`(${projectId}) Token fetcher is busy, wait for my turn to fetch tokens...`);
+    }
+    while (queue && queue[0] !== projectId) {
+      await sleep(500);
+    }
 
-  queue.push(projectId);
-  while (true) {
-    if (queue[0] !== projectId) {
-      console.log('fetchTokenURIs wait for my turn...');
-      await sleep(1000);
-    } else {
-      break;
+    log.info(`(${projectId}) Start fetching tokens...`);
+
+    const inputRef = [...inputArray];
+    const activeRef = [];
+
+    let numToProcess = inputRef.length;
+
+    while (true) {
+      if (inputRef.length === 0 && activeRef.length === 0) {
+        break;
+      }
+
+      const maxNumNew = activeRef.length < fetchOptions.concurrent ? fetchOptions.concurrent - activeRef.length : 0;
+      const items = inputRef.splice(0, maxNumNew);
+      const inCache = items.length ? existsInCache(cacheRef, items[0].url) : false;
+      // console.log('numProcessed, numLeft, numActive, numNew', numToProcess - inputRef.length, inputRef.length, activeRef.length, items.length);
+      log.debug(`processed: ${numToProcess - inputRef.length}, left: ${inputRef.length}, active: ${activeRef.length}, new: ${items.length}, ok: ${statsRef['200'] ?? 0}, timeout: ${statsRef.timeout ?? 0}, tooMany: ${statsRef['429'] ?? 0}, `);
+      // console.log('stats', statsRef);
+      items.forEach(item => {
+        getItem(item, activeRef, outputArray, fetchOptions.timeout, cacheRef, fetchFromCache, statsRef);
+      });
+
+      if (!inCache) {
+        await sleep(fetchOptions.delayBetweenBatches);
+      }
+    }
+
+    // Remove my projectId from queue to let other projects use this module!
+    queue.shift();
+
+    log.info(`(${projectId}) End fetching tokens!`);
+  } catch (error) {
+    log.error(error);
+    if (queue.length && queue[0] === projectId) {
+      queue.shift();
     }
   }
-
-  const inputRef = [...inputArray];
-  const activeRef = [];
-
-  let numToProcess = inputRef.length;
-
-  while (true) {
-    if (inputRef.length === 0 && activeRef.length === 0) {
-      break;
-    }
-
-    const maxNumNew = activeRef.length < fetchOptions.concurrent ? fetchOptions.concurrent - activeRef.length : 0;
-    const items = inputRef.splice(0, maxNumNew);
-    const inCache = items.length ? existsInCache(cacheRef, items[0].url) : false;
-    console.log('numProcessed, numLeft, numActive, numNew', numToProcess - inputRef.length, inputRef.length, activeRef.length, items.length);
-    items.forEach(item => {
-      getItem(item, activeRef, outputArray, fetchOptions.timeout, cacheRef, fetchFromCache, statsRef);
-    });
-
-    if (!inCache) {
-      await sleep(fetchOptions.delay);
-    }
-  }
-
-  // Remove my projectId from queue to let other projects use this module!
-  queue.shift();
-
-  console.log('fetchTokenURIs end!');
 }
 
 function getItemFromCache(key, cacheRef, fetchFromCache) {
@@ -69,6 +80,15 @@ function getItemFromCache(key, cacheRef, fetchFromCache) {
   return { status: '200', data };
 }
 
+function getRetryAfter(headers, valueIfNotFound) {
+  try {
+    const result = parseInt(headers.get('retry-after'));
+    return result ? result : valueIfNotFound;
+  } catch (error) {
+    return valueIfNotFound;
+  }
+}
+
 async function getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetchFromCache, statsRef, attempt = 1) {
   if (attempt === 1) {
     activeRef.push(item);
@@ -78,10 +98,18 @@ async function getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetch
   const result = itemFromCache ?? await get(item.url, { timeout: fetchTimeout });
 
   addToStats(result.status, statsRef);
+  // log.debug('stats', statsRef);
+  if (result.headers) {
+    log.debug('result.headers', result.headers);
+  }
+  if (!result.headers) {
+    log.debug('result.data', result.data);
+  }
 
   if (result.status === '429') {
-    console.log('429 headers:', result.headers);
-    const retryAfterSecs = parseInt(result.headers.get('retry-after')) ?? 2;
+    // console.log('429 headers:', result.headers);
+    const retryAfterSecs = getRetryAfter(result.headers, 2);
+    log.debug('retryAfterSecs', retryAfterSecs);
     setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetchFromCache, statsRef, attempt + 1), retryAfterSecs * 1000);
     return;
   } else if (result.status === 'timeout') {
@@ -96,6 +124,12 @@ async function getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetch
     // console.log('connectionReset');
     setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetchFromCache, statsRef, attempt + 1), 1000);
     return;
+  } else if (result.status === 'connectionTimeout') {
+    // console.log('connectionReset');
+    setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetchFromCache, statsRef, attempt + 1), 1000);
+    return;
+  } else if (result.status === '404') {
+    // do nothing, handle by caller!
   } else if (result.status === '200') {
     addToCache(cacheRef, item.url, result.data);
   } else {

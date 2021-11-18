@@ -32,7 +32,7 @@
     }
 
     .reveal-hot-col {
-      background: lawngreen;
+      background: white;
     }
 
     .reveal-image-col {
@@ -41,7 +41,7 @@
 
     .desc-row {
       width: 100%;
-      background: black;
+      background: slategrey;
       color: white;
       margin: 0 0 5px 0;
       padding: 2px 0;
@@ -52,7 +52,7 @@
     }
 
     .large-count {
-      font-size: 48px;
+      font-size: 42px;
     }
 
     reveal-token-col > table, th, td {
@@ -63,6 +63,10 @@
       border: 1px solid black;
       height: 120px;
       width: 120px
+    }
+
+    .new-hot-token {
+      background: greenyellow;
     }
 
     img.ov-thumb {
@@ -80,6 +84,14 @@
     img.ov-thumb-size-2 {
       height: 200px;
       width: 200px;
+    }
+
+    .page-main-nav {
+      width: 100%;
+      background: darkcyan;
+      color: white;
+      margin: 0;
+      padding: 3px;
     }
 
     tr {
@@ -252,19 +264,17 @@
   </style>
 </head>
 <body>
-<div class="page-main-nav">
-  {PAGE_MAIN_NAV}
+<div class="page-container">
+  <div class="page-main-nav">
+    &nbsp;How Rare Is It?
+  </div>
+  <h3>{PAGE_HEADER}</h3>
+  <div class="page-sub-nav">
+    {PAGE_SUB_NAV}
+  </div>
+  <div class="page-content">
+    {PAGE_CONTENT}
+  </div>
 </div>
-<div class="page-header">
-  {PAGE_HEADER}
-</div>
-<div class="page-sub-nav">
-  {PAGE_SUB_NAV}
-</div>
-<div class="page-content">
-  {PAGE_CONTENT}
-</div>
-
-
 </body>
 </html>

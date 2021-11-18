@@ -1,16 +1,7 @@
 import * as miscutil from "./miscutil.js";
-import { fetchTokenById, isTokenRevealed, getTokenRevealStatus } from "./token.js";
+import { fetchTokenById, getRevealedStatus } from "./token.js";
 import * as fileutil from "./fileutil.js";
-import { getConfig } from "./config.js";
 import * as tokenURI from "./tokenURI.js";
-import { fetchCollection } from './collection.js';
-import {
-  countDone,
-  countDoneConfig,
-  countSkippedConfig,
-  countDoneOrSkip,
-  countSkip
-} from "./count.js";
 
 import open from "open";
 import { createLogger } from "./lib/loggerlib.js";
@@ -38,8 +29,8 @@ async function getRevealedToken(config) {
   const pollForRevealTokenIds = config.pollForRevealTokenIds;
   const tokens = [];
   for (const tokenId of pollForRevealTokenIds) {
-    const token = await fetchTokenById(tokenId, config.contractAddress);
-    const revealStatus = await getTokenRevealStatus(token, config);
+    const token = await fetchTokenById(tokenId, config.collection.contractAddress);
+    const revealStatus = await getRevealedStatus(token, config);
     if (revealStatus > 0) {
       return token;
     } else if (revealStatus === 0) {

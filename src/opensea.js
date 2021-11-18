@@ -43,7 +43,7 @@ export async function getAssets(config) {
 
   const fromTokenId = config.tokenIdRange[0];
   const toTokenId = config.tokenIdRange[1];
-  const assets = await getAssetsByChunks(config.contractAddress, fromTokenId, toTokenId, config);
+  const assets = await getAssetsByChunks(config.collection.contractAddress, fromTokenId, toTokenId, config);
   const tokens = [];
   assets.forEach(asset => {
     const token = convertAsset(asset);
@@ -60,7 +60,7 @@ export async function getAssets(config) {
 export async function updateAssets(config) {
   const fromTokenId = config.tokenIdRange[0];
   const toTokenId = config.tokenIdRange[1];
-  const assets = await getAssetsByChunks(config.contractAddress, fromTokenId, toTokenId, config);
+  const assets = await getAssetsByChunks(config.collection.contractAddress, fromTokenId, toTokenId, config);
   assets.forEach(asset => {
     const token = convertAsset(asset);
     addToCache(config.cache.opensea.assets, token.tokenId, token);
@@ -150,7 +150,8 @@ function convertAsset(asset) {
     lastSaleDate: asset?.last_sale?.event_timestamp ?? null,
     lastSaleCurrency: asset?.last_sale?.payment_token?.symbol ?? null,
   };
-  // todo convertedAsset.lastSaleDate = convertedAsset.lastSaleDate ? new Date(convertedAsset.lastSaleDate) : new Date('1900-01-01');
+
+  convertedAsset.lastSaleDate = convertedAsset.lastSaleDate ? new Date(convertedAsset.lastSaleDate) : new Date('1900-01-01');
 
   convertedAsset.price = convertedAsset.basePrice && convertedAsset.decimals && convertedAsset.currency === 'ETH' ? convertedAsset.basePrice / Math.pow(10, convertedAsset.decimals) : null;
   convertedAsset.lastPrice = convertedAsset.lastSalePrice && convertedAsset.lastSaleDecimals && convertedAsset.lastSaleCurrency === 'ETH' ? convertedAsset.lastSalePrice / Math.pow(10, convertedAsset.lastSaleDecimals) : null;

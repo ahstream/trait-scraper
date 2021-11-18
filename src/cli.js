@@ -8,15 +8,14 @@ import fetch from 'node-fetch';
 
 import { createLogger } from './lib/loggerlib.js';
 
-import { fetchCollections, pollCollections, analyzeOV } from './collection.js';
-import { reveal } from './collection2.js';
+import { reveal } from './collection.js';
 import { testCollection } from './test.js';
 import { analyzeCollection } from './analyze.js';
 import { getAssets, pollAssets } from './opensea.js';
-import { debugToFile, getConfig } from './config.js';
-import { createStartPage, cleanWebPages } from './webPage.js';
-import { cleanCache } from "./cache.js";
-import { fetchTokenDataById } from './token.js';
+import { cleanHtml, cleanCache } from './tools.js';
+import { getConfig } from './config.js';
+import { range } from './miscutil.js';
+import { get } from './fetch.js';
 
 const log = createLogger();
 
@@ -44,9 +43,8 @@ async function runProgram() {
   program.option('--nodb', 'Do not get data from DB');
   program.option('--silent', 'Do not notify events');
   program.option('--sample', 'Use test samples');
-  program.option('--forcebuynow', '');
-  program.option('--forcetokenfetch', '');
-  program.option('--skipopensea', '');
+  program.option('--skiptokencache', '');
+  program.option('--skipassetsfetch', '');
   program.option('--value <value>', 'Arbitrary value');
   program.option('--id <value>', 'Token Id');
   program.option('--contract <value>', 'Contract address');
@@ -56,17 +54,25 @@ async function runProgram() {
   const cmd = program.args[0];
   const projectId = program.args[1];
 
-  log.info('options', options);
-  log.info('cmd', cmd);
-  log.info('projectId', projectId);
+  log.info(`cmd: ${cmd}, projectId: ${projectId}, options: ${options}`);
+  log.info('------------------------------------------------');
 
   switch (cmd) {
     case 'reveal':
       await reveal(projectId, {
-        forceTokenFetch: options.forcetokenfetch,
-        skipOpensea: options.skipopensea,
+        skipTokenCache: options.skiptokencache,
+        skipAssetsFetch: options.skipassetsfetch,
         silent: options.silent,
       });
+      break;
+    case 'foo':
+      foo();
+      break;
+    case 'cleanhtml':
+      cleanHtml(getConfig(null, null));
+      break;
+    case 'cleancache':
+      cleanCache(getConfig(null, null));
       break;
     case 'analyze':
       await analyzeCollection({ projectId });
@@ -105,12 +111,6 @@ async function runProgram() {
     case 'createstartpage':
       createStartPage(true);
       break;
-    case 'cleanwebpages':
-      cleanWebPages(true);
-      break;
-    case 'cleancache':
-      cleanCache();
-      break;
     /*
   case 'getassets':
     const result2 = await getAssets(config);
@@ -129,8 +129,32 @@ async function runProgram() {
     default:
       log.error(`Unknown command: ${cmd}`);
   }
-  log.info('Done!');
   // process.exit(0);
+}
+
+async function foo() {
+  const baseUrl = 'https://strongapeclub.com/SAC_metadata/';
+  const results = [];
+
+  // 3410
+  // range(1, 3410, 1).forEach(async (id) => {
+  const arr = range(501, 3410, 1);
+  for (let id of arr) {
+    const url = `${baseUrl}${id}.png`;
+    const result = await doFoo(url);
+    if (result.ok || result.status === 200 || result.status === '200') {
+      console.log(url, result);
+    } else if (result.status === 404 || result.status === '404') {
+      console.log('404', id);
+    } else {
+      console.log('Re-schedule id:', id, result);
+      // setTimeout(() => doFoo(url), 1000);
+    }
+  }
+}
+
+async function doFoo(url) {
+  return await get(url, { timeout: 10000 }, 'blob');
 }
 
 function getNextTokens(config, qty) {

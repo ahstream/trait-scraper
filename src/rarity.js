@@ -1,49 +1,212 @@
 import { createLogger } from "./lib/loggerlib.js";
-import {
-  countDone,
-} from "./count.js";
 import * as miscutil from "./miscutil.js";
-import { debugToFile } from "./config.js";
+import { addNoneTraits } from "./trait.js";
 import { Stats } from 'fast-stats';
+import * as timer from "./timer.js";
 
 const log = createLogger();
 
-const TRAIT_NONE_VALUE = 'xxNonexx';
 const TRAIT_COUNT_TYPE = 'xxTraitCountxx';
 
-export function calcRarity(config) {
-  addTokenNoneTrait(config.data.collection);
-  calcGlobalRarity(config.data.collection);
-  calcTokenRarity(config.data.collection, config.rules.scoreKey);
-  calcRanks(config.data.collection);
-  calcOutliers(config);
+export function calcRarity(collection, scoreKey) {
+  const myTimer = timer.create();
+  addNoneTraits(collection);
+  // myTimer.ping(`addNoneTraits duration`);
+  calcGlobalRarity(collection, scoreKey);
+  // myTimer.ping(`calcGlobalRarity duration`);
+  calcTokenRarity(collection, scoreKey);
+  // myTimer.ping(`calcTokenRarity duration`);
+  calcRanks(collection);
+  // myTimer.ping(`calcRanks duration`);
+  calcOutliers(collection);
+  // myTimer.ping(`calcOutliers duration`);
 }
 
-export function calcRarityFromTokens(config) {
-  for (const token of config.data.collection.tokens) {
-    addGlobalTraitCount(token.traitCount, config.data.collection, token.tokenId);
-    for (const trait of token.traits) {
-      addGlobalTrait(trait, config.data.collection, token.tokenId);
+function calcGlobalRarity(collection, scoreKey) {
+  calcGlobalTraitsRarity(collection, scoreKey);
+  calcGlobalTraitCountsRarity(collection); // Need to be done after calcGlobalTraitsRarity!
+}
+
+function calcGlobalTraitsRarity(collection, scoreKey) {
+  const numTokens = collection.tokens.length;
+
+  // Normalize score key since traits do not have count (rarityCount*)!
+  const normalizedScoreKey = scoreKey.replace('Count', '');
+
+  let numTraits = 0;
+  let numTraitValues = 0;
+
+  for (let trait of Object.keys(collection.traits.items)) {
+    numTraits++;
+    let numTraitValuesInTrait = 0;
+    for (let traitValue of Object.keys(collection.traits.items[trait].items)) {
+      numTraitValues++;
+      numTraitValuesInTrait++;
+      const freq = collection.traits.items[trait].items[traitValue].count / numTokens;
+      collection.traits.items[trait].items[traitValue].freq = freq;
+      collection.traits.items[trait].items[traitValue].rarity = 1 / freq;
     }
+
+    collection.traits.items[trait].numTraitValues = numTraitValuesInTrait;
   }
 
-  calcGlobalRarity(config.data.collection);
-  calcTokenRarity(config.data.collection, config.rules.scoreKey);
-  calcRanks(config.data.collection);
-  calcOutliers(config);
+  collection.traits.numTraitValues = numTraitValues;
+  collection.traits.numTraits = numTraits;
+  collection.traits.numValuesPerTrait = numTraitValues / numTraits;
+
+  for (let trait of Object.keys(collection.traits.items)) {
+    for (let traitValue of Object.keys(collection.traits.items[trait].items)) {
+      const normFactor = (collection.traits.numValuesPerTrait / collection.traits.items[trait].numTraitValues);
+      collection.traits.items[trait].normFactor = normFactor;
+      collection.traits.items[trait].items[traitValue].rarityNorm = collection.traits.items[trait].items[traitValue].rarity * normFactor;
+      collection.traits.items[trait].items[traitValue].score = collection.traits.items[trait].items[traitValue][normalizedScoreKey];
+    }
+  }
 }
 
-function calcOutliers(config) {
-  calcOutlier(config, 'score');
-  calcOutlier(config, 'rarityCountNorm');
-  calcOutlier(config, 'rarityCount');
-  calcOutlier(config, 'rarityNorm');
-  calcOutlier(config, 'rarity');
+function calcGlobalTraitCountsRarity(collection) {
+  const numTokens = collection.tokens.length;
+  const normFactor = (collection.traits.numValuesPerTrait / Object.keys(collection.traitCounts.items).length);
+
+  collection.traits.normFactor = normFactor;
+
+  for (let trait of Object.keys(collection.traitCounts.items)) {
+    const freq = collection.traitCounts.items[trait].count / numTokens;
+    const rarity = 1 / freq;
+    collection.traitCounts.items[trait].freq = freq;
+    collection.traitCounts.items[trait].rarity = rarity;
+    collection.traitCounts.items[trait].rarityNorm = rarity * normFactor;
+  }
+
+  const counts = Object.values(collection.traitCounts.items).map(obj => obj.idSortKey);
+
+  collection.traitCounts.minTraits = Math.min(...counts);
+  collection.traitCounts.maxTraits = Math.max(...counts);
 }
 
-function calcOutlier(config, scoreKey) {
-  const scores = config.data.collection.tokens.map(token => token[scoreKey]).filter(score => typeof score === 'number');
-  miscutil.sortBy1Key(scores, scoreKey, true);
+export function calcTokenRarity(collection, scoreKey) {
+  const numTokens = collection.tokens.length;
+
+  // Normalize score key since traits do not have count (rarityCount*)!
+  const normalizedScoreKey = scoreKey.replace('Count', '');
+
+  for (let token of collection.tokens) {
+    let sumRarity = 0;
+    let sumRarityNorm = 0;
+
+    for (let trait of token.traits) {
+      const traitType = trait.trait_type;
+      const traitValue = trait.value;
+
+      trait.numWithTrait = collection.traits.items[traitType].items[traitValue].count;
+      trait.freq = collection.traits.items[traitType].items[traitValue].freq;
+      trait.rarity = collection.traits.items[traitType].items[traitValue].rarity;
+      trait.rarityNorm = collection.traits.items[traitType].items[traitValue].rarityNorm;
+      trait.score = trait[normalizedScoreKey];
+
+      sumRarity = sumRarity + trait.rarity;
+      sumRarityNorm = sumRarityNorm + trait.rarityNorm;
+    }
+
+    token.numWithTraitCount = collection.traitCounts.items[token.traitCount].count;
+    token.traitCountFreq = token.numWithTraitCount / numTokens;
+
+    token.rarity = sumRarity;
+    token.rarityCount = sumRarity + collection.traitCounts.items[token.traitCount].rarity;
+    token.rarityNorm = sumRarityNorm;
+    token.rarityCountNorm = sumRarityNorm + collection.traitCounts.items[token.traitCount].rarityNorm;
+
+    token.score = token[`${scoreKey}`] ?? null;
+
+    token.hasRarity = token.rarity > 0;
+  }
+}
+
+export function calcTemporaryTokenRarity(token, collection, scoreKey) {
+  if (!collection.calcOutlier) {
+    // Only possible to calc temp rarity + OV if calcOutlier has been defined!
+    return;
+  }
+
+  const numTokens = collection.tokens.length;
+
+  let sumRarity = 0;
+  let sumRarityNorm = 0;
+
+  for (let trait of token.traits) {
+    const traitType = trait.trait_type;
+    const traitValue = trait.value;
+
+    const tempFreq = 1 / numTokens;
+    const normFactor = collection.traits.items[traitType].normFactor;
+
+    const freq = collection.traits.items[traitType].items[traitValue].freq ?? tempFreq;
+    const rarity = collection.traits.items[traitType].items[traitValue].rarity ?? 1 / freq;
+    const rarityNorm = collection.traits.items[traitType].items[traitValue].rarityNorm ?? rarity * normFactor;
+
+    sumRarity = sumRarity + rarity;
+    sumRarityNorm = sumRarityNorm + rarityNorm;
+  }
+
+  const tempTraitCountFreq = 1 / numTokens;
+  const traitCountRarity = collection.traitCounts.items[token.traitCount].rarity ?? 1 / tempTraitCountFreq;
+
+  if (!token.temp) {
+    token.temp = {};
+  }
+
+  token.temp.rarity = sumRarity;
+
+  token.temp.rarityCount = sumRarity + traitCountRarity;
+  token.temp.rarityNorm = sumRarityNorm;
+  token.temp.rarityCountNorm = sumRarityNorm + (traitCountRarity * collection.traits.normFactor);
+
+  token.temp.score = token.temp[`${scoreKey}`] ?? null;
+
+  token.temp.scoreOV = collection.calcOutlier(token.temp.score);
+}
+
+export function calcRanks(collection) {
+  calcRank(collection.tokens, 'score', false);
+  // calcRank(collection.tokens, 'rarity', false);
+  // calcRank(collection.tokens, 'rarityNorm', false);
+  // calcRank(collection.tokens, 'rarityCount', false);
+  // calcRank(collection.tokens, 'rarityCountNorm', false);
+}
+
+function calcRank(tokens, scoreKey, ascending) {
+  const numTokens = tokens.length;
+  miscutil.sort(tokens, scoreKey, ascending);
+  const rankKey = `${scoreKey}Rank`;
+  let rank = 1;
+  let lastRank = 1;
+  let lastScore = 0;
+  for (let i = 0; i < numTokens; i++) {
+    const item = tokens[i];
+    const thisScore = item[scoreKey];
+    let thisRank = rank;
+    if (thisScore === lastScore) {
+      thisRank = lastRank;
+    }
+    lastScore = thisScore;
+    lastRank = thisRank;
+    item[rankKey] = thisRank;
+    item[`${rankKey}Pct`] = thisRank / numTokens;
+    rank++;
+  }
+}
+
+function calcOutliers(collection) {
+  collection.calcOutlier = calcOutlier(collection, 'score');
+  // calcOutlier(collection, 'rarityCountNorm');
+  // calcOutlier(collection, 'rarityCount');
+  // calcOutlier(collection, 'rarityNorm');
+  // calcOutlier(collection, 'rarity');
+}
+
+function calcOutlier(collection, scoreKey) {
+  const scores = collection.tokens.map(token => token[scoreKey]).filter(score => typeof score === 'number');
+  miscutil.sort(scores, scoreKey, true);
 
   const stats = new Stats();
   stats.push(scores);
@@ -54,280 +217,9 @@ function calcOutlier(config, scoreKey) {
 
   const calcOV = val => (val - q3) / iqr;
 
-  config.data.collection.tokens.forEach(token => {
+  collection.tokens.forEach(token => {
     token[`${scoreKey}OV`] = calcOV(token[scoreKey]);
   });
 
-}
-
-export function calcGlobalRarity(collection) {
-  calcGlobalTraitsRarity(collection);
-  calcGlobalTraitCountsRarity(collection); // Need to be done after calcGlobalTraitsRarity!
-}
-
-function calcGlobalTraitsRarity(collection) {
-  const numTokens = countDone(collection.tokens);
-  let numTraitTypes = 0;
-  let numTraitValuesInTotal = 0;
-
-  for (let traitType of Object.keys(collection.traits.data)) {
-    numTraitTypes++;
-    if (typeof collection.traits.data[traitType] !== 'object') {
-      continue;
-    }
-    let numTraitValuesInTraitType = 0;
-    for (let traitValue of Object.keys(collection.traits.data[traitType].data)) {
-      numTraitValuesInTotal++;
-      numTraitValuesInTraitType++;
-      const freq = collection.traits.data[traitType].data[traitValue].count / numTokens;
-      collection.traits.data[traitType].data[traitValue].freq = freq;
-      collection.traits.data[traitType].data[traitValue].rarity = 1 / freq;
-    }
-
-    collection.traits.data[traitType].numTraitValues = numTraitValuesInTraitType;
-  }
-
-  collection.traits.numTraitValues = numTraitValuesInTotal;
-  collection.traits.numTraitTypes = numTraitTypes;
-  collection.traits.avgNumTraitValuesPerTraitType = numTraitValuesInTotal / numTraitTypes;
-
-  for (let traitType of Object.keys(collection.traits.data)) {
-    if (typeof collection.traits.data[traitType] !== 'object') {
-      continue;
-    }
-    for (let traitValue of Object.keys(collection.traits.data[traitType].data)) {
-      const normFactor = (collection.traits.avgNumTraitValuesPerTraitType / collection.traits.data[traitType].numTraitValues);
-      collection.traits.data[traitType].data[traitValue].rarityNorm = collection.traits.data[traitType].data[traitValue].rarity * normFactor;
-    }
-  }
-}
-
-function calcGlobalTraitCountsRarity(collection) {
-  const numTokens = countDone(collection.tokens);
-
-  const normFactor = (collection.traits.avgNumTraitValuesPerTraitType / Object.keys(collection.traitCounts.data).length);
-
-  for (let trait of Object.keys(collection.traitCounts.data)) {
-    const freq = collection.traitCounts.data[trait].count / numTokens;
-    const rarity = 1 / freq;
-    collection.traitCounts.data[trait].freq = freq;
-    collection.traitCounts.data[trait].rarity = rarity;
-    collection.traitCounts.data[trait].rarityNorm = rarity * normFactor;
-  }
-}
-
-export function calcTokenRarity(collection, scoreKey) {
-  let numTokens = 0;
-  const numDone = countDone(collection.tokens);
-  const counts = Object.values(collection.traitCounts.data).map(obj => obj.numValue);
-  const minTraits = Math.min(...counts);
-  const maxTraits = Math.max(...counts);
-  for (const token of collection.tokens) {
-    if (!token.done) {
-      continue;
-    }
-
-    numTokens++;
-    let sumRarity = 0;
-    let sumRarityCount = 0;
-    let sumRarityNorm = 0;
-    let sumRarityCountNorm = 0;
-
-    let traitCount = 0;
-
-    for (const trait of token.traits) {
-      const traitType = trait.trait_type;
-      const traitValue = trait.value;
-
-      if (traitType !== TRAIT_COUNT_TYPE && traitValue !== TRAIT_NONE_VALUE) {
-        traitCount++;
-      }
-
-      trait.numWithThisTrait = collection.traits.data[traitType].data[traitValue].count;
-      trait.freq = collection.traits.data[traitType].data[traitValue].freq;
-      trait.rarity = collection.traits.data[traitType].data[traitValue].rarity;
-      trait.rarityNorm = collection.traits.data[traitType].data[traitValue].rarityNorm;
-
-      if (traitType === TRAIT_COUNT_TYPE) {
-        sumRarityCount = sumRarityCount + trait.rarity;
-        sumRarityCountNorm = sumRarityCountNorm + trait.rarityNorm;
-      } else {
-        sumRarity = sumRarity + trait.rarity;
-        sumRarityNorm = sumRarityNorm + trait.rarityNorm;
-        sumRarityCount = sumRarityCount + trait.rarity;
-        sumRarityCountNorm = sumRarityCountNorm + trait.rarityNorm;
-      }
-    }
-
-    token.traitCount = traitCount;
-    token.numWithTraitCount = collection.traitCounts.data[traitCount.toString()].count;
-    token.traitCountFreq = token.numWithTraitCount / numDone;
-    token.minTraits = minTraits;
-    token.maxTraits = maxTraits;
-
-    /*
-    if (collection.tokens.length === 3) {
-      log.info(`-------------------------------${traitCount}, ${collection.traitCounts.data[traitCount.toString()].count}, ${token.traitCountFreq}`);
-      log.info(collection.tokens);
-      log.info(collection.traitCounts);
-    }
-     */
-
-    token.rarity = sumRarity;
-    token.rarityNorm = sumRarityNorm;
-    token.rarityCount = sumRarityCount;
-    token.rarityCountNorm = sumRarityCountNorm;
-
-    token.score = token[`${scoreKey}`];
-
-    token.hasRarity = token.rarity > 0;
-  }
-}
-
-function getTraitGroups(attributes, config) {
-  const traits = attributes.filter((attr) => !isSpecialTrait(attr, config));
-  const specialTraits = attributes.filter((attr) => isSpecialTrait(attr, config));
-  return { traits, specialTraits };
-}
-
-function isSpecialTrait(attribute, config) {
-  if (typeof attribute.value !== 'string' && !config.rules.numberValues) {
-    return true;
-  }
-  if (attribute.trait_type && attribute.display_type) {
-    return true;
-  }
-  return false;
-}
-
-function normalizeTraitValues(traits) {
-  const result = [];
-  traits.forEach((trait) => {
-    let normalizedValue = trait.value.toString();
-    if (['none', 'nothing'].includes(normalizedValue.toLowerCase())) {
-      normalizedValue = TRAIT_NONE_VALUE;
-    }
-    result.push({ ...trait, value: normalizedValue });
-  });
-  return result;
-}
-
-export function addTokenTraits(token, attributes, collection, config) {
-  const traitGroups = getTraitGroups(attributes, config);
-  token.traits = normalizeTraitValues(traitGroups.traits);
-  token.specialTraits = traitGroups.specialTraits;
-
-  const traitCount = token.traits.filter((item) => item.value !== TRAIT_NONE_VALUE).length;
-  const traitCountTrait = {
-    trait_type: TRAIT_COUNT_TYPE,
-    value: traitCount.toString()
-  };
-  token.traits.push(traitCountTrait);
-  token.traitCount = traitCount;
-
-  try {
-    for (const attr of token.traits) {
-      addGlobalTrait(attr, collection, token.tokenId);
-    }
-    addGlobalTraitCount(traitCount, collection, token.tokenId);
-  } catch (error) {
-    log.error('error', attributes, error);
-  }
-}
-
-export function addTokenNoneTrait(collection) {
-  for (let traitType of Object.keys(collection.traits.data)) {
-    if (typeof collection.traits.data[traitType] !== 'object') {
-      continue;
-    }
-    for (let token of collection.tokens) {
-      if (!token.done) {
-        continue;
-      }
-      if (typeof token.traits.find !== 'function') {
-        log.info('ERROR token.traits.find:', token);
-        log.info('ERROR typeof token.traits.find:', typeof token.traits.find);
-      }
-      const item = token.traits.find(o => o.trait_type === traitType);
-      if (!item) {
-        // log.info('Add None:', trait, token.tokenId);
-        token.traits.push({ trait_type: traitType, value: TRAIT_NONE_VALUE });
-        addGlobalTrait({ trait_type: traitType, value: TRAIT_NONE_VALUE }, collection);
-      }
-    }
-  }
-}
-
-function addGlobalTrait(attribute, collection, tokenId) {
-  if (attribute.value === '') {
-    attribute.value = TRAIT_NONE_VALUE;
-  }
-
-  const traitType = attribute.trait_type;
-  const traitValue = attribute.value.toString();
-  const displayType = attribute.display_type;
-
-  if (!collection.traits.data[traitType]) {
-    collection.traits.data[traitType] = {
-      count: 0,
-      trait: traitType,
-      displayType,
-      data: {},
-    };
-  }
-  collection.traits.data[traitType].count++;
-
-  if (!collection.traits.data[traitType].data[traitValue]) {
-    collection.traits.data[traitType].data[traitValue] = {
-      count: 0,
-      value: traitValue,
-      tokenIds: {},
-    };
-  }
-  collection.traits.data[traitType].data[traitValue].count++;
-  collection.traits.data[traitType].data[traitValue].tokenIds[tokenId] = true;
-}
-
-export function addGlobalTraitCount(count, collection, tokenId) {
-  const value = count.toString();
-  if (!collection.traitCounts.data[value]) {
-    collection.traitCounts.data[value] = {
-      count: 0,
-      stringValue: value,
-      numValue: count,
-      tokenIds: {},
-    };
-  }
-  collection.traitCounts.data[value].count++;
-  collection.traitCounts.data[value].tokenIds[tokenId] = true;
-}
-
-export function calcRanks(collection) {
-  const numDone = countDone(collection.tokens);
-  calcRank(collection.tokens, numDone, 'score', false);
-  calcRank(collection.tokens, numDone, 'rarity', false);
-  calcRank(collection.tokens, numDone, 'rarityNorm', false);
-  calcRank(collection.tokens, numDone, 'rarityCount', false);
-  calcRank(collection.tokens, numDone, 'rarityCountNorm', false);
-}
-
-function calcRank(tokens, numDone, sortKey, ascending) {
-  miscutil.sortBy1Key(tokens, sortKey, ascending);
-  const rankKey = `${sortKey}Rank`;
-  let rank = 1;
-  let lastRank = 1;
-  let lastScore = 0;
-  for (let i = 0; i < tokens.length; i++) {
-    const item = tokens[i];
-    const thisScore = item[sortKey];
-    let thisRank = rank;
-    if (thisScore === lastScore) {
-      thisRank = lastRank;
-    }
-    lastScore = thisScore;
-    lastRank = thisRank;
-    item[rankKey] = thisRank;
-    item[`${rankKey}Pct`] = thisRank / numDone;
-    rank++;
-  }
+  return calcOV;
 }

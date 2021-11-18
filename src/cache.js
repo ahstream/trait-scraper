@@ -79,19 +79,3 @@ function get(cache, key) {
 function set(cache, key, value) {
   return cache.data[key] = value;
 }
-
-export function cleanCache() {
-  const allProjectsFolder = toAbsFilepath(`../data/projects/`);
-  const allProjectsFiles = getFilesInFolder(allProjectsFolder, { withFileTypes: true });
-  allProjectsFiles.forEach(fileObj => {
-    if (!fileObj.isDirectory()) {
-      return;
-    }
-    const folderName = fileObj.name;
-    getFilesInFolder(`${allProjectsFolder}${folderName}/`).forEach(fileName => {
-      if (fileName === 'cache.json') {
-        deleteFile(`${allProjectsFolder}${folderName}/${fileName}`);
-      }
-    });
-  });
-}

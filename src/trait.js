@@ -4,8 +4,8 @@ const log = createLogger();
 
 export const TRAIT_NONE_VALUE = 'NONE';
 
-export function addTokenTraits(token, attributes, collection, includeNonStringValues) {
-  const normalTraits = attributes.filter((attr) => isNormalTrait(attr, includeNonStringValues));
+export function addTokenTraits(token, attributes, collection, ignoreNumberTraits) {
+  const normalTraits = attributes.filter((attr) => isNormalTrait(attr, ignoreNumberTraits));
   const traits = normalizeTraitValues(normalTraits);
 
   token.traits = traits;
@@ -74,8 +74,8 @@ function addGlobalTraitCount(count, collection) {
   collection.traitCounts.items[key].count++;
 }
 
-function isNormalTrait(attribute, includeNonStringValues) {
-  if (typeof attribute.value !== 'string' && !includeNonStringValues) {
+function isNormalTrait(attribute, ignoreNumberTraits) {
+  if (typeof attribute.value !== 'string' && ignoreNumberTraits) {
     return false;
   }
   if (attribute.display_type) {
