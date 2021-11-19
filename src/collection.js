@@ -1,22 +1,20 @@
-import { waitForReveal } from "./token.js";
-import * as timer from "./timer.js";
-import { getConfig, saveCache } from "./config.js";
-import { updateAssets } from "./opensea.js";
-
-import { createLogger } from "./lib/loggerlib.js";
-import * as tokenURI from "./tokenURI.js";
-import * as miscutil from "./miscutil.js";
-import { fetchTokenURIs } from "./fetchTokenURIs.js";
-import { getFromCache } from "./cache.js";
-import { addTokenTraits } from "./trait.js";
-
 import _ from 'lodash';
-import { calcRarity, calcTemporaryTokenRarity } from "./rarity.js";
-import * as webPage from "./webPage.js";
 import open from "open";
-import { notifyHotToken, notifyNewResults } from "./notify.js";
 
-const log = createLogger();
+import { getFromCache } from "./cache.js";
+import { getConfig, saveCache } from "./config.js";
+import { fetchTokenURIs } from "./fetchTokenURIs.js";
+import { log } from "./logUtils.js";
+import { addSecondsToDate, delay, range, sort } from "./miscUtils.js";
+import { notifyHotToken, notifyNewResults } from "./notify.js";
+import { updateAssets } from "./opensea.js";
+import { calcRarity, calcTemporaryTokenRarity } from "./rarity.js";
+import { release, take } from "./semaphore.js";
+import * as timer from "./timer.js";
+import { waitForReveal } from "./token.js";
+import * as tokenURI from "./tokenURI.js";
+import { addTokenTraits } from "./trait.js";
+import * as webPage from "./webPage.js";
 
 const BASE_ASSET_URI = 'https://opensea.io/assets/';
 
@@ -68,15 +66,31 @@ export function createCollection() {
 // INTERNAL FUNCTIONS
 
 async function getOpenseaAssets(config) {
-  if (!config.args.skipAssetsFetch) {
-    const myTimer = timer.create();
+  try {
+    if (config.args.skipOpensea) {
+      log.debug('Skip Opensea');
+      return;
+    }
 
+    if (!take('getOpenseaAssets', log.info, config.projectId)) {
+      log.info(`(${config.projectId}) Asset fetcher is busy, wait for my turn to fetch tokens...`);
+      while (!take('getOpenseaAssets', log.info, config.projectId)) {
+        await delay(1000);
+      }
+    }
     log.info(`(${config.projectId}) Get Opensea assets...`);
-    await updateAssets(config);
 
+    const myTimer = timer.create();
+    await updateAssets(config);
     // myTimer.ping(`(${config.projectId}) getOpenseaAssets duration`);
 
+    release('getOpenseaAssets');
+
     saveCache(config);
+  } catch
+    (error) {
+    log.error(error);
+    release('getOpenseaAssets');
   }
 }
 
@@ -115,7 +129,7 @@ async function revealCollection(config) {
 async function fetchCollection(config) {
   const myTimer = timer.create();
 
-  const baseTokens = miscutil.range(config.collection.firstTokenId, config.collection.lastTokenId, 1).map(id => {
+  const baseTokens = range(config.collection.firstTokenId, config.collection.lastTokenId, 1).map(id => {
     const asset = getFromCache(config.cache.opensea.assets, id);
     return {
       tokenId: id.toString(),
@@ -128,7 +142,7 @@ async function fetchCollection(config) {
     };
   });
 
-  const tokensOnSale = miscutil.sort(baseTokens.filter(token => token.price > 0), 'price', true);
+  const tokensOnSale = sort(baseTokens.filter(token => token.price > 0), 'price', true);
   const tokensNotOnSale = baseTokens.filter(token => token.price <= 0);
   const allTokens = [...tokensOnSale, ...tokensNotOnSale];
 
@@ -147,8 +161,8 @@ async function fetchCollection(config) {
   fetchTokenURIs(config.projectId, inputArray, outputArray, config.fetchTokenOptions, config.cache.tokens, !config.args.skipTokenCache, stats);
 
   config.runtime.fetchStartTime = new Date();
-  config.runtime.nextTimeCreateResults = miscutil.addSecondsToDate(new Date(), config.milestones.createResultEverySecs);
-  config.runtime.nextTimeSaveCache = miscutil.addSecondsToDate(new Date(), config.milestones.saveCacheEverySecs);
+  config.runtime.nextTimeCreateResults = addSecondsToDate(new Date(), config.milestones.createResultEverySecs);
+  config.runtime.nextTimeSaveCache = addSecondsToDate(new Date(), config.milestones.saveCacheEverySecs);
 
   let numProcessedTokens = 0;
   let numHot = 0;
@@ -187,7 +201,7 @@ async function fetchCollection(config) {
       }
     }
 
-    await miscutil.sleep(1000);
+    await delay(1000);
   }
 
   log.info(`(${config.projectId}) Stats:`, stats);
@@ -296,7 +310,7 @@ function createRevealResults(config, lastToken = null, isLastPage = false) {
   const path = webPage.createRevealWebPage(config, config.runtime.revealPageNum);
 
   const everySecs = lastToken ? config.milestones.createResultEverySecs[0] : config.milestones.createResultEverySecs[1];
-  config.runtime.nextTimeCreateResults = miscutil.addSecondsToDate(new Date(), everySecs);
+  config.runtime.nextTimeCreateResults = addSecondsToDate(new Date(), everySecs);
 
   if (!config.runtime.webPageShown && config.autoOpen.firstResultPage) {
     open(path, { app: 'chrome' });

@@ -1,6 +1,4 @@
-import { createLogger } from "./lib/loggerlib.js";
-
-const log = createLogger();
+import { log } from "./logUtils.js";
 
 export const TRAIT_NONE_VALUE = 'NONE';
 

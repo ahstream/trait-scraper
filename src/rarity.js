@@ -1,10 +1,8 @@
-import { createLogger } from "./lib/loggerlib.js";
-import * as miscutil from "./miscutil.js";
-import { addNoneTraits } from "./trait.js";
 import { Stats } from 'fast-stats';
-import * as timer from "./timer.js";
 
-const log = createLogger();
+import { sort } from "./miscUtils.js";
+import * as timer from "./timer.js";
+import { addNoneTraits } from "./trait.js";
 
 const TRAIT_COUNT_TYPE = 'xxTraitCountxx';
 
@@ -176,7 +174,7 @@ export function calcRanks(collection) {
 
 function calcRank(tokens, scoreKey, ascending) {
   const numTokens = tokens.length;
-  miscutil.sort(tokens, scoreKey, ascending);
+  sort(tokens, scoreKey, ascending);
   const rankKey = `${scoreKey}Rank`;
   let rank = 1;
   let lastRank = 1;
@@ -206,7 +204,7 @@ function calcOutliers(collection) {
 
 function calcOutlier(collection, scoreKey) {
   const scores = collection.tokens.map(token => token[scoreKey]).filter(score => typeof score === 'number');
-  miscutil.sort(scores, scoreKey, true);
+  sort(scores, scoreKey, true);
 
   const stats = new Stats();
   stats.push(scores);

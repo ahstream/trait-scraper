@@ -1,16 +1,11 @@
-import { sleep } from "./miscutil.js";
-import { get } from "./fetch.js";
-
-import { createLogger } from "./lib/loggerlib.js";
-
-const log = createLogger();
-
 import _ from 'lodash';
-
-const queue = [];
-
 import { createRequire } from 'module';
-import { existsInCache, getFromCache, addToCache } from "./cache.js";
+
+import { addToCache,existsInCache, getFromCache } from "./cache.js";
+import { get } from "./fetch.js";
+import { log } from "./logUtils.js";
+import { delay } from "./miscUtils.js";
+import { release,take } from "./semaphore.js";
 
 const require = createRequire(import.meta.url);
 
@@ -21,12 +16,11 @@ require('events').EventEmitter.prototype._maxListeners = 125;
 
 export async function fetchTokenURIs(projectId, inputArray, outputArray, fetchOptions, cacheRef = null, fetchFromCache = true, statsRef = null) {
   try {
-    queue.push(projectId);
-    if (queue && queue[0] !== projectId) {
+    if (!take('fetchTokenURIs', log.info, projectId)) {
       log.info(`(${projectId}) Token fetcher is busy, wait for my turn to fetch tokens...`);
-    }
-    while (queue && queue[0] !== projectId) {
-      await sleep(500);
+      while (!take('fetchTokenURIs', log.info, projectId)) {
+        await delay(250);
+      }
     }
 
     log.info(`(${projectId}) Start fetching tokens...`);
@@ -52,19 +46,16 @@ export async function fetchTokenURIs(projectId, inputArray, outputArray, fetchOp
       });
 
       if (!inCache) {
-        await sleep(fetchOptions.delayBetweenBatches);
+        await delay(fetchOptions.delayBetweenBatches);
       }
     }
 
-    // Remove my projectId from queue to let other projects use this module!
-    queue.shift();
+    release('fetchTokenURIs');
 
     log.info(`(${projectId}) End fetching tokens!`);
   } catch (error) {
     log.error(error);
-    if (queue.length && queue[0] === projectId) {
-      queue.shift();
-    }
+    release('fetchTokenURIs');
   }
 }
 

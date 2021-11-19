@@ -1,0 +1,19 @@
+{
+    "keep": {
+        "days": false,
+        "amount": 20
+    },
+    "auditLog": "logfiles\\.4db6e110c3a81738aca1a660972dd130b145a5a9-audit.json",
+    "files": [
+        {
+            "date": 1637326043645,
+            "name": "logfiles\\verbose-2021-11-19-13.log",
+            "hash": "3f67b24583965c493a9f6cbb395f4b35"
+        },
+        {
+            "date": 1637326838139,
+            "name": "logfiles\\verbose-2021-11-19-14.log",
+            "hash": "ec53595aabd0e2eb00a56e9393279fd2"
+        }
+    ]
+}

@@ -1,11 +1,10 @@
-import { get } from './fetch.js';
-import { getTokenURI } from './tokenURI.js';
-import { createLogger } from "./lib/loggerlib.js";
-import { notifyRevealed } from "./notify.js";
-import * as miscutil from "./miscutil.js";
 import _ from 'lodash';
 
-const log = createLogger();
+import { get } from './fetch.js';
+import { log } from "./logUtils.js";
+import { delay } from "./miscUtils.js";
+import { notifyRevealed } from "./notify.js";
+import { getTokenURI } from './tokenURI.js';
 
 // EXPORTED
 
@@ -61,7 +60,7 @@ export async function waitForReveal(collection, tokenIds, sleepBetween, silentFl
       return token;
     }
     log.info(`(${collection.projectId}) .`);
-    await miscutil.sleep(sleepBetween);
+    await delay(sleepBetween);
   }
 }
 

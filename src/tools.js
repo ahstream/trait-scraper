@@ -1,4 +1,4 @@
-import { getFilesInFolder, deleteFile, toAbsFilepath } from "./fileutil.js";
+import { deleteFile, getFilesInFolder } from "./fileUtils.js";
 
 export function cleanHtml(config) {
   cleanFiles(`${config.baseDataFolder}projects/`, '.html');

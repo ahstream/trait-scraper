@@ -1,14 +1,15 @@
 import open from "open";
-import * as fileutil from "./fileutil.js";
+
+import { toAbsFilepath } from "./fileUtils.js";
 
 export function notifyRevealed() {
-  open(fileutil.toAbsFilepath('./audio/reveal-notification.mp3'), { app: { name: 'firefox' } });
+  open(toAbsFilepath('./audio/reveal-notification.mp3'), { app: { name: 'firefox' } });
 }
 
 export function notifyNewResults() {
-  open(fileutil.toAbsFilepath('./audio/new-results-notification.mp3'), { app: { name: 'firefox' } });
+  open(toAbsFilepath('./audio/new-results-notification.mp3'), { app: { name: 'firefox' } });
 }
 
 export function notifyHotToken() {
-  open(fileutil.toAbsFilepath('./audio/new-results-notification.mp3'), { app: { name: 'firefox' } });
+  open(toAbsFilepath('./audio/new-results-notification.mp3'), { app: { name: 'firefox' } });
 }

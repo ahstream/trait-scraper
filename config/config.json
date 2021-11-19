@@ -80,6 +80,27 @@
         ["body", "trafficcone"],
         ["body", "decapitated"],
         ["skin", "skull", 100, 100]
+      ],
+      "hotTraitsContains2": [
+        ["*", "gold"],
+        ["*", "gold teeth"],
+        ["*", "dots"],
+        ["other", "translucetopian pigeon", 10, 10],
+        ["other", "*/banana peel", 100, 100],
+        ["other", "*/snake necklace", 100, 100],
+        ["other", "*/bubble-gum blow", 200, 200],
+        ["other", "*/octopus", 100],
+        ["other", "*/crying tears", 100, 100],
+        ["mask", "*/visor helmet", 13, 100],
+        ["skin", "*/alien.a", 100, 100],
+        ["skin", "*/skull", 100, 100],
+        ["haircolour", "*/alien", 100],
+        ["hat", "*/preposterotopian", 10, 10],
+        ["body", "brickhead", 1],
+        ["body", "trafficcone"],
+        ["body", "decapitated"],
+        ["*", "*/translucetopian"],
+        ["*", "*/goldtopian", 20, 20]
       ]
     },
     "partygrandpa": {
@@ -116,13 +137,20 @@
         "weight": [
           ["Character", 5.0]
         ]
+      },
+      "rules": {
+        "scoreKey": "rarity",
+        "ignoreNumberTraits": true,
+        "maxPrice": 2.5,
+        "maxTokens": 500,
+        "hotMaxTraits": 1,
+        "hotMinOV": 30,
+        "hotTraits": ["Gold", "dots", "BoredApe"]
       }
     }
   },
   "pollForRevealTokenIds": [296, 452, 526, 789, 1234, 2345, 3456],
-  "autoOpen": {
-    "firstResultPage": true, "hotPct": 0.005, "maxHotItems": 10
-  },
+  "autoOpen": {"firstResultPage": true},
   "DIVIDER": "------------------------------------------------------------------------",
   "fetchTokenOptions": {"concurrent": 100, "delayBetweenBatches": 250, "timeout": 5000},
   "rules": {

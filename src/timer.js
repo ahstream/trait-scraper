@@ -1,6 +1,4 @@
-import { createLogger } from "./lib/loggerlib.js";
-
-const log = createLogger();
+import { log } from "./logUtils.js";
 
 export function create() {
   const now = new Date();

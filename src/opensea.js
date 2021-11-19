@@ -3,13 +3,11 @@
  * FILE DESCRIPTION
  */
 
-import { createLogger } from './lib/loggerlib.js';
-import * as miscutil from "./miscutil.js";
-import { addToCache } from "./cache.js";
 import fetch from 'node-fetch';
-import { debugToFile } from "./config.js";
 
-const log = createLogger();
+import { addToCache } from "./cache.js";
+import { log } from "./logUtils.js";
+import { addSecondsToDate,delay,  } from "./miscUtils.js";
 
 // MAIN FUNCTIONS
 
@@ -22,14 +20,14 @@ export async function pollAssets(config, callback) {
     }
     if (config.cache.opensea.assets.nextFullUpdate > now) {
       log.info(`(${config.projectId}) Not ready to update assets, wait ${config.opensea.pollAssetsCheckFreqSecs} secs`);
-      await miscutil.sleepSecs(config.opensea.pollAssetsCheckFreqSecs);
+      await delay(config.opensea.pollAssetsCheckFreqSecs * 1000);
       continue;
     }
 
     log.info(`(${config.projectId}) Update assets`);
     await updateAssets(config);
     config.cache.opensea.assets.lastFullUpdate = new Date();
-    config.cache.opensea.assets.nextFullUpdate = miscutil.addSecondsToDate(new Date(), config.opensea.pollAssetsUpdateFreqSecs);
+    config.cache.opensea.assets.nextFullUpdate = addSecondsToDate(new Date(), config.opensea.pollAssetsUpdateFreqSecs);
 
     if (callback && !callback(config)) {
       break;
@@ -79,7 +77,7 @@ async function getAssetsByChunks(contractAddress, fromTokenId, toTokenId, config
   });
 
   const finalResult = [];
-  let retryAfter = 0;
+  let retryAfterSecs = 0;
   while (true) {
     const newTries = tries.filter(obj => obj.status !== 'ok' && obj.status !== 'skip').map(obj => {
       return {
@@ -103,7 +101,7 @@ async function getAssetsByChunks(contractAddress, fromTokenId, toTokenId, config
         finalResult.push((await response.json()).assets);
         tries[resultsArrIndex].status = 'ok';
       } else if (response.status === 429) {
-        retryAfter = parseInt(response.headers.get('retry-after'));
+        retryAfterSecs = parseInt(response.headers.get('retry-after'));
       } else if (response.status === 400) {
         tries[resultsArrIndex].status = 'skip';
       } else {
@@ -114,13 +112,13 @@ async function getAssetsByChunks(contractAddress, fromTokenId, toTokenId, config
     const num429 = tries.filter(obj => ['429'].includes(obj.status)).length;
     const numNotOk = tries.length - numOk;
 
-    if (retryAfter > 0) {
-      log.info(`(${config.projectId}) numOk: ${numOk}, numNotOk: ${numNotOk}, num429: ${num429} (retry after ${retryAfter} secs)`);
-      await miscutil.sleep(retryAfter * 1000);
-      retryAfter = 0;
+    if (retryAfterSecs > 0) {
+      log.info(`(${config.projectId}) Batches: ${times}, numOk: ${numOk}, numNotOk: ${numNotOk}, num429: ${num429} (retry after ${retryAfterSecs} secs)`);
+      await delay(retryAfterSecs * 1000);
+      retryAfterSecs = 0;
     } else {
-      log.info(`(${config.projectId}) numOk: ${numOk}, numNotOk: ${numNotOk}, num429: ${num429}`);
-      await miscutil.sleep(50);
+      log.info(`(${config.projectId}) Batches: ${times}, numOk: ${numOk}, numNotOk: ${numNotOk}, num429: ${num429}`);
+      await delay(50);
     }
   }
   return finalResult.flat();

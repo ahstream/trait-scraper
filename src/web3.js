@@ -3,14 +3,13 @@
  * FILE DESCRIPTION
  */
 
-import { createLogger } from './lib/loggerlib.js';
 import { curly } from "node-libcurl";
-import { isValidTokenURI } from "./tokenURI.js";
+
 import { ERRORCODES } from "./error.js";
+import { isValidTokenURI } from "./tokenURI.js";
 
-const log = createLogger();
-
-const IPFS_URL = 'ipfs://';
+const ETHERSCAN_API_URL = 'http://node1.web3api.com/';
+const TOKENURI_METHOD_SIGNATUR = '0xc87b56dd';
 
 const GET_TOKEN_URI_HEADERS = [
   'authority: node1.web3api.com',
@@ -29,9 +28,6 @@ const GET_TOKEN_URI_HEADERS = [
   'referer: https://etherscan.io/',
   'accept-language: sv,en-GB;q=0.9,en-US;q=0.8,en;q=0.7,la;q=0.6,da;q=0.5,de;q=0.4',
 ];
-
-const ETHERSCAN_API_URL = 'http://node1.web3api.com/';
-const TOKENURI_METHOD_SIGNATUR = '0xc87b56dd';
 
 export async function getTokenURIFromContract(id, contractAddress) {
   try {

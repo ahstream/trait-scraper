@@ -1,5 +1,5 @@
-import { readFile, toAbsFilepath, writeFile, getFilesInFolder, deleteFile } from "./fileutil.js";
-import * as miscutil from "./miscutil.js";
+import { readFile, toAbsFilepath, writeFile } from "./fileUtils.js";
+import { sort } from "./miscUtils.js";
 import { normalizeURI } from './tokenURI.js';
 
 function buildPage(title, mainNavHtml, subNavHtml, headerHtml, contentHtml) {
@@ -41,6 +41,7 @@ export function createRevealHeaderHtml(config, prevNextPageNames) {
   const maxSupply = config.collection.maxSupply;
 
   html = html + `<span>Settings: `;
+  html = html + `ScoreKey: <b>${config.rules.scoreKey}</b>&nbsp;|&nbsp;`;
   html = html + `<b>Max ${normalizePrice(config.rules.maxPrice)} ETH</b>, <b>${config.rules.maxTokens} tokens</b>&nbsp;|&nbsp;`;
   html = html + `Hot Traits: <b>"${config.rules.hotTraits.join(', ')}"</b>&nbsp;|&nbsp;Hot OV: <b>${config.rules.hotMinOV}</b>&nbsp;|&nbsp;Hot Trait Count: <b>${config.rules.hotMaxTraits}</b>`;
   html = html + `</span>`;
@@ -62,7 +63,7 @@ export function createRevealHeaderHtml(config, prevNextPageNames) {
 
 export function createRevealTokenColHtml(collection, rules) {
   const numWithPrice = collection.tokens.filter(obj => obj.price > 0).length;
-  const tokensWithRightPrice = miscutil.sort(collection.tokens.filter(obj => obj.price > 0 && obj.price <= rules.maxPrice), 'score', false);
+  const tokensWithRightPrice = sort(collection.tokens.filter(obj => obj.price > 0 && obj.price <= rules.maxPrice), 'score', false);
   const tokens = tokensWithRightPrice.slice(0, rules.maxTokens);
 
   // const htmlDesc = `<span class="desc-text">Top ${tokens.length} (of ${numWithPrice}) Rare BuyNow tokens (of ${numWithPrice})</span>`;
@@ -101,8 +102,8 @@ export function createRevealTokenColHtml(collection, rules) {
 }
 
 export function createRevealHotColHtml(collection, rules, runtime) {
-  // const tokensWithRightPrice = miscutil.sort(collection.hotTokens.filter(obj => obj.price > 0), 'revealOrder', true);
-  const tokensWithRightPrice = miscutil.sort(collection.hotTokens, 'revealOrder', false);
+  // const tokensWithRightPrice = sort(collection.hotTokens.filter(obj => obj.price > 0), 'revealOrder', true);
+  const tokensWithRightPrice = sort(collection.hotTokens, 'revealOrder', false);
   const tokens = tokensWithRightPrice.slice(0, rules.maxTokens);
 
   const htmlDesc = `<span class="desc-text">Top ${tokens.length} Hot BuyNow</span>`;
@@ -149,7 +150,7 @@ export function createRevealHotColHtml(collection, rules, runtime) {
 
 export function createRevealImageColHtml(collection, rules) {
   // todo sort by reveal order!?
-  const tokensWithRightPrice = miscutil.sort(collection.tokens.filter(obj => obj.price > 0 && obj.price <= rules.maxPrice), 'price', true);
+  const tokensWithRightPrice = sort(collection.tokens.filter(obj => obj.price > 0 && obj.price <= rules.maxPrice), 'price', true);
   const tokens = tokensWithRightPrice.slice(0, rules.maxTokens);
   const htmlDesc = `<span class="desc-text">Top ${tokens.length} Cheap BuyNow images</span>`;
 
@@ -186,7 +187,7 @@ function createImageTitleText(token, scoreKey, numTokens) {
 function createTraitsText(token, scoreKey, numTokens) {
   // Normalize score key since traits do not have count (rarityCount*)!
   const normalizedScoreKey = scoreKey.replace('Count', '');
-  const traits = miscutil.sort([...token.traits], normalizedScoreKey, false);
+  const traits = sort([...token.traits], normalizedScoreKey, false);
   let s = '\n';
   for (let trait of traits) {
     s = s + `${trait.value}             (${normalizeScore(trait[normalizedScoreKey])} pts)  (${normalizePct(trait.numWithTrait * 100 / numTokens)} %)  (${trait.trait_type})\n`;

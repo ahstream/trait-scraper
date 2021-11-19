@@ -1,11 +1,9 @@
-import nodeFetch from 'node-fetch';
-import { createLogger } from "./lib/loggerlib.js";
-import { AbortController } from "node-abort-controller";
-
-const log = createLogger();
-
 import http from 'http';
 import https from 'https';
+import { AbortController } from "node-abort-controller";
+import nodeFetch from 'node-fetch';
+
+import { log } from "./logUtils.js";
 
 const httpAgent = new http.Agent({ keepAlive: true });
 const httpsAgent = new https.Agent({ keepAlive: true });

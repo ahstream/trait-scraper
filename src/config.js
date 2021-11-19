@@ -1,18 +1,16 @@
-import {
-  importJSONFile,
-  writeJSONFile,
-  toAbsFilepath,
-  ensureFolder
-} from "./fileutil.js";
-import { createCache, writeCache } from "./cache.js";
 import _ from 'lodash';
+
+import { createCache, writeCache } from "./cache.js";
 import { createCollection } from "./collection.js";
-import { createLogger } from "./lib/loggerlib.js";
+import {
+  ensureFolder,
+  importJSONFile,
+  toAbsFilepath,
+  writeJSONFile} from "./fileUtils.js";
+import { log } from "./logUtils.js";
 import * as timer from "./timer.js";
 
-const log = createLogger();
-
-// args: command | skipTokenCache | skipAssetsFetch
+// args: command | skipTokenCache | skipOpensea
 export function getConfig(projectId, args) {
   const baseConfig = importJSONFile(`../config/config.json`);
 
@@ -48,6 +46,8 @@ export function getConfig(projectId, args) {
   config.collection.firstTokenId = config.tokenIdRange[0];
   config.collection.lastTokenId = config.tokenIdRange[1];
   config.collection.maxSupply = config.collection.lastTokenId - config.collection.firstTokenId + 1;
+
+  config.rules.hotTraits = config.rules.hotTraits.map(rule => rule.toLowerCase());
 
   config.cache = createCache(projectId);
   config.runtime = createRuntime(config);

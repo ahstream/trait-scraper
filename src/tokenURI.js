@@ -3,11 +3,9 @@
  * FILE DESCRIPTION
  */
 
-import { createLogger } from './lib/loggerlib.js';
-import * as miscutil from "./miscutil.js";
+import { log } from "./logUtils.js";
+import { countInstancesOf, replaceLastOccurrenceOf } from "./miscUtils.js";
 import * as web3 from "./web3.js";
-
-const log = createLogger();
 
 const IPFS_URL = 'ipfs://';
 
@@ -50,12 +48,12 @@ export function convertToBaseTokenURI(tokenId, tokenURI) {
       return '';
     }
     const idString = tokenId.toString();
-    const count = miscutil.countInstances(tokenURI, idString);
+    const count = countInstancesOf(tokenURI, idString);
     if (count === 1) {
       return tokenURI.replace(idString, '{ID}');
     }
     if (count > 1) {
-      return miscutil.replaceLastOccurrenceOf(tokenURI, idString, '{ID}');
+      return replaceLastOccurrenceOf(tokenURI, idString, '{ID}');
     }
     log.debug('Invalid conversion to baseTokenURI:', tokenId, tokenURI);
     return '';

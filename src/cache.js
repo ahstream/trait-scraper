@@ -1,16 +1,12 @@
+import { debugToFile } from './config.js';
 import {
-  importJSONFile,
-  writeJSONFile,
-  toAbsFilepath,
+  deleteFile,
   fileExists,
   getFilesInFolder,
-  deleteFile
-} from "./fileutil.js";
-import { debugToFile } from './config.js';
-
-import { createLogger } from "./lib/loggerlib.js";
-
-const log = createLogger();
+  importJSONFile,
+  toAbsFilepath,
+  writeJSONFile} from "./fileUtils.js";
+import { log } from "./logUtils.js";
 
 export function createCache(projectId) {
   const baseCache = {

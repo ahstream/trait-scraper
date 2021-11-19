@@ -10,7 +10,9 @@
     "node": true,
     "es6": true
   },
+  "plugins": ["simple-import-sort"],
   "rules": {
+    "simple-import-sort/imports": "error",
     "no-undef": "error",
     "semi": [
       "error",

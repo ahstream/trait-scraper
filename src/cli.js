@@ -6,18 +6,13 @@
 import program from 'commander';
 import fetch from 'node-fetch';
 
-import { createLogger } from './lib/loggerlib.js';
-
 import { reveal } from './collection.js';
-import { testCollection } from './test.js';
-import { analyzeCollection } from './analyze.js';
-import { getAssets, pollAssets } from './opensea.js';
-import { cleanHtml, cleanCache } from './tools.js';
 import { getConfig } from './config.js';
-import { range } from './miscutil.js';
 import { get } from './fetch.js';
-
-const log = createLogger();
+import { log } from "./logUtils.js";
+import { range } from './miscUtils.js';
+import { getAssets } from './opensea.js';
+import { cleanCache, cleanHtml } from './tools.js';
 
 const DEFAULT_FETCH_HEADERS = {
   'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
@@ -44,7 +39,7 @@ async function runProgram() {
   program.option('--silent', 'Do not notify events');
   program.option('--sample', 'Use test samples');
   program.option('--skiptokencache', '');
-  program.option('--skipassetsfetch', '');
+  program.option('--skipopensea', '');
   program.option('--value <value>', 'Arbitrary value');
   program.option('--id <value>', 'Token Id');
   program.option('--contract <value>', 'Contract address');
@@ -61,7 +56,7 @@ async function runProgram() {
     case 'reveal':
       await reveal(projectId, {
         skipTokenCache: options.skiptokencache,
-        skipAssetsFetch: options.skipassetsfetch,
+        skipOpensea: options.skipopensea,
         silent: options.silent,
       });
       break;
