@@ -4,6 +4,7 @@ import open from "open";
 import { getFromCache } from "./cache.js";
 import { getConfig, saveCache } from "./config.js";
 import { fetchTokenURIs } from "./fetchTokenURIs.js";
+import { checkIfHot, updateHotOV } from "./hotToken.js";
 import { log } from "./logUtils.js";
 import { addSecondsToDate, delay, range, sort } from "./miscUtils.js";
 import { notifyHotToken, notifyNewResults } from "./notify.js";
@@ -60,6 +61,7 @@ export function createCollection() {
     hotTokens: [],
     traits: { items: {} },
     traitCounts: { items: {} },
+    runtime: {}
   };
 }
 
@@ -160,9 +162,9 @@ async function fetchCollection(config) {
 
   fetchTokenURIs(config.projectId, inputArray, outputArray, config.fetchTokenOptions, config.cache.tokens, !config.args.skipTokenCache, stats);
 
-  config.runtime.fetchStartTime = new Date();
-  config.runtime.nextTimeCreateResults = addSecondsToDate(new Date(), config.milestones.createResultEverySecs);
-  config.runtime.nextTimeSaveCache = addSecondsToDate(new Date(), config.milestones.saveCacheEverySecs);
+  config.collection.runtime.fetchStartTime = new Date();
+  config.collection.runtime.nextTimeCreateResults = addSecondsToDate(new Date(), config.milestones.createResultEverySecs);
+  config.collection.runtime.nextTimeSaveCache = addSecondsToDate(new Date(), config.milestones.saveCacheEverySecs);
 
   let numProcessedTokens = 0;
   let numHot = 0;
@@ -174,19 +176,15 @@ async function fetchCollection(config) {
       if (result.status !== '200') {
         continue;
       }
-      const token = addTokenRef(result.ref, result.data, config.collection, numProcessedTokens, config.rules);
+      const token = addTokenRef(result.ref, result.data, config.collection, numProcessedTokens,);
       lastToken = token;
 
       if (numProcessedTokens === 1000) {
         createRevealResults(config, lastToken);
       }
 
-      const hotToken = checkIfHotToken(token, config.rules);
-
-      if (hotToken) {
+      if (checkIfHot(token, config.collection)) {
         numHot++;
-        config.collection.hotTokens.push(hotToken);
-        config.runtime.newHotTokens.push(hotToken.tokenId);
         createRevealResults(config, lastToken);
         doIfTrue(!config.args.silent, notifyHotToken);
         continue;
@@ -217,9 +215,9 @@ function checkMilestones(config, lastToken) {
   let flCreateResults = false;
   const now = new Date();
 
-  info.saveToCache = (now >= config.runtime.nextTimeSaveCache);
+  info.saveToCache = (now >= config.collection.runtime.nextTimeSaveCache);
 
-  if (now >= config.runtime.nextTimeCreateResults) {
+  if (now >= config.collection.runtime.nextTimeCreateResults) {
     log.debug('nextTimeCreateResults!');
     info.createResults = true;
     return info;
@@ -241,40 +239,9 @@ function checkMilestones(config, lastToken) {
   return info;
 }
 
-function checkIfHotToken(token, rules) {
-  if (!token.price || token.price > rules.maxPrice) {
-    // Only tokens for sale can be hot!
-    return null;
-  }
-
-  const data = {
-    isHotTraitCount: false,
-    isHotOV: false,
-    isHotTrait: false,
-    traits: []
-  };
-  data.isHotTraitCount = token.traitCount <= rules.hotMaxTraits;
-  data.isHotOV = token.scoreOV >= rules.hotMinOV || token.temp?.scoreOV >= rules.hotMinOV;
-
-  token.traits.map(obj => obj.value).forEach(traitValue => {
-    // if (rules.hotTraits.some(substr => traitValue.toLowerCase().includes(substr))) {
-    if (rules.hotTraits.some(substr => traitValue.toLowerCase() === substr)) {
-      data.traits.push(traitValue);
-    }
-  });
-  data.isHotTrait = data.traits.length > 0;
-
-  if (data.isHotTraitCount || data.isHotOV || data.isHotTrait) {
-    token.hot = data;
-    return token;
-  }
-
-  return null;
-}
-
 function addTokenRef(tokenRef, tokenData, collection, revealOrder, rules) {
   if (_.isEmpty(tokenData) || _.isEmpty(tokenData.attributes) || !tokenData.image) {
-    console.log('Not proper JSON:', tokenData);
+    log.debug('Not proper JSON:', tokenData);
     return false;
   }
   const { attributes, ...otherTokenProperties } = tokenData;
@@ -287,9 +254,9 @@ function addTokenRef(tokenRef, tokenData, collection, revealOrder, rules) {
     token.assetURI = `${BASE_ASSET_URI}${collection.contractAddress}/${token.tokenId}`;
   }
 
-  addTokenTraits(token, attributes, collection, rules.ignoreNumberTraits);
+  addTokenTraits(token, attributes, collection);
 
-  calcTemporaryTokenRarity(token, collection, rules.scoreKey);
+  calcTemporaryTokenRarity(token, collection);
 
   return token;
 }
@@ -298,23 +265,24 @@ function createRevealResults(config, lastToken = null, isLastPage = false) {
   // const myTimer = timer.create();
 
   if (isLastPage) {
-    config.runtime.revealPageNum = 0;
+    config.collection.runtime.revealPageNum = 0;
   } else {
-    config.runtime.revealPageNum = config.runtime.revealPageNum ?? 0;
-    config.runtime.revealPageNum++;
+    config.collection.runtime.revealPageNum = config.collection.runtime.revealPageNum ?? 0;
+    config.collection.runtime.revealPageNum++;
   }
 
-  calcRarity(config.collection, config.rules.scoreKey);
+  calcRarity(config.collection);
+  updateHotOV(config.collection);
   // myTimer.ping(`(${config.projectId}) createResults duration`);
 
-  const path = webPage.createRevealWebPage(config, config.runtime.revealPageNum);
+  const path = webPage.createRevealWebPage(config, config.collection.runtime.revealPageNum);
 
   const everySecs = lastToken ? config.milestones.createResultEverySecs[0] : config.milestones.createResultEverySecs[1];
-  config.runtime.nextTimeCreateResults = addSecondsToDate(new Date(), everySecs);
+  config.collection.runtime.nextTimeCreateResults = addSecondsToDate(new Date(), everySecs);
 
-  if (!config.runtime.webPageShown && config.autoOpen.firstResultPage) {
+  if (!config.collection.runtime.webPageShown && config.autoOpen.firstResultPage) {
     open(path, { app: 'chrome' });
-    config.runtime.webPageShown = true;
+    config.collection.runtime.webPageShown = true;
   } else {
     doIfTrue(!config.args.silent, notifyNewResults);
   }

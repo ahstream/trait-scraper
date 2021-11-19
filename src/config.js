@@ -6,7 +6,8 @@ import {
   ensureFolder,
   importJSONFile,
   toAbsFilepath,
-  writeJSONFile} from "./fileUtils.js";
+  writeJSONFile
+} from "./fileUtils.js";
 import { log } from "./logUtils.js";
 import * as timer from "./timer.js";
 
@@ -38,19 +39,22 @@ export function getConfig(projectId, args) {
   // config.lastTokenId = config.tokenIdRange[1];
   // config.maxSupply = config.lastTokenId - config.firstTokenId + 1;
 
-  config.freqInfoLog = config.freqInfoLogSecs * 1000 / config.fetchSleepBetween;
+  // config.freqInfoLog = config.freqInfoLogSecs * 1000 / config.fetchSleepBetween;
+
+  const maxSupply = config.supply[0];
 
   config.collection = createCollection();
+  config.collection.runtime = createRuntime(config);
   config.collection.projectId = config.projectId;
   config.collection.contractAddress = config.contractAddress;
-  config.collection.firstTokenId = config.tokenIdRange[0];
-  config.collection.lastTokenId = config.tokenIdRange[1];
-  config.collection.maxSupply = config.collection.lastTokenId - config.collection.firstTokenId + 1;
-
-  config.rules.hotTraits = config.rules.hotTraits.map(rule => rule.toLowerCase());
+  config.collection.maxSupply = maxSupply;
+  config.collection.firstTokenId = config.supply[1] ?? 0;
+  config.collection.lastTokenId = config.supply[2] ?? maxSupply;
+  config.collection.rules = { ...config.rules };
+  // todo transform rules!
+  config.collection.rules.hotTraits = config.collection.rules.hotTraits.map(rule => rule.toLowerCase());
 
   config.cache = createCache(projectId);
-  config.runtime = createRuntime(config);
 
   return config;
 }
@@ -71,7 +75,7 @@ function createRuntime(config) {
 }
 
 export function resetRuntime(config) {
-  config.runtime = createRuntime(config);
+  config.collection.runtime = createRuntime(config);
 }
 
 export function debugToFile(config, filename = 'debug.json') {

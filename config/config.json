@@ -2,7 +2,7 @@
   "projects": {
     "apewives": {
       "disabled": false,
-      "tokenIdRange": [1, 10000],
+      "supply": [10000],
       "contractAddress": "0xf1268733c6fb05ef6be9cf23d24436dcd6e0b35e",
       "fetchTokenOptions": {"concurrent": 100, "delayBetweenBatches": 250, "timeout": 5000},
       "rules": {
@@ -24,15 +24,15 @@
     },
     "modz": {
       "disabled": false,
-      "tokenIdRange": [1, 5555],
+      "supply": [5555, 1, 5555],
       "contractAddress": "0x50e712b3a260d7639179e8277836253461418f23"
     },
     "pixelnauts": {
-      "tokenIdRange": [1, 10000],
+      "supply": [10000],
       "contractAddress": "0x27cC171B16FdD2224E1f93eD7DccFcc6790cA4BF"
     },
     "strongapeclub": {
-      "tokenIdRange": [1, 5000],
+      "supply": [5000],
       "contractAddress": "0xbf3EB06c55709674504C2181362D09b51AEaF0AA",
       "rules": {
         "maxPrice": 0.5,
@@ -47,11 +47,11 @@
       }
     },
     "angryapearmy": {
-      "tokenIdRange": [0, 3333],
+      "supply": [3333],
       "contractAddress": "0x77640cf3F89A4F1B5CA3A1e5c87f3F5B12ebf87e"
     },
     "bricktopians": {
-      "tokenIdRange": [1, 10000],
+      "supply": [10000],
       "contractAddress": "0x9eEeAF684E228C2D5C89435e010acC02c41Dc86B",
       "hotTraitsEquals": [
         "kanyetopian", "draketopian", "youngthugtopian", "kanye", "drake", "youngthug", "gold",
@@ -108,7 +108,7 @@
         "https://discord.com/channels/900373453784350781/900373454581297232",
         "https://retirementclubnft.com/"
       ],
-      "tokenIdRange": [0, 10000],
+      "supply": [10000],
       "contractAddress": "0x60d9b4F9d85695274a5777537F204675082Bd745",
       "rules": {
         "maxPrice": 0.3,
@@ -126,8 +126,8 @@
       }
     },
     "nfteams": {
+      "supply": [10000],
       "disabled": false,
-      "tokenIdRange": [1, 10000],
       "contractAddress": "0x03f5cee0d698c24a42a396ec6bdaee014057d4c8",
       "___rules": {
         "requiredTraitTypes": ["Character"],

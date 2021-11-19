@@ -1,11 +1,11 @@
 import _ from 'lodash';
 import { createRequire } from 'module';
 
-import { addToCache,existsInCache, getFromCache } from "./cache.js";
+import { addToCache, existsInCache, getFromCache } from "./cache.js";
 import { get } from "./fetch.js";
 import { log } from "./logUtils.js";
 import { delay } from "./miscUtils.js";
-import { release,take } from "./semaphore.js";
+import { release, take } from "./semaphore.js";
 
 const require = createRequire(import.meta.url);
 
@@ -38,9 +38,7 @@ export async function fetchTokenURIs(projectId, inputArray, outputArray, fetchOp
       const maxNumNew = activeRef.length < fetchOptions.concurrent ? fetchOptions.concurrent - activeRef.length : 0;
       const items = inputRef.splice(0, maxNumNew);
       const inCache = items.length ? existsInCache(cacheRef, items[0].url) : false;
-      // console.log('numProcessed, numLeft, numActive, numNew', numToProcess - inputRef.length, inputRef.length, activeRef.length, items.length);
       log.debug(`processed: ${numToProcess - inputRef.length}, left: ${inputRef.length}, active: ${activeRef.length}, new: ${items.length}, ok: ${statsRef['200'] ?? 0}, timeout: ${statsRef.timeout ?? 0}, tooMany: ${statsRef['429'] ?? 0}, `);
-      // console.log('stats', statsRef);
       items.forEach(item => {
         getItem(item, activeRef, outputArray, fetchOptions.timeout, cacheRef, fetchFromCache, statsRef);
       });
@@ -89,42 +87,33 @@ async function getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetch
   const result = itemFromCache ?? await get(item.url, { timeout: fetchTimeout });
 
   addToStats(result.status, statsRef);
-  // log.debug('stats', statsRef);
   if (result.headers) {
     log.debug('result.headers', result.headers);
-  }
-  if (!result.headers) {
+  } else {
     log.debug('result.data', result.data);
   }
 
-  if (result.status === '429') {
-    // console.log('429 headers:', result.headers);
-    const retryAfterSecs = getRetryAfter(result.headers, 2);
-    log.debug('retryAfterSecs', retryAfterSecs);
-    setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetchFromCache, statsRef, attempt + 1), retryAfterSecs * 1000);
-    return;
-  } else if (result.status === 'timeout') {
-    // console.log('timeout');
-    setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetchFromCache, statsRef, attempt + 1), 1000);
-    return;
-  } else if (result.status === 'connectionRefused') {
-    // console.log('connectionRefused');
-    setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetchFromCache, statsRef, attempt + 1), 1000);
-    return;
-  } else if (result.status === 'connectionReset') {
-    // console.log('connectionReset');
-    setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetchFromCache, statsRef, attempt + 1), 1000);
-    return;
-  } else if (result.status === 'connectionTimeout') {
-    // console.log('connectionReset');
-    setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetchFromCache, statsRef, attempt + 1), 1000);
-    return;
-  } else if (result.status === '404') {
-    // do nothing, handle by caller!
-  } else if (result.status === '200') {
-    addToCache(cacheRef, item.url, result.data);
-  } else {
-    console.log('Other status: ', JSON.stringify(result));
+  switch (result.status) {
+    case '429':
+      const retryAfterSecs = getRetryAfter(result.headers, 2);
+      log.debug('retryAfterSecs', retryAfterSecs);
+      setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetchFromCache, statsRef, attempt + 1), retryAfterSecs * 1000);
+      return;
+    case 'timeout':
+    case 'connectionRefused':
+    case 'connectionReset':
+    case 'connectionTimeout':
+      setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, fetchFromCache, statsRef, attempt + 1), 1000);
+      return;
+    case '403':
+    case '404':
+      // do nothing, handle by caller!
+      break;
+    case '200':
+      addToCache(cacheRef, item.url, result.data);
+      break;
+    default:
+      log.info('Other status: ', JSON.stringify(result));
   }
 
   outputRef.push({ ref: item.ref, ...result });

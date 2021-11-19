@@ -2,8 +2,8 @@ import { log } from "./logUtils.js";
 
 export const TRAIT_NONE_VALUE = 'NONE';
 
-export function addTokenTraits(token, attributes, collection, ignoreNumberTraits) {
-  const normalTraits = attributes.filter((attr) => isNormalTrait(attr, ignoreNumberTraits));
+export function addTokenTraits(token, attributes, collection) {
+  const normalTraits = attributes.filter((attr) => isNormalTrait(attr, collection.rules.ignoreNumberTraits));
   const traits = normalizeTraitValues(normalTraits);
 
   token.traits = traits;

@@ -7,7 +7,7 @@ import fetch from 'node-fetch';
 
 import { addToCache } from "./cache.js";
 import { log } from "./logUtils.js";
-import { addSecondsToDate,delay,  } from "./miscUtils.js";
+import { addSecondsToDate, delay, } from "./miscUtils.js";
 
 // MAIN FUNCTIONS
 
@@ -39,8 +39,8 @@ export async function pollAssets(config, callback) {
 export async function getAssets(config) {
   log.info(`(${config.projectId}) Start Get Assets`);
 
-  const fromTokenId = config.tokenIdRange[0];
-  const toTokenId = config.tokenIdRange[1];
+  const fromTokenId = config.collection.firstTokenId;
+  const toTokenId = config.collection.lastTokenId;
   const assets = await getAssetsByChunks(config.collection.contractAddress, fromTokenId, toTokenId, config);
   const tokens = [];
   assets.forEach(asset => {
@@ -56,8 +56,8 @@ export async function getAssets(config) {
 }
 
 export async function updateAssets(config) {
-  const fromTokenId = config.tokenIdRange[0];
-  const toTokenId = config.tokenIdRange[1];
+  const fromTokenId = config.collection.firstTokenId;
+  const toTokenId = config.collection.lastTokenId;
   const assets = await getAssetsByChunks(config.collection.contractAddress, fromTokenId, toTokenId, config);
   assets.forEach(asset => {
     const token = convertAsset(asset);

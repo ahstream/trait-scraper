@@ -27,9 +27,9 @@ export function createRevealWebPage(config, pageNum = 1) {
 export function createRevealWebPageHtml(config, prevNextPageNames) {
   return importTemplate('reveal.html')
     .replace('{REVEAL_HEADER}', createRevealHeaderHtml(config, prevNextPageNames))
-    .replace('{REVEAL_TOKEN_COL}', createRevealTokenColHtml(config.collection, config.rules))
-    .replace('{REVEAL_HOT_COL}', createRevealHotColHtml(config.collection, config.rules, config.runtime))
-    .replace('{REVEAL_IMAGE_COL}', createRevealImageColHtml(config.collection, config.rules));
+    .replace('{REVEAL_TOKEN_COL}', createRevealTokenColHtml(config.collection))
+    .replace('{REVEAL_HOT_COL}', createRevealHotColHtml(config.collection))
+    .replace('{REVEAL_IMAGE_COL}', createRevealImageColHtml(config.collection));
 }
 
 export function createRevealHeaderHtml(config, prevNextPageNames) {
@@ -41,9 +41,9 @@ export function createRevealHeaderHtml(config, prevNextPageNames) {
   const maxSupply = config.collection.maxSupply;
 
   html = html + `<span>Settings: `;
-  html = html + `ScoreKey: <b>${config.rules.scoreKey}</b>&nbsp;|&nbsp;`;
-  html = html + `<b>Max ${normalizePrice(config.rules.maxPrice)} ETH</b>, <b>${config.rules.maxTokens} tokens</b>&nbsp;|&nbsp;`;
-  html = html + `Hot Traits: <b>"${config.rules.hotTraits.join(', ')}"</b>&nbsp;|&nbsp;Hot OV: <b>${config.rules.hotMinOV}</b>&nbsp;|&nbsp;Hot Trait Count: <b>${config.rules.hotMaxTraits}</b>`;
+  html = html + `<b>ScoreKey "${config.collection.rules.scoreKey}"</b>&nbsp;|&nbsp;`;
+  html = html + `<b>Max ${normalizePrice(config.collection.rules.maxPrice)} ETH</b>, <b>${config.collection.rules.maxTokens} tokens</b>&nbsp;|&nbsp;`;
+  html = html + `Hot Traits: <b>"${config.collection.rules.hotTraits.join(', ')}"</b>&nbsp;|&nbsp;Hot OV: <b>${config.collection.rules.hotMinOV}</b>&nbsp;|&nbsp;Hot Trait Count: <b>${config.collection.rules.hotMaxTraits}</b>`;
   html = html + `</span>`;
   html = html + `<br>`;
 
@@ -61,10 +61,10 @@ export function createRevealHeaderHtml(config, prevNextPageNames) {
   return html;
 }
 
-export function createRevealTokenColHtml(collection, rules) {
+export function createRevealTokenColHtml(collection) {
   const numWithPrice = collection.tokens.filter(obj => obj.price > 0).length;
-  const tokensWithRightPrice = sort(collection.tokens.filter(obj => obj.price > 0 && obj.price <= rules.maxPrice), 'score', false);
-  const tokens = tokensWithRightPrice.slice(0, rules.maxTokens);
+  const tokensWithRightPrice = sort(collection.tokens.filter(obj => obj.price > 0 && obj.price <= collection.rules.maxPrice), 'score', false);
+  const tokens = tokensWithRightPrice.slice(0, collection.rules.maxTokens);
 
   // const htmlDesc = `<span class="desc-text">Top ${tokens.length} (of ${numWithPrice}) Rare BuyNow tokens (of ${numWithPrice})</span>`;
   // const htmlDesc = `<span class="desc-text">Top ${tokens.length} (of ${numWithPrice}/${collection.tokens.length}) Rare BuyNow</span>`;
@@ -101,17 +101,20 @@ export function createRevealTokenColHtml(collection, rules) {
     .replace('{TABLE_ROWS}', html);
 }
 
-export function createRevealHotColHtml(collection, rules, runtime) {
+export function createRevealHotColHtml(collection) {
   // const tokensWithRightPrice = sort(collection.hotTokens.filter(obj => obj.price > 0), 'revealOrder', true);
   const tokensWithRightPrice = sort(collection.hotTokens, 'revealOrder', false);
-  const tokens = tokensWithRightPrice.slice(0, rules.maxTokens);
+  const tokens = tokensWithRightPrice.slice(0, collection.rules.maxTokens);
 
   const htmlDesc = `<span class="desc-text">Top ${tokens.length} Hot BuyNow</span>`;
 
   let html = '';
 
   for (const token of tokens) {
-    const rowClassName = runtime.newHotTokens.find(obj => obj === token.tokenId) ? 'new-hot-token' : '';
+    if (!token.hot) {
+      console.log(token);
+    }
+    const rowClassName = collection.runtime.newHotTokens.find(obj => obj === token.tokenId) ? 'new-hot-token' : '';
     const titleTxt = createImageTitleText(token, 'score', collection.tokens.length);
     const className = 'thumb';
     const imageHtml = `<a target="_blank" href="${token.assetURI}"><img alt='' title="${titleTxt}" class="${className}" src="${normalizeURI(token.image)}"></a>`;
@@ -122,7 +125,11 @@ export function createRevealHotColHtml(collection, rules, runtime) {
       hotReasons.push(`<b>${token.traitCount} traits</b> (${traitCountFreqHtml}%)`);
     }
     if (token.hot.isHotOV) {
-      hotReasons.push(`<b>OV ${normalizeOV(token.temp.scoreOV)}</b> (${normalizeOV(token.scoreOV)})`);
+      if (token.temp?.scoreOV) {
+        hotReasons.push(`<b>OV ${normalizeOV(token.temp.scoreOV)}</b> (${normalizeOV(token.scoreOV)})`);
+      } else {
+        hotReasons.push(`<b>OV ${normalizeOV(token.scoreOV)}</b>`);
+      }
     }
     if (token.hot.traits.length) {
       token.hot.traits.forEach(obj => hotReasons.push(`"<b>${obj}</b>"`));
@@ -141,17 +148,17 @@ export function createRevealHotColHtml(collection, rules, runtime) {
         </tr>`;
   }
 
-  runtime.newHotTokens = [];
+  collection.runtime.newHotTokens = [];
 
   return importTemplate('reveal-hot-col.html')
     .replace('{DESC}', htmlDesc)
     .replace('{TABLE_ROWS}', html);
 }
 
-export function createRevealImageColHtml(collection, rules) {
+export function createRevealImageColHtml(collection) {
   // todo sort by reveal order!?
-  const tokensWithRightPrice = sort(collection.tokens.filter(obj => obj.price > 0 && obj.price <= rules.maxPrice), 'price', true);
-  const tokens = tokensWithRightPrice.slice(0, rules.maxTokens);
+  const tokensWithRightPrice = sort(collection.tokens.filter(obj => obj.price > 0 && obj.price <= collection.rules.maxPrice), 'price', true);
+  const tokens = tokensWithRightPrice.slice(0, collection.rules.maxTokens);
   const htmlDesc = `<span class="desc-text">Top ${tokens.length} Cheap BuyNow images</span>`;
 
   let html = '';

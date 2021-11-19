@@ -99,9 +99,7 @@ async function runProgram() {
       break;
     case 'assets':
       const result = await getAssets(options);
-    // console.log(result);
     case 'fetchtokendata':
-      console.log(await fetchTokenDataById(options.id, options.contract));
       break;
     case 'createstartpage':
       createStartPage(true);
@@ -114,7 +112,6 @@ async function runProgram() {
     break;
   case 'pollassets':
     const result3 = await pollAssets(config, (obj) => {
-      console.log(obj.cache.opensea.assets.lastFullUpdate);
       return true;
     });
     debugToFile(config, 'config3.json');

@@ -6,13 +6,13 @@ import { addNoneTraits } from "./trait.js";
 
 const TRAIT_COUNT_TYPE = 'xxTraitCountxx';
 
-export function calcRarity(collection, scoreKey) {
+export function calcRarity(collection) {
   const myTimer = timer.create();
   addNoneTraits(collection);
   // myTimer.ping(`addNoneTraits duration`);
-  calcGlobalRarity(collection, scoreKey);
+  calcGlobalRarity(collection);
   // myTimer.ping(`calcGlobalRarity duration`);
-  calcTokenRarity(collection, scoreKey);
+  calcTokenRarity(collection);
   // myTimer.ping(`calcTokenRarity duration`);
   calcRanks(collection);
   // myTimer.ping(`calcRanks duration`);
@@ -20,16 +20,16 @@ export function calcRarity(collection, scoreKey) {
   // myTimer.ping(`calcOutliers duration`);
 }
 
-function calcGlobalRarity(collection, scoreKey) {
-  calcGlobalTraitsRarity(collection, scoreKey);
+function calcGlobalRarity(collection) {
+  calcGlobalTraitsRarity(collection);
   calcGlobalTraitCountsRarity(collection); // Need to be done after calcGlobalTraitsRarity!
 }
 
-function calcGlobalTraitsRarity(collection, scoreKey) {
+function calcGlobalTraitsRarity(collection) {
   const numTokens = collection.tokens.length;
 
   // Normalize score key since traits do not have count (rarityCount*)!
-  const normalizedScoreKey = scoreKey.replace('Count', '');
+  const normalizedScoreKey = collection.rules.scoreKey.replace('Count', '');
 
   let numTraits = 0;
   let numTraitValues = 0;
@@ -82,11 +82,11 @@ function calcGlobalTraitCountsRarity(collection) {
   collection.traitCounts.maxTraits = Math.max(...counts);
 }
 
-export function calcTokenRarity(collection, scoreKey) {
+export function calcTokenRarity(collection) {
   const numTokens = collection.tokens.length;
 
   // Normalize score key since traits do not have count (rarityCount*)!
-  const normalizedScoreKey = scoreKey.replace('Count', '');
+  const normalizedScoreKey = collection.rules.scoreKey.replace('Count', '');
 
   for (let token of collection.tokens) {
     let sumRarity = 0;
@@ -114,13 +114,13 @@ export function calcTokenRarity(collection, scoreKey) {
     token.rarityNorm = sumRarityNorm;
     token.rarityCountNorm = sumRarityNorm + collection.traitCounts.items[token.traitCount].rarityNorm;
 
-    token.score = token[`${scoreKey}`] ?? null;
+    token.score = token[`${collection.rules.scoreKey}`] ?? null;
 
     token.hasRarity = token.rarity > 0;
   }
 }
 
-export function calcTemporaryTokenRarity(token, collection, scoreKey) {
+export function calcTemporaryTokenRarity(token, collection) {
   if (!collection.calcOutlier) {
     // Only possible to calc temp rarity + OV if calcOutlier has been defined!
     return;
@@ -159,7 +159,7 @@ export function calcTemporaryTokenRarity(token, collection, scoreKey) {
   token.temp.rarityNorm = sumRarityNorm;
   token.temp.rarityCountNorm = sumRarityNorm + (traitCountRarity * collection.traits.normFactor);
 
-  token.temp.score = token.temp[`${scoreKey}`] ?? null;
+  token.temp.score = token.temp[`${collection.rules.scoreKey}`] ?? null;
 
   token.temp.scoreOV = collection.calcOutlier(token.temp.score);
 }
