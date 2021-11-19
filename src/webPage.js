@@ -111,9 +111,6 @@ export function createRevealHotColHtml(collection) {
   let html = '';
 
   for (const token of tokens) {
-    if (!token.hot) {
-      console.log(token);
-    }
     const rowClassName = collection.runtime.newHotTokens.find(obj => obj === token.tokenId) ? 'new-hot-token' : '';
     const titleTxt = createImageTitleText(token, 'score', collection.tokens.length);
     const className = 'thumb';
@@ -132,7 +129,7 @@ export function createRevealHotColHtml(collection) {
       }
     }
     if (token.hot.traits.length) {
-      token.hot.traits.forEach(obj => hotReasons.push(`"<b>${obj}</b>"`));
+      token.hot.traits.forEach(obj => hotReasons.push(`<b>${obj}</b>`));
     }
     const ov = normalizeOV(token.scoreOV);
     const priceHtml = token.price ? normalizePrice(token.price) : '-';

@@ -19,6 +19,16 @@
             "date": 1637330730926,
             "name": "logfiles\\info-2021-11-19-15.log",
             "hash": "8fed20d826d19bdad7abbc3dc689b5dc"
+        },
+        {
+            "date": 1637334118428,
+            "name": "logfiles\\info-2021-11-19-16.log",
+            "hash": "4bca2b4f8efcf118cc5389d3de17381f"
+        },
+        {
+            "date": 1637337629764,
+            "name": "logfiles\\info-2021-11-19-17.log",
+            "hash": "ac3d04db459f85f53bc0c8e15091d066"
         }
     ]
 }

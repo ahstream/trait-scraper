@@ -4,23 +4,7 @@
       "disabled": false,
       "supply": [10000],
       "contractAddress": "0xf1268733c6fb05ef6be9cf23d24436dcd6e0b35e",
-      "fetchTokenOptions": {"concurrent": 100, "delayBetweenBatches": 250, "timeout": 5000},
-      "rules": {
-        "scoreKey": "rarityCountNorm",
-        "ignoreNumberTraits": true,
-        "maxPrice": 22.7,
-        "maxTokens": 100,
-        "hotMaxTraits": 1,
-        "hotMinOV": 20,
-        "hotTraits": ["gold", "dots", "laser eyes"]
-      },
-      "milestones": {
-        "createResultEverySecs": [5, 20],
-        "createResultOnTokenNum": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-        "createResultOnNthToken": [100, 500],
-        "saveCacheEverySecs": 120,
-        "updateAssetsEverySecs": 3600
-      }
+      "fetchTokenOptions": {"concurrent": 100, "delayBetweenBatches": 250, "timeout": 5000}
     },
     "modz": {
       "disabled": false,
@@ -35,14 +19,18 @@
       "supply": [5000],
       "contractAddress": "0xbf3EB06c55709674504C2181362D09b51AEaF0AA",
       "rules": {
-        "maxPrice": 0.5,
+        "scoreKey": "rarityCountNorm",
+        "ignoreNumberTraits": true,
+        "maxPrice": 1,
         "maxTokens": 300,
         "hotMaxTraits": 1,
-        "hotMinOV": 55,
+        "hotMinOV": 20,
         "hotTraits": [
           "the sealer man", "sealer man", "the jinn appearing",
           "jinn appearing", "the wolf", "wolf", "the leader", "leader", "the mad titan",
-          "mad titan", "gold", "dots", "laser eyes"
+          "mad titan", "body/gold", "skin/gold", "colour/gold", "color/gold", "gold", "boredape",
+          "dots",
+          "laser eyes"
         ]
       }
     },
@@ -50,7 +38,7 @@
       "supply": [3333],
       "contractAddress": "0x77640cf3F89A4F1B5CA3A1e5c87f3F5B12ebf87e"
     },
-    "bricktopians": {
+    "bricktopians222222": {
       "supply": [10000],
       "contractAddress": "0x9eEeAF684E228C2D5C89435e010acC02c41Dc86B",
       "hotTraitsEquals": [
@@ -110,7 +98,7 @@
       ],
       "supply": [10000],
       "contractAddress": "0x60d9b4F9d85695274a5777537F204675082Bd745",
-      "rules": {
+      "rules2222": {
         "maxPrice": 0.3,
         "maxTokens": 300,
         "hotMaxTraits": 1,
@@ -129,38 +117,33 @@
       "supply": [10000],
       "disabled": false,
       "contractAddress": "0x03f5cee0d698c24a42a396ec6bdaee014057d4c8",
-      "___rules": {
-        "requiredTraitTypes": ["Character"],
-        "numberValues": false,
-        "traitCount": false,
-        "scoreKey": "rarity",
-        "weight": [
-          ["Character", 5.0]
-        ]
-      },
       "rules": {
         "scoreKey": "rarity",
         "ignoreNumberTraits": true,
-        "maxPrice": 2.5,
-        "maxTokens": 500,
+        "maxPrice": 11,
+        "maxTokens": 300,
         "hotMaxTraits": 1,
-        "hotMinOV": 30,
-        "hotTraits": ["Gold", "dots", "BoredApe"]
+        "hotMinOV": 20,
+        "hotTraits": [
+          "body/gold", "skin/gold", "colour/gold", "color/gold", "gold", "boredape", "dots"
+        ]
       }
     }
   },
   "pollForRevealTokenIds": [296, 452, 526, 789, 1234, 2345, 3456],
   "autoOpen": {"firstResultPage": true},
-  "DIVIDER": "------------------------------------------------------------------------",
-  "fetchTokenOptions": {"concurrent": 100, "delayBetweenBatches": 250, "timeout": 5000},
+  "fetchTokenOptions": {"concurrent": 100, "delayBetweenBatches": 200, "timeout": 5000},
   "rules": {
     "scoreKey": "rarityCountNorm",
     "ignoreNumberTraits": true,
-    "maxPrice": 0.5,
-    "maxTokens": 100,
+    "maxPrice": 1,
+    "maxTokens": 300,
     "hotMaxTraits": 1,
     "hotMinOV": 20,
-    "hotTraits": ["gold", "dots", "laser eyes"]
+    "hotTraits": [
+      "body/gold", "skin/gold", "colour/gold", "color/gold", "gold", "boredape", "dots",
+      "laser eyes"
+    ]
   },
   "milestones": {
     "createResultEverySecs": [5, 20],
@@ -169,6 +152,7 @@
     "saveCacheEverySecs": 120,
     "updateAssetsEverySecs": 3600
   },
+  "DIVIDER": "------------------------------------------------------------------------",
   "pollSleepBetweenReveal": 1000,
   "freqInfoLogSecs": 5,
   "analyze": [

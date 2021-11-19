@@ -2,9 +2,8 @@ import { Stats } from 'fast-stats';
 
 import { sort } from "./miscUtils.js";
 import * as timer from "./timer.js";
+import { addToTokenTraitMap } from "./token.js";
 import { addNoneTraits } from "./trait.js";
-
-const TRAIT_COUNT_TYPE = 'xxTraitCountxx';
 
 export function calcRarity(collection) {
   const myTimer = timer.create();
@@ -17,7 +16,7 @@ export function calcRarity(collection) {
   calcRanks(collection);
   // myTimer.ping(`calcRanks duration`);
   calcOutliers(collection);
-  // myTimer.ping(`calcOutliers duration`);
+  // myTimer.ping(`calcRarity length ${collection.tokens.length} duration`);
 }
 
 function calcGlobalRarity(collection) {
@@ -104,6 +103,9 @@ export function calcTokenRarity(collection) {
 
       sumRarity = sumRarity + trait.rarity;
       sumRarityNorm = sumRarityNorm + trait.rarityNorm;
+
+      // Need to do this here also to add for NONE values!
+      addToTokenTraitMap(token, traitType, traitValue);
     }
 
     token.numWithTraitCount = collection.traitCounts.items[token.traitCount].count;
@@ -121,7 +123,7 @@ export function calcTokenRarity(collection) {
 }
 
 export function calcTemporaryTokenRarity(token, collection) {
-  if (!collection.calcOutlier) {
+  if (typeof collection.calcOutlier !== 'function') {
     // Only possible to calc temp rarity + OV if calcOutlier has been defined!
     return;
   }
@@ -136,7 +138,7 @@ export function calcTemporaryTokenRarity(token, collection) {
     const traitValue = trait.value;
 
     const tempFreq = 1 / numTokens;
-    const normFactor = collection.traits.items[traitType].normFactor;
+    const normFactor = collection.traits.items[traitType].normFactor ?? 1;
 
     const freq = collection.traits.items[traitType].items[traitValue].freq ?? tempFreq;
     const rarity = collection.traits.items[traitType].items[traitValue].rarity ?? 1 / freq;
@@ -161,7 +163,9 @@ export function calcTemporaryTokenRarity(token, collection) {
 
   token.temp.score = token.temp[`${collection.rules.scoreKey}`] ?? null;
 
-  token.temp.scoreOV = collection.calcOutlier(token.temp.score);
+  const ov = collection.calcOutlier(token.temp.score);
+
+  token.temp.scoreOV = !isNaN(ov) || ov === Infinity ? null : ov;
 }
 
 export function calcRanks(collection) {

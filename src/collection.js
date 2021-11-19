@@ -179,10 +179,6 @@ async function fetchCollection(config) {
       const token = addTokenRef(result.ref, result.data, config.collection, numProcessedTokens,);
       lastToken = token;
 
-      if (numProcessedTokens === 1000) {
-        createRevealResults(config, lastToken);
-      }
-
       if (checkIfHot(token, config.collection)) {
         numHot++;
         createRevealResults(config, lastToken);
@@ -191,7 +187,7 @@ async function fetchCollection(config) {
       }
 
       const milestoneInfo = checkMilestones(config, lastToken);
-      if (milestoneInfo.createResult) {
+      if (milestoneInfo.createResults) {
         createRevealResults(config, lastToken);
       }
       if (milestoneInfo.saveCache) {
@@ -199,7 +195,7 @@ async function fetchCollection(config) {
       }
     }
 
-    await delay(1000);
+    await delay(1);
   }
 
   log.info(`(${config.projectId}) Stats:`, stats);
@@ -212,7 +208,6 @@ async function fetchCollection(config) {
 function checkMilestones(config, lastToken) {
   const info = {};
 
-  let flCreateResults = false;
   const now = new Date();
 
   info.saveToCache = (now >= config.collection.runtime.nextTimeSaveCache);
@@ -255,14 +250,13 @@ function addTokenRef(tokenRef, tokenData, collection, revealOrder, rules) {
   }
 
   addTokenTraits(token, attributes, collection);
-
   calcTemporaryTokenRarity(token, collection);
 
   return token;
 }
 
 function createRevealResults(config, lastToken = null, isLastPage = false) {
-  // const myTimer = timer.create();
+  const myTimer = timer.create();
 
   if (isLastPage) {
     config.collection.runtime.revealPageNum = 0;
@@ -273,9 +267,10 @@ function createRevealResults(config, lastToken = null, isLastPage = false) {
 
   calcRarity(config.collection);
   updateHotOV(config.collection);
-  // myTimer.ping(`(${config.projectId}) createResults duration`);
 
   const path = webPage.createRevealWebPage(config, config.collection.runtime.revealPageNum);
+
+  // myTimer.ping(`createResults length ${config.collection.tokens.length} duration`);
 
   const everySecs = lastToken ? config.milestones.createResultEverySecs[0] : config.milestones.createResultEverySecs[1];
   config.collection.runtime.nextTimeCreateResults = addSecondsToDate(new Date(), everySecs);

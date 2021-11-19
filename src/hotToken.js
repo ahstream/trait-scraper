@@ -1,4 +1,5 @@
 import { log } from "./logUtils.js";
+import { matchTraitMap } from "./token.js";
 
 export function checkIfHot(token, collection) {
   const hotData = getHotTokenData(token, collection.rules);
@@ -37,13 +38,19 @@ function getHotTokenData(token, rules) {
     isHotTrait: false,
     traits: []
   };
-  data.isHotTraitCount = token.traitCount <= rules.hotMaxTraits;
-  data.isHotOV = token.scoreOV >= rules.hotMinOV || token.temp?.scoreOV >= rules.hotMinOV;
 
-  token.traits.map(obj => obj.value).forEach(traitValue => {
-    // if (rules.hotTraits.some(substr => traitValue.toLowerCase().includes(substr))) {
-    if (rules.hotTraits.some(substr => traitValue.toLowerCase() === substr)) {
-      data.traits.push(traitValue);
+  data.isHotTraitCount = token.traitCount <= rules.hotMaxTraits;
+
+  if (token.scoreOV && token.scoreOV !== Infinity) {
+    data.isHotOV = token.scoreOV >= rules.hotMinOV || token.temp?.scoreOV >= rules.hotMinOV;
+  }
+
+  rules.hotTraits.forEach(rule => {
+    const guiValue = matchTraitMap(token, rule);
+    if (guiValue) {
+      // if (rules.hotTraits.some(substr => traitValue.toLowerCase().includes(substr))) {
+      // if (rules.hotTraits.some(substr => traitValue.toLowerCase() === substr)) {
+      data.traits.push(guiValue);
     }
   });
   data.isHotTrait = data.traits.length > 0;

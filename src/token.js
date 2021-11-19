@@ -4,6 +4,7 @@ import { get } from './fetch.js';
 import { log } from "./logUtils.js";
 import { delay } from "./miscUtils.js";
 import { notifyRevealed } from "./notify.js";
+import * as timer from "./timer.js";
 import { getTokenURI } from './tokenURI.js';
 
 // EXPORTED
@@ -62,6 +63,48 @@ export async function waitForReveal(collection, tokenIds, sleepBetween, silentFl
     log.info(`(${collection.projectId}) .`);
     await delay(sleepBetween);
   }
+}
+
+export function addToTokenTraitMap(token, traitType, traitValue) {
+  // const myTimer = timer.create();
+
+  const normalizedType = normalizeTrait(traitType);
+  const normalizedValue = normalizeTrait(traitValue);
+  const key1 = `${normalizedType}/${normalizedValue}`;
+  const key2 = normalizedValue;
+  const guiValue = `${traitType}: ${traitValue}`;
+  if (!token.traitMap) {
+    token.traitMap = {};
+  }
+
+  if (!token.traitMap[key1]) {
+    token.traitMap[key1] = [];
+  }
+  if (!token.traitMap[key1].includes(guiValue)) {
+    token.traitMap[key1].push(guiValue);
+  }
+
+  if (!token.traitMap[key2]) {
+    token.traitMap[key2] = [];
+  }
+  if (!token.traitMap[key2].includes(guiValue)) {
+    token.traitMap[key2].push(guiValue);
+  }
+
+  // myTimer.pingms(`addToTokenTraitMap duration`);
+}
+
+export function normalizeTrait(value) {
+  return value
+    .replaceAll(' ', '')
+    .replaceAll('-', '')
+    // .replaceAll('/', '') DON'T include this because rules can contain "/"
+    .replaceAll('.', '')
+    .toLowerCase();
+}
+
+export function matchTraitMap(token, value) {
+  return token.traitMap[value] ?? null;
 }
 
 // INTERNAL FUNCTIONS
@@ -129,3 +172,4 @@ export async function getRevealedStatus(token) {
 function isIterable(obj) {
   return !(obj == null || typeof obj[Symbol.iterator] !== 'function');
 }
+

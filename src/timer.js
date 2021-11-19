@@ -18,6 +18,11 @@ export function create() {
       timer.lastDate = new Date();
       log.info(`${text}: ${duration} secs`);
     },
+    pingms: (text = 'Duration') => {
+      const duration = ((new Date()).getTime() - timer.lastDate.getTime());
+      timer.lastDate = new Date();
+      log.info(`${text}: ${duration} millisecs`);
+    },
     duration: () => {
       const duration = ((new Date()).getTime() - timer.lastDate.getTime()) / 1000;
       timer.lastDate = new Date();

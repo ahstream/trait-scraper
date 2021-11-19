@@ -1,4 +1,5 @@
 import { log } from "./logUtils.js";
+import { addToTokenTraitMap } from "./token.js";
 
 export const TRAIT_NONE_VALUE = 'NONE';
 
@@ -9,11 +10,19 @@ export function addTokenTraits(token, attributes, collection) {
   token.traits = traits;
   token.traitCount = traits.filter((item) => item.value !== TRAIT_NONE_VALUE).length;
 
+  token.traits.forEach(trait => {
+    addToTokenTraitMap(token, trait.trait_type, trait.value);
+  });
+
   addGlobalTraitCount(token.traitCount, collection, token.tokenId);
   addGlobalTraits(token.traits, collection, token.tokenId);
 }
 
 export function addNoneTraits(collection) {
+  if (!collection.runtime.newTraitTypes) {
+    log.debug('no newTraitTypes');
+    return;
+  }
   for (let trait of Object.keys(collection.traits.items)) {
     if (typeof collection.traits.items[trait] !== 'object') {
       continue;
@@ -30,6 +39,7 @@ export function addNoneTraits(collection) {
       }
     }
   }
+  collection.runtime.newTraitTypes = false;
 }
 
 export function addGlobalTraits(traits, collection) {
@@ -41,6 +51,7 @@ export function addGlobalTraits(traits, collection) {
     const traitValue = trait.value.toString();
 
     if (!collection.traits.items[traitType]) {
+      collection.runtime.newTraitTypes = true;
       collection.traits.items[traitType] = {
         count: 0,
         trait: traitType,

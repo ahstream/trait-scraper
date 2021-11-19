@@ -10,6 +10,7 @@ import {
 } from "./fileUtils.js";
 import { log } from "./logUtils.js";
 import * as timer from "./timer.js";
+import { normalizeTrait } from "./token.js";
 
 // args: command | skipTokenCache | skipOpensea
 export function getConfig(projectId, args) {
@@ -50,13 +51,17 @@ export function getConfig(projectId, args) {
   config.collection.maxSupply = maxSupply;
   config.collection.firstTokenId = config.supply[1] ?? 0;
   config.collection.lastTokenId = config.supply[2] ?? maxSupply;
-  config.collection.rules = { ...config.rules };
-  // todo transform rules!
-  config.collection.rules.hotTraits = config.collection.rules.hotTraits.map(rule => rule.toLowerCase());
+  config.collection.rules = normalizeRules(config.rules);
 
   config.cache = createCache(projectId);
 
   return config;
+}
+
+function normalizeRules(rules) {
+  const newRules = { ...rules };
+  newRules.hotTraits = newRules.hotTraits.map(rule => normalizeTrait(rule)).filter(obj => obj !== '');
+  return newRules;
 }
 
 export function saveCache(config) {
