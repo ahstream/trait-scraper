@@ -5,7 +5,7 @@
 
 import fs from "fs";
 import { createRequire } from 'module';
-import { dirname, join } from 'path';
+import { basename, dirname, extname, join, normalize, parse, toNamespacedPath } from 'path';
 import { fileURLToPath } from 'url';
 
 const require = createRequire(import.meta.url);
@@ -69,4 +69,19 @@ export function ensureFolder(path, recursive = true) {
 
 export function toAbsFilepath(path) {
   return join(__dirname, path);
+}
+
+export function deleteSpecificFilesInFolder(path, prefix, suffix) {
+  if (!folderExists(path)) {
+    return false;
+  }
+  if (!prefix && !suffix) {
+    return false;
+  }
+  const files = fs.readdirSync(path);
+  files.forEach(file => {
+    if (file.startsWith(prefix) && file.endsWith(suffix)) {
+      deleteFile(`${path}${file}`);
+    }
+  });
 }

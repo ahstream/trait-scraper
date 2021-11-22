@@ -14,7 +14,7 @@ const DEFAULT_OPTIONS = {
   dir: 'logfiles',
   timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS',
   datePattern: 'YYYY-MM-DD-HH',
-  zippedArchive: true,
+  zippedArchive: false,
   maxSize: '100M',
   maxFiles: '20',
 };

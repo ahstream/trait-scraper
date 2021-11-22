@@ -9,10 +9,11 @@ import fetch from 'node-fetch';
 import { reveal } from './collection.js';
 import { getConfig } from './config.js';
 import { get } from './fetch.js';
+import { deleteSpecificFilesInFolder, toAbsFilepath } from './fileUtils.js';
 import { log } from "./logUtils.js";
 import { range } from './miscUtils.js';
 import { getAssets } from './opensea.js';
-import { cleanCache, cleanHtml } from './tools.js';
+import { cleanCacheFiles, cleanHtmlFiles } from './tools.js';
 
 const DEFAULT_FETCH_HEADERS = {
   'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
@@ -40,7 +41,7 @@ async function runProgram() {
   program.option('--sample', 'Use test samples');
   program.option('--skiptokencache', '');
   program.option('--skipopensea', '');
-  program.option('--value <value>', 'Arbitrary value');
+  program.option('--top <value>', 'Top N tokens instead of Buynow tokens');
   program.option('--id <value>', 'Token Id');
   program.option('--contract <value>', 'Contract address');
   program.parse();
@@ -49,7 +50,7 @@ async function runProgram() {
   const cmd = program.args[0];
   const projectId = program.args[1];
 
-  log.info(`cmd: ${cmd}, projectId: ${projectId}, options: ${options}`);
+  log.info(`cmd: ${cmd}, projectId: ${projectId}, options: ${JSON.stringify(options)}`);
   log.info('------------------------------------------------');
 
   switch (cmd) {
@@ -58,16 +59,17 @@ async function runProgram() {
         skipTokenCache: options.skiptokencache,
         skipOpensea: options.skipopensea,
         silent: options.silent,
+        top: options.top,
       });
       break;
     case 'foo':
-      foo();
+      deleteSpecificFilesInFolder(toAbsFilepath('../data/projects/nfteams/'), 'reveal', '.html');
       break;
     case 'cleanhtml':
-      cleanHtml(getConfig(null, null));
+      cleanHtmlFiles(getConfig(null, null));
       break;
     case 'cleancache':
-      cleanCache(getConfig(null, null));
+      cleanCacheFiles(getConfig(null, null));
       break;
     case 'analyze':
       await analyzeCollection({ projectId });
@@ -124,7 +126,7 @@ async function runProgram() {
   // process.exit(0);
 }
 
-async function foo() {
+async function tempfunc() {
   const baseUrl = 'https://strongapeclub.com/SAC_metadata/';
   const results = [];
 

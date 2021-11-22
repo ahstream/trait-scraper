@@ -1,10 +1,14 @@
-import { deleteFile, getFilesInFolder } from "./fileUtils.js";
+import { deleteFile, deleteSpecificFilesInFolder, getFilesInFolder } from "./fileUtils.js";
 
-export function cleanHtml(config) {
+export function cleanHtmlFiles(config) {
   cleanFiles(`${config.baseDataFolder}projects/`, '.html');
 }
 
-export function cleanCache(config) {
+export function cleanProjectHtmlFiles(config, projectId, prefix) {
+  deleteSpecificFilesInFolder(`${config.baseDataFolder}projects/${projectId}/`, prefix, '.html');
+}
+
+export function cleanCacheFiles(config) {
   cleanFiles(`${config.baseDataFolder}projects/`, 'cache.json');
 }
 
@@ -22,5 +26,3 @@ export function cleanFiles(folder, filenameSuffix) {
     });
   });
 }
-
-

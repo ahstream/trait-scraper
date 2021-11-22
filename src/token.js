@@ -104,7 +104,7 @@ export function normalizeTrait(value) {
 }
 
 export function matchTraitMap(token, value) {
-  return token.traitMap[value] ?? null;
+  return token.traitMap ? (token.traitMap[value] ?? null) : null;
 }
 
 // INTERNAL FUNCTIONS

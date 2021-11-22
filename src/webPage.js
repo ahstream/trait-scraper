@@ -27,7 +27,7 @@ export function createRevealWebPage(config, pageNum = 1) {
 export function createRevealWebPageHtml(config, prevNextPageNames) {
   return importTemplate('reveal.html')
     .replace('{REVEAL_HEADER}', createRevealHeaderHtml(config, prevNextPageNames))
-    .replace('{REVEAL_TOKEN_COL}', createRevealTokenColHtml(config.collection))
+    .replace('{REVEAL_TOKEN_COL}', createRevealTokenColHtml(config.collection, config))
     .replace('{REVEAL_HOT_COL}', createRevealHotColHtml(config.collection))
     .replace('{REVEAL_IMAGE_COL}', createRevealImageColHtml(config.collection));
 }
@@ -40,12 +40,28 @@ export function createRevealHeaderHtml(config, prevNextPageNames) {
   const numTokens = config.collection.tokens.length;
   const maxSupply = config.collection.maxSupply;
 
-  html = html + `<span>Settings: `;
-  html = html + `<b>ScoreKey "${config.collection.rules.scoreKey}"</b>&nbsp;|&nbsp;`;
-  html = html + `<b>Max ${normalizePrice(config.collection.rules.maxPrice)} ETH</b>, <b>${config.collection.rules.maxTokens} tokens</b>&nbsp;|&nbsp;`;
-  html = html + `Hot Traits: <b>"${config.collection.rules.hotTraits.join(', ')}"</b>&nbsp;|&nbsp;Hot OV: <b>${config.collection.rules.hotMinOV}</b>&nbsp;|&nbsp;Hot Trait Count: <b>${config.collection.rules.hotMaxTraits}</b>`;
+  html = html + `<span>`;
+  /*
+  html = html + `ScoreKey: <b>${config.collection.rules.scoreKey}</b>`;
+  html = html + `&nbsp;|&nbsp;`;
+  html = html + `Max <b>${normalizePrice(config.collection.rules.maxPrice)} ETH</b>, <b>${config.collection.rules.maxTokens} tokens</b>`;
+  html = html + `&nbsp;|&nbsp;`;
+  html = html + `Hot Traits: <b>"${config.collection.rules.hotTraits.join(', ')}"</b>`;
+  html = html + `&nbsp;|&nbsp;`;
+  html = html + `Hot OV: <b>${config.collection.rules.hotMinOV}</b>`;
+  html = html + `&nbsp;|&nbsp;`;
+  html = html + `Hot TC: <b>${config.collection.rules.hotMaxTraits}</b>`;
+  html = html + `&nbsp;|&nbsp;`;
+  html = html + `CreateDate: <b>${(new Date()).toLocaleString()}</b>`;
   html = html + `</span>`;
   html = html + `<br>`;
+   */
+  html = html + `<span>`;
+  html = html + `<b>Rules:</b> ${JSON.stringify(config.collection.rules)}`;
+  html = html + `<br>`;
+  html = html + `<b>Create Date:</b> ${(new Date()).toLocaleString()}`;
+  html = html + `<br>`;
+  html = html + `</span>`;
 
   html = html + `<span class="large-count">${numTokens}</span>`;
   html = html + `<span> revealed tokens &nbsp;</span>`;
@@ -61,10 +77,13 @@ export function createRevealHeaderHtml(config, prevNextPageNames) {
   return html;
 }
 
-export function createRevealTokenColHtml(collection) {
-  const numWithPrice = collection.tokens.filter(obj => obj.price > 0).length;
-  const tokensWithRightPrice = sort(collection.tokens.filter(obj => obj.price > 0 && obj.price <= collection.rules.maxPrice), 'score', false);
-  const tokens = tokensWithRightPrice.slice(0, collection.rules.maxTokens);
+export function createRevealTokenColHtml(collection, config) {
+  let tokens;
+  if (config.args.top) {
+    tokens = sort(collection.tokens, 'score', false).slice(0, config.args.top);
+  } else {
+    tokens = sort(collection.tokens.filter(obj => obj.price > 0 && obj.price <= collection.rules.maxPrice), 'score', false).slice(0, collection.rules.maxTokens);
+  }
 
   // const htmlDesc = `<span class="desc-text">Top ${tokens.length} (of ${numWithPrice}) Rare BuyNow tokens (of ${numWithPrice})</span>`;
   // const htmlDesc = `<span class="desc-text">Top ${tokens.length} (of ${numWithPrice}/${collection.tokens.length}) Rare BuyNow</span>`;
@@ -103,14 +122,15 @@ export function createRevealTokenColHtml(collection) {
 
 export function createRevealHotColHtml(collection) {
   // const tokensWithRightPrice = sort(collection.hotTokens.filter(obj => obj.price > 0), 'revealOrder', true);
-  const tokensWithRightPrice = sort(collection.hotTokens, 'revealOrder', false);
-  const tokens = tokensWithRightPrice.slice(0, collection.rules.maxTokens);
+  const hotTokens = sort(collection.hotTokens, 'sortOrder', true, 'revealOrder', true).slice(0, collection.rules.maxTokens);
+  // const tokens = hotTokens.map(obj => obj.token).slice(0, collection.rules.maxTokens);
 
-  const htmlDesc = `<span class="desc-text">Top ${tokens.length} Hot BuyNow</span>`;
+  const htmlDesc = `<span class="desc-text">Top ${hotTokens.length} Hot Tokens</span>`;
 
   let html = '';
 
-  for (const token of tokens) {
+  for (const hotToken of hotTokens) {
+    const token = hotToken.token;
     const rowClassName = collection.runtime.newHotTokens.find(obj => obj === token.tokenId) ? 'new-hot-token' : '';
     const titleTxt = createImageTitleText(token, 'score', collection.tokens.length);
     const className = 'thumb';
@@ -118,31 +138,34 @@ export function createRevealHotColHtml(collection) {
     const traitCountFreqHtml = `${normalizePct(token.traitCountFreq * 100)}</b> <span class="lolite">(${token.traitCount})</span>`;
 
     const hotReasons = [];
-    if (token.hot.isHotTraitCount) {
-      hotReasons.push(`<b>${token.traitCount} traits</b> (${traitCountFreqHtml}%)`);
+    if (hotToken.isHotTraitCount) {
+      hotReasons.push(`<b>TC: ${token.traitCount} (${normalizePct(token.traitCountFreq * 100)}%)</b>`);
     }
-    if (token.hot.isHotOV) {
+    if (hotToken.isHotOV) {
+      hotReasons.push(`<b>OV ${normalizeOV(token.scoreOV)}</b> (${normalizeOV(hotToken.ov)})`);
+      /*
       if (token.temp?.scoreOV) {
         hotReasons.push(`<b>OV ${normalizeOV(token.temp.scoreOV)}</b> (${normalizeOV(token.scoreOV)})`);
       } else {
         hotReasons.push(`<b>OV ${normalizeOV(token.scoreOV)}</b>`);
       }
+       */
     }
-    if (token.hot.traits.length) {
-      token.hot.traits.forEach(obj => hotReasons.push(`<b>${obj}</b>`));
+    if (hotToken.traits.length) {
+      hotToken.traits.forEach(obj => hotReasons.push(`<b>${obj}</b> (0.xx%)`));
     }
     const ov = normalizeOV(token.scoreOV);
-    const priceHtml = token.price ? normalizePrice(token.price) : '-';
+    const priceHtml = token.price ? `<b>${normalizePrice(token.price)} eth</b>` : 'Not for sale';
     const rankPctHtml = `${normalizePct(token.scoreRankPct * 100)} (${token.scoreRank})`;
 
-    // const reasonHtml = `${hotReasons.join(' + ')}<br>OV: ${ov}<br>Temp OV: ${tempOV}<br>TraitFreq: ${traitCountFreqHtml}<br>Price: ${priceHtml}`;
-    const reasonHtml = `${hotReasons.join(' + ')}<br><br>OV: ${ov}<br>Pct: ${rankPctHtml}<br><b>${priceHtml}</b> eth`;
+// const reasonHtml = `${hotReasons.join(' + ')}<br>OV: ${ov}<br>Temp OV: ${tempOV}<br>TraitFreq: ${traitCountFreqHtml}<br>Price: ${priceHtml}`;
+    const reasonHtml = `${hotReasons.join('<br>')}<br>OV: ${ov}<br>Pct: ${rankPctHtml}<br>${priceHtml}<br>SortOrder: ${hotToken.sortOrder}`;
 
     html = html + `
-        <tr class="${rowClassName}">
-            <td>${imageHtml}</td>
-            <td>${reasonHtml}</td>
-        </tr>`;
+  <tr class="${rowClassName}">
+      <td>${imageHtml}</td>
+      <td>${reasonHtml}</td>
+  </tr>`;
   }
 
   collection.runtime.newHotTokens = [];
@@ -153,7 +176,6 @@ export function createRevealHotColHtml(collection) {
 }
 
 export function createRevealImageColHtml(collection) {
-  // todo sort by reveal order!?
   const tokensWithRightPrice = sort(collection.tokens.filter(obj => obj.price > 0 && obj.price <= collection.rules.maxPrice), 'price', true);
   const tokens = tokensWithRightPrice.slice(0, collection.rules.maxTokens);
   const htmlDesc = `<span class="desc-text">Top ${tokens.length} Cheap BuyNow images</span>`;
@@ -176,10 +198,10 @@ function createImageTitleText(token, scoreKey, numTokens) {
   const finalRank = '';
 
   const rankTxt = `Rank: ${rank} (${normalizePct(rankPct * 100)} % of ${numTokens})\n${finalRank}`;
-  // Only show ov for simple scoreKey!
+// Only show ov for simple scoreKey!
   const ovTxt = token.scoreOV ? `OV: ${normalizeOV(token.scoreOV)}\n` : '';
   const traitCountTxt = `Trait Count: ${token.traitCount} (${normalizePct(token.traitCountFreq * 100)} %)\n`;
-  const scoreTxt = `Score: ${token[scoreKey].toFixed(0)}\n`;
+  const scoreTxt = `Score: ${token[scoreKey].toFixed(2)}\n`;
   const orderTxt = `Reveal order: ${token.revealOrder}\n`;
   const idTxt = `ID: ${token.tokenId}\n`;
   const priceTxt = `Price: ${token.price ? `${normalizePrice(token.price)} eth` : '-'}\n`;
@@ -189,7 +211,7 @@ function createImageTitleText(token, scoreKey, numTokens) {
 }
 
 function createTraitsText(token, scoreKey, numTokens) {
-  // Normalize score key since traits do not have count (rarityCount*)!
+// Normalize score key since traits do not have count (rarityCount*)!
   const normalizedScoreKey = scoreKey.replace('Count', '');
   const traits = sort([...token.traits], normalizedScoreKey, false);
   let s = '\n';

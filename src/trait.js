@@ -7,8 +7,18 @@ export function addTokenTraits(token, attributes, collection) {
   const normalTraits = attributes.filter((attr) => isNormalTrait(attr, collection.rules.ignoreNumberTraits));
   const traits = normalizeTraitValues(normalTraits);
 
+  for (const traitType of getAllTraitTypes(collection)) {
+    if (!traits.find(obj => obj.trait_type === traitType)) {
+      traits.push({ trait_type: traitType, value: TRAIT_NONE_VALUE });
+    }
+  }
+
   token.traits = traits;
   token.traitCount = traits.filter((item) => item.value !== TRAIT_NONE_VALUE).length;
+
+  if (!token.traitMap) {
+    token.traitMap = {};
+  }
 
   token.traits.forEach(trait => {
     addToTokenTraitMap(token, trait.trait_type, trait.value);
@@ -51,13 +61,14 @@ export function addGlobalTraits(traits, collection) {
     const traitValue = trait.value.toString();
 
     if (!collection.traits.items[traitType]) {
-      collection.runtime.newTraitTypes = true;
       collection.traits.items[traitType] = {
         count: 0,
         trait: traitType,
         displayType: trait.display_type,
         items: {},
       };
+      collection.runtime.newTraitTypes = true;
+      addGlobalTraitMaps(traitType, collection);
     }
     collection.traits.items[traitType].count++;
 
@@ -69,6 +80,17 @@ export function addGlobalTraits(traits, collection) {
     }
     collection.traits.items[traitType].items[traitValue].count++;
   }
+}
+
+function addGlobalTraitMaps(traitType, collection) {
+  collection.traits.traitTypesMap = collection.traits.traitTypesMap ?? new Map();
+  collection.traits.traitTypesArr = collection.traits.traitTypesArr ?? [];
+  collection.traits.traitTypesMap.set(traitType, true);
+  collection.traits.traitTypesArr.push(traitType);
+}
+
+function getAllTraitTypes(collection) {
+  return collection.traits.traitTypesArr ?? [];
 }
 
 function addGlobalTraitCount(count, collection) {

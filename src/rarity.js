@@ -1,5 +1,6 @@
 import { Stats } from 'fast-stats';
 
+import { debugToFile } from "./config.js";
 import { sort } from "./miscUtils.js";
 import * as timer from "./timer.js";
 import { addToTokenTraitMap } from "./token.js";
@@ -17,6 +18,7 @@ export function calcRarity(collection) {
   // myTimer.ping(`calcRanks duration`);
   calcOutliers(collection);
   // myTimer.ping(`calcRarity length ${collection.tokens.length} duration`);
+  debugToFile(collection, 'rarity.json');
 }
 
 function calcGlobalRarity(collection) {
@@ -65,7 +67,7 @@ function calcGlobalTraitCountsRarity(collection) {
   const numTokens = collection.tokens.length;
   const normFactor = (collection.traits.numValuesPerTrait / Object.keys(collection.traitCounts.items).length);
 
-  collection.traits.normFactor = normFactor;
+  collection.traitCounts.normFactor = normFactor;
 
   for (let trait of Object.keys(collection.traitCounts.items)) {
     const freq = collection.traitCounts.items[trait].count / numTokens;
@@ -159,7 +161,7 @@ export function calcTemporaryTokenRarity(token, collection) {
 
   token.temp.rarityCount = sumRarity + traitCountRarity;
   token.temp.rarityNorm = sumRarityNorm;
-  token.temp.rarityCountNorm = sumRarityNorm + (traitCountRarity * collection.traits.normFactor);
+  token.temp.rarityCountNorm = sumRarityNorm + (traitCountRarity * collection.traitCounts.normFactor);
 
   token.temp.score = token.temp[`${collection.rules.scoreKey}`] ?? null;
 

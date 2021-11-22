@@ -8,6 +8,12 @@
 
 // EXPORTED FUNCTIONS
 
+export function doIfTrue(predicate, func, ...args) {
+  if (predicate) {
+    func(...args);
+  }
+}
+
 export function countInstancesOf(string, word) {
   return string.split(word).length - 1;
 }

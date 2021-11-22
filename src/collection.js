@@ -2,11 +2,11 @@ import _ from 'lodash';
 import open from "open";
 
 import { getFromCache } from "./cache.js";
-import { getConfig, saveCache } from "./config.js";
+import { debugToFile, getConfig, saveCache } from "./config.js";
 import { fetchTokenURIs } from "./fetchTokenURIs.js";
-import { checkIfHot, updateHotOV } from "./hotToken.js";
+import { addToHotTokens, updateHotOV } from "./hotToken.js";
 import { log } from "./logUtils.js";
-import { addSecondsToDate, delay, range, sort } from "./miscUtils.js";
+import { addSecondsToDate, delay, doIfTrue, range, sort } from "./miscUtils.js";
 import { notifyHotToken, notifyNewResults } from "./notify.js";
 import { updateAssets } from "./opensea.js";
 import { calcRarity, calcTemporaryTokenRarity } from "./rarity.js";
@@ -14,6 +14,7 @@ import { release, take } from "./semaphore.js";
 import * as timer from "./timer.js";
 import { waitForReveal } from "./token.js";
 import * as tokenURI from "./tokenURI.js";
+import { cleanProjectHtmlFiles } from "./tools.js";
 import { addTokenTraits } from "./trait.js";
 import * as webPage from "./webPage.js";
 
@@ -28,19 +29,23 @@ export async function reveal(projectId, args) {
   const config = getConfig(projectId, args);
 
   if (config.projectId) {
-    return await fetch(projectId, args);
+    return await revealOneProject(projectId, args);
   }
 
   Object.keys(config.projects).forEach((projectId) => {
-    if (config.projects[projectId].disabled) {
-      return;
+    if (!config.projects[projectId].disabled) {
+      revealOneProject(projectId, args);
     }
-    fetch(projectId, args);
   });
 }
 
-export async function fetch(projectId, args) {
+export async function revealOneProject(projectId, args) {
   const config = getConfig(projectId, args);
+
+  cleanProjectHtmlFiles(config, config.projectId, 'reveal-');
+
+  config.collection.retryTo = addSecondsToDate(new Date(), 60 * 60);
+  config.collection.waitBeforeRetry = 500;
 
   await getOpenseaAssets(config);
   updateAssetInfo(config);
@@ -129,8 +134,6 @@ async function revealCollection(config) {
 }
 
 async function fetchCollection(config) {
-  const myTimer = timer.create();
-
   const baseTokens = range(config.collection.firstTokenId, config.collection.lastTokenId, 1).map(id => {
     const asset = getFromCache(config.cache.opensea.assets, id);
     return {
@@ -139,8 +142,8 @@ async function fetchCollection(config) {
       tokenURI: tokenURI.createTokenURI(id, config.collection.baseTokenURI),
       assetURI: asset?.permalink ?? null,
       price: asset?.price ?? null,
-      traits: asset?.traits ?? null,
-      // asset,
+      hasAsset: !_.isEmpty(asset)
+      // traits: asset?.traits ?? null,
     };
   });
 
@@ -150,59 +153,98 @@ async function fetchCollection(config) {
 
   log.info(`(${config.projectId}) Total tokens: ${allTokens.length} (Buynow: ${tokensOnSale.length})`);
 
-  const inputArray = allTokens.map(token => {
+  const fetchInfoRefs = allTokens.map(token => {
     return {
       ref: token,
       url: token.tokenURI,
+      hasAsset: token.hasAsset,
+      fetchFromCache: config.args.skipTokenCache ? false : true,
     };
   });
-  const outputArray = [];
-
-  const stats = {};
-
-  fetchTokenURIs(config.projectId, inputArray, outputArray, config.fetchTokenOptions, config.cache.tokens, !config.args.skipTokenCache, stats);
 
   config.collection.runtime.fetchStartTime = new Date();
   config.collection.runtime.nextTimeCreateResults = addSecondsToDate(new Date(), config.milestones.createResultEverySecs);
   config.collection.runtime.nextTimeSaveCache = addSecondsToDate(new Date(), config.milestones.saveCacheEverySecs);
 
-  let numProcessedTokens = 0;
-  let numHot = 0;
+  await fetchCollectionProcess(config, fetchInfoRefs);
+}
+
+async function fetchCollectionProcess(config, inputArray, totalProcessedTokens = 0) {
+  const outputArray = [];
+  const stats = {};
+
+  const lastRetryDate = addSecondsToDate(new Date(), 60);
+
+  fetchTokenURIs(config.projectId, inputArray, outputArray, config.fetchTokenOptions, lastRetryDate, config.cache.tokens, stats);
+
+  // todo: retry borde göras direkt på invalid json tokens, annars måste hela kollektionen hämtas innan man kan försöka igen på de tokens som antagligen revealas först!
+  const retryList = [];
+
+  let numProcessedTokensThisRun = 0;
   let lastToken = null;
-  while (numProcessedTokens < inputArray.length) {
+  while (numProcessedTokensThisRun < inputArray.length) {
+    console.log(numProcessedTokensThisRun, inputArray.length);
     while (outputArray.length) {
-      numProcessedTokens++;
+      numProcessedTokensThisRun++;
+
       const result = outputArray.shift();
       if (result.status !== '200') {
         continue;
       }
-      const token = addTokenRef(result.ref, result.data, config.collection, numProcessedTokens,);
+
+      const token = addTokenRef(result.ref, result.data, config.collection, numProcessedTokensThisRun + totalProcessedTokens);
+      if (!token) {
+        /*
+        if (shouldTokenBeSkipped(result.ref, result.data)) {
+          continue;
+        }
+        // console.log('Retry invalid token:', result.ref.tokenURI);
+        retryList.push({
+          ref: result.ref,
+          url: result.ref.tokenURI,
+          fetchFromCache: false,
+        });
+         */
+        continue;
+      }
+
       lastToken = token;
 
-      if (checkIfHot(token, config.collection)) {
-        numHot++;
-        createRevealResults(config, lastToken);
+      if (addToHotTokens(token, config.collection, config)) {
+        await createRevealResults(config, lastToken);
         doIfTrue(!config.args.silent, notifyHotToken);
         continue;
       }
 
       const milestoneInfo = checkMilestones(config, lastToken);
       if (milestoneInfo.createResults) {
-        createRevealResults(config, lastToken);
+        await createRevealResults(config, lastToken);
       }
       if (milestoneInfo.saveCache) {
         saveCache(config);
       }
     }
-
-    await delay(1);
+    await delay(10);
   }
 
   log.info(`(${config.projectId}) Stats:`, stats);
+  await createRevealResults(config, null, true);
 
-  createRevealResults(config, null, true);
+  debugToFile(config, 'tokens.json');
 
-  // myTimer.ping(`(${config.projectId}) fetchCollection duration`);
+  /*
+  if (retryList.length) {
+    if (config.collection.retryTo < new Date()) {
+      log.info(`(${config.projectId}) Retry deadline is passed, exit fetch!`);
+      return;
+    }
+    log.info(`(${config.projectId}) Retry ${retryList.length} tokens in ${config.collection.waitBeforeRetry} ms`);
+    await delay(config.collection.waitBeforeRetry);
+    await fetchCollectionProcess(config, retryList, numProcessedTokensThisRun + totalProcessedTokens);
+  }
+   */
+
+  debugToFile(config.collection.traits, 'traits.json');
 }
 
 function checkMilestones(config, lastToken) {
@@ -234,11 +276,20 @@ function checkMilestones(config, lastToken) {
   return info;
 }
 
-function addTokenRef(tokenRef, tokenData, collection, revealOrder, rules) {
+function shouldTokenBeSkipped(tokenRef, tokenData) {
+  if (tokenData?.error) {
+    log.info('Skip invalid token:', tokenRef, tokenData);
+    return true;
+  }
+  return false;
+}
+
+function addTokenRef(tokenRef, tokenData, collection, revealOrder) {
   if (_.isEmpty(tokenData) || _.isEmpty(tokenData.attributes) || !tokenData.image) {
     log.debug('Not proper JSON:', tokenData);
     return false;
   }
+
   const { attributes, ...otherTokenProperties } = tokenData;
   const token = { ...otherTokenProperties, ...tokenRef };
   collection.tokens.push(token);
@@ -255,8 +306,12 @@ function addTokenRef(tokenRef, tokenData, collection, revealOrder, rules) {
   return token;
 }
 
-function createRevealResults(config, lastToken = null, isLastPage = false) {
+async function createRevealResults(config, lastToken = null, isLastPage = false) {
   const myTimer = timer.create();
+
+  if (config.args.top && !isLastPage) {
+    return;
+  }
 
   if (isLastPage) {
     config.collection.runtime.revealPageNum = 0;
@@ -266,7 +321,7 @@ function createRevealResults(config, lastToken = null, isLastPage = false) {
   }
 
   calcRarity(config.collection);
-  updateHotOV(config.collection);
+  updateHotOV(config.collection, config);
 
   const path = webPage.createRevealWebPage(config, config.collection.runtime.revealPageNum);
 
@@ -278,13 +333,10 @@ function createRevealResults(config, lastToken = null, isLastPage = false) {
   if (!config.collection.runtime.webPageShown && config.autoOpen.firstResultPage) {
     open(path, { app: 'chrome' });
     config.collection.runtime.webPageShown = true;
+    await delay(1);
   } else {
     doIfTrue(!config.args.silent, notifyNewResults);
+    await delay(1);
   }
 }
 
-function doIfTrue(predicate, func, ...args) {
-  if (predicate) {
-    func(...args);
-  }
-}
