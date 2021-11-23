@@ -22,12 +22,12 @@ export async function isRevealed(tokenIds, contractAddress) {
   return typeof token?.tokenId !== 'undefined';
 }
 
-export async function getRevealedToken(tokenIds, contractAddress) {
+export async function getRevealedToken(tokenIds, contractAddress, unrevealedImage = null) {
   const maybeRevealedTokens = [];
 
   for (const tokenId of tokenIds) {
     const token = await fetchTokenById(tokenId, contractAddress);
-    const revealStatus = await getRevealedStatus(token);
+    const revealStatus = await getRevealedStatus(token, unrevealedImage);
     if (revealStatus > 0) {
       return token;
     } else if (revealStatus === 0) {
@@ -51,9 +51,9 @@ export async function getRevealedToken(tokenIds, contractAddress) {
   return null;
 }
 
-export async function waitForReveal(collection, tokenIds, sleepBetween, silentFlag) {
+export async function waitForReveal(collection, tokenIds, sleepBetween, silentFlag, unrevealedImage = null) {
   while (true) {
-    const token = await getRevealedToken(tokenIds, collection.contractAddress);
+    const token = await getRevealedToken(tokenIds, collection.contractAddress, unrevealedImage);
     if (token !== null) {
       if (!silentFlag) {
         notifyRevealed();
@@ -72,7 +72,9 @@ export function addToTokenTraitMap(token, traitType, traitValue) {
   const normalizedValue = normalizeTrait(traitValue);
   const key1 = `${normalizedType}/${normalizedValue}`;
   const key2 = normalizedValue;
-  const guiValue = `${traitType}: ${traitValue}`;
+
+  const keyValue = [traitType, traitValue];
+
   if (!token.traitMap) {
     token.traitMap = {};
   }
@@ -80,15 +82,15 @@ export function addToTokenTraitMap(token, traitType, traitValue) {
   if (!token.traitMap[key1]) {
     token.traitMap[key1] = [];
   }
-  if (!token.traitMap[key1].includes(guiValue)) {
-    token.traitMap[key1].push(guiValue);
+  if (!token.traitMap[key1].includes(keyValue)) {
+    token.traitMap[key1].push(keyValue);
   }
 
   if (!token.traitMap[key2]) {
     token.traitMap[key2] = [];
   }
-  if (!token.traitMap[key2].includes(guiValue)) {
-    token.traitMap[key2].push(guiValue);
+  if (!token.traitMap[key2].includes(keyValue)) {
+    token.traitMap[key2].push(keyValue);
   }
 
   // myTimer.pingms(`addToTokenTraitMap duration`);
@@ -130,8 +132,12 @@ async function fetchTokenData(tokenURI) {
   return get(tokenURI, {});
 }
 
-export async function getRevealedStatus(token) {
+export async function getRevealedStatus(token, unrevealedImage = null) {
   if (!token || _.isEmpty(token) || !token.attributes || token.attributes.length < 1 || _.isEmpty(token.attributes)) {
+    return -1;
+  }
+
+  if (unrevealedImage && token.image && unrevealedImage === token.image) {
     return -1;
   }
 

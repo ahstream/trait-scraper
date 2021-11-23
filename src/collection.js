@@ -42,7 +42,7 @@ export async function reveal(projectId, args) {
 export async function revealOneProject(projectId, args) {
   const config = getConfig(projectId, args);
 
-  cleanProjectHtmlFiles(config, config.projectId, 'reveal-');
+  cleanProjectHtmlFiles(config, config.projectId, 'reveal');
 
   config.collection.retryTo = addSecondsToDate(new Date(), 60 * 60);
   config.collection.waitBeforeRetry = 500;
@@ -126,7 +126,7 @@ async function revealCollection(config) {
 
   log.info(`(${config.projectId}) Wait for reveal...`);
 
-  const token = await waitForReveal(config.collection, config.pollForRevealTokenIds, config.sleepBetween, config.args.silent);
+  const token = await waitForReveal(config.collection, config.pollForRevealTokenIds, config.sleepBetween, config.args.silent, config.unrevealedImage);
 
   config.collection.baseTokenURI = tokenURI.convertToBaseTokenURI(token.tokenId, token.tokenURI);
 
@@ -173,17 +173,13 @@ async function fetchCollectionProcess(config, inputArray, totalProcessedTokens =
   const outputArray = [];
   const stats = {};
 
-  const lastRetryDate = addSecondsToDate(new Date(), 60);
+  const lastRetryDate = addSecondsToDate(new Date(), 60 * 60);
 
   fetchTokenURIs(config.projectId, inputArray, outputArray, config.fetchTokenOptions, lastRetryDate, config.cache.tokens, stats);
-
-  // todo: retry borde göras direkt på invalid json tokens, annars måste hela kollektionen hämtas innan man kan försöka igen på de tokens som antagligen revealas först!
-  const retryList = [];
 
   let numProcessedTokensThisRun = 0;
   let lastToken = null;
   while (numProcessedTokensThisRun < inputArray.length) {
-    console.log(numProcessedTokensThisRun, inputArray.length);
     while (outputArray.length) {
       numProcessedTokensThisRun++;
 
@@ -194,17 +190,6 @@ async function fetchCollectionProcess(config, inputArray, totalProcessedTokens =
 
       const token = addTokenRef(result.ref, result.data, config.collection, numProcessedTokensThisRun + totalProcessedTokens);
       if (!token) {
-        /*
-        if (shouldTokenBeSkipped(result.ref, result.data)) {
-          continue;
-        }
-        // console.log('Retry invalid token:', result.ref.tokenURI);
-        retryList.push({
-          ref: result.ref,
-          url: result.ref.tokenURI,
-          fetchFromCache: false,
-        });
-         */
         continue;
       }
 
@@ -231,18 +216,6 @@ async function fetchCollectionProcess(config, inputArray, totalProcessedTokens =
   await createRevealResults(config, null, true);
 
   debugToFile(config, 'tokens.json');
-
-  /*
-  if (retryList.length) {
-    if (config.collection.retryTo < new Date()) {
-      log.info(`(${config.projectId}) Retry deadline is passed, exit fetch!`);
-      return;
-    }
-    log.info(`(${config.projectId}) Retry ${retryList.length} tokens in ${config.collection.waitBeforeRetry} ms`);
-    await delay(config.collection.waitBeforeRetry);
-    await fetchCollectionProcess(config, retryList, numProcessedTokensThisRun + totalProcessedTokens);
-  }
-   */
 
   debugToFile(config.collection.traits, 'traits.json');
 }
@@ -276,14 +249,6 @@ function checkMilestones(config, lastToken) {
   return info;
 }
 
-function shouldTokenBeSkipped(tokenRef, tokenData) {
-  if (tokenData?.error) {
-    log.info('Skip invalid token:', tokenRef, tokenData);
-    return true;
-  }
-  return false;
-}
-
 function addTokenRef(tokenRef, tokenData, collection, revealOrder) {
   if (_.isEmpty(tokenData) || _.isEmpty(tokenData.attributes) || !tokenData.image) {
     log.debug('Not proper JSON:', tokenData);
@@ -312,8 +277,9 @@ async function createRevealResults(config, lastToken = null, isLastPage = false)
   if (config.args.top && !isLastPage) {
     return;
   }
-
-  if (isLastPage) {
+  if (config.args.skipPageNums) {
+    config.collection.runtime.revealPageNum = null;
+  } else if (isLastPage) {
     config.collection.runtime.revealPageNum = 0;
   } else {
     config.collection.runtime.revealPageNum = config.collection.runtime.revealPageNum ?? 0;

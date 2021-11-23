@@ -5,7 +5,35 @@
       "supply": [8888],
       "contractAddress": "0x8C186802b1992f7650Ac865d4CA94D55fF3C0d17"
     },
+    "galacticmonkes": {
+      "supply": [10150],
+      "contractAddress": "0x7Bb6413C939d9ECC62bdD60D6e23816B1AE9099f"
+    },
+    "metatravellers": {
+      "supply": [7777],
+      "contractAddress": "0x5372f926b34Be60aC1436372107C3eE8c6e056E5"
+    },
+    "derivativeapes": {
+      "supply": [9999],
+      "contractAddress": "0xB184b9414e7d7c436B7097eD2C774bB56fae392f",
+      "unrevealedImage": "ipfs://QmZCG7AJkt2gWzDnwJCRVdD52TW5fswjdF76rJmDDw8YgA",
+      "url": "https://discord.com/invite/sodativity",
+      "rules": {
+        "scoreKey": "rarityCountNorm",
+        "ignoreNumberTraits": true,
+        "maxPrice": 0.5,
+        "maxTokens": 200,
+        "hotTraitCount": 1,
+        "hotOV": 25,
+        "hotTraits": [
+          "fire ape", "fire", "laser", "body/gold", "skin/gold", "colour/gold", "color/gold",
+          "gold", "boredape", "dots",
+          "laser eyes"
+        ]
+      }
+    },
     "merrymodz": {
+      "disabled": true,
       "supply": [10000],
       "contractAddress": "0x1dCBc2A155Fc62b8eFA84d2759B23f29B0c7A335"
     },
@@ -14,15 +42,17 @@
       "contractAddress": "0xfa5aa65c1ea8ca3158d8c8806d947f1364795f4c"
     },
     "metathugs": {
+      "disabled": true,
       "supply": [10000],
       "contractAddress": "0xcB54Da78e6921B8bb64F3e7aF06f337Cb103070A"
     },
     "legendmaps": {
+      "disabled": true,
       "supply": [5757],
       "contractAddress": "0xBFf184118BF575859Dc6A236E8C7C4F80Dc7c25c"
     },
     "strongapeclub": {
-      "disabled": false,
+      "disabled": true,
       "supply": [5000],
       "contractAddress": "0xbf3EB06c55709674504C2181362D09b51AEaF0AA",
       "rules": {
@@ -30,8 +60,8 @@
         "ignoreNumberTraits": true,
         "maxPrice": 0.3,
         "maxTokens": 150,
-        "hotMaxTraits": 1,
-        "hotMinOV": null,
+        "hotTraitCount": null,
+        "hotOV": 20,
         "hotTraits": [
           "the sealer man", "sealer man", "the jinn appearing",
           "jinn appearing", "the wolf", "wolf", "the leader", "leader", "the mad titan",
@@ -57,10 +87,10 @@
       "rules": {
         "scoreKey": "rarityCountNorm",
         "ignoreNumberTraits": true,
-        "maxPrice": 0.3,
-        "maxTokens": 150,
-        "hotMaxTraits": 1,
-        "hotMinOV": 20,
+        "maxPrice": 0.4,
+        "maxTokens": 300,
+        "hotTraitCount": 1,
+        "hotOV": 20,
         "hotTraits": [
           "gold",
           "gold teeth",
@@ -93,10 +123,10 @@
       "supply": [10000],
       "contractAddress": "0x60d9b4F9d85695274a5777537F204675082Bd745",
       "rules2222": {
-        "maxPrice": 0.3,
+        "maxPrice": 0.4,
         "maxTokens": 300,
-        "hotMaxTraits": 1,
-        "hotMinOV": 20,
+        "hotTraitCount": 1,
+        "hotOV": 20,
         "hotTraits": [
           "santa", "the prisoner ", "the party guy", "the astronaut ", "the farmer ",
           "the French DJ ", "the Hippie ", "the Hipster", "the Sheriff", "the Joker", "001",
@@ -115,8 +145,8 @@
         "ignoreNumberTraits": true,
         "maxPrice": 11,
         "maxTokens": 300,
-        "hotMaxTraits": 1,
-        "hotMinOV": 20,
+        "hotTraitCount": 1,
+        "hotOV": 20,
         "hotTraits": [
           "body/gold", "skin/gold", "colour/gold", "color/gold", "gold", "boredape", "dots"
         ]
@@ -138,7 +168,7 @@
       "contractAddress": "0xf1268733c6fb05ef6be9cf23d24436dcd6e0b35e"
     }
   },
-  "pollForRevealTokenIds": [296, 452, 526, 789, 1234, 2345, 3456],
+  "pollForRevealTokenIds": [10, 296, 452, 526, 789, 1234, 2345, 3456],
   "autoOpen": {"firstResultPage": true},
   "fetchTokenOptions": {"concurrent": 100, "delayBetweenBatches": 100, "timeout": 5000},
   "rules": {
@@ -146,8 +176,8 @@
     "ignoreNumberTraits": true,
     "maxPrice": 1,
     "maxTokens": 200,
-    "hotMaxTraits": 1,
-    "hotMinOV": null,
+    "hotTraitCount": 1,
+    "hotOV": 25,
     "hotTraits": [
       "body/gold", "skin/gold", "colour/gold", "color/gold", "gold", "boredape", "dots",
       "laser eyes"

@@ -28,6 +28,16 @@ export function addTokenTraits(token, attributes, collection) {
   addGlobalTraits(token.traits, collection, token.tokenId);
 }
 
+export function getTraitFrequency(collection, traitType, traitValue) {
+  if (!collection.traits.items[traitType]) {
+    return null;
+  }
+  if (!collection.traits.items[traitType].items[traitValue]) {
+    return null;
+  }
+  return collection.traits.items[traitType].items[traitValue].freq;
+}
+
 export function addNoneTraits(collection) {
   if (!collection.runtime.newTraitTypes) {
     log.debug('no newTraitTypes');

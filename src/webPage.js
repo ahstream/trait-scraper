@@ -1,6 +1,7 @@
 import { readFile, toAbsFilepath, writeFile } from "./fileUtils.js";
 import { sort } from "./miscUtils.js";
 import { normalizeURI } from './tokenURI.js';
+import { getTraitFrequency } from "./trait.js";
 
 function buildPage(title, mainNavHtml, subNavHtml, headerHtml, contentHtml) {
   return importTemplate('page.html')
@@ -15,11 +16,16 @@ function importTemplate(name) {
   return readFile(toAbsFilepath(`./templates/${name}`));
 }
 
-export function createRevealWebPage(config, pageNum = 1) {
-  const prevNextPageNames = [`./reveal-${(pageNum - 1).toString().padStart(4, '0')}.html`, `./reveal-${(pageNum + 1).toString().padStart(4, '0')}.html`];
+export function createRevealWebPage(config, pageNum = null) {
+  let prevNextPageNames = '';
+  let pathSuffix = '';
+  if (typeof pageNum === 'number') {
+    prevNextPageNames = [`./reveal-${(pageNum - 1).toString().padStart(4, '0')}.html`, `./reveal-${(pageNum + 1).toString().padStart(4, '0')}.html`];
+    pathSuffix = `-${pageNum.toString().padStart(4, '0')}`;
+  }
   const content = createRevealWebPageHtml(config, prevNextPageNames);
   const html = buildPage('Reveal Page', '', '', 'Reveal page', content);
-  const path = `${config.projectFolder}reveal-${pageNum.toString().padStart(4, '0')}.html`;
+  const path = `${config.projectFolder}reveal${pathSuffix}.html`;
   writeFile(path, html);
   return path;
 }
@@ -48,9 +54,9 @@ export function createRevealHeaderHtml(config, prevNextPageNames) {
   html = html + `&nbsp;|&nbsp;`;
   html = html + `Hot Traits: <b>"${config.collection.rules.hotTraits.join(', ')}"</b>`;
   html = html + `&nbsp;|&nbsp;`;
-  html = html + `Hot OV: <b>${config.collection.rules.hotMinOV}</b>`;
+  html = html + `Hot OV: <b>${config.collection.rules.hotOV}</b>`;
   html = html + `&nbsp;|&nbsp;`;
-  html = html + `Hot TC: <b>${config.collection.rules.hotMaxTraits}</b>`;
+  html = html + `Hot TC: <b>${config.collection.rules.hotTraitCount}</b>`;
   html = html + `&nbsp;|&nbsp;`;
   html = html + `CreateDate: <b>${(new Date()).toLocaleString()}</b>`;
   html = html + `</span>`;
@@ -103,8 +109,16 @@ export function createRevealTokenColHtml(collection, config) {
     const ovHtml = `<b>${normalizeOV(token.scoreOV)}</b>&nbsp;`;
     const scoreHtml = token.score.toFixed(0);
     const priceHtml = token.price ? normalizePrice(token.price) : '-';
+
+    let className = '';
+    if (typeof collection.rules.hotTraitCount === 'number' && token.traitCount <= collection.rules.hotTraitCount) {
+      className = 'hot-token-traitcount';
+    } else if (typeof collection.rules.hotOV === 'number' && token.scoreOV >= collection.rules.hotOV) {
+      className = 'hot-token-ov';
+    }
+
     html = html + `
-        <tr>
+        <tr class="${className}">
             <td>${imageHtml}</td>
             <td>${rankPctHtml}</td>
             <td>${ovHtml}</td>
@@ -131,7 +145,7 @@ export function createRevealHotColHtml(collection) {
 
   for (const hotToken of hotTokens) {
     const token = hotToken.token;
-    const rowClassName = collection.runtime.newHotTokens.find(obj => obj === token.tokenId) ? 'new-hot-token' : '';
+    const rowClassName = collection.runtime.newHotTokens.find(obj => obj === token.tokenId) ? 'hot-token-new' : '';
     const titleTxt = createImageTitleText(token, 'score', collection.tokens.length);
     const className = 'thumb';
     const imageHtml = `<a target="_blank" href="${token.assetURI}"><img alt='' title="${titleTxt}" class="${className}" src="${normalizeURI(token.image)}"></a>`;
@@ -152,14 +166,24 @@ export function createRevealHotColHtml(collection) {
        */
     }
     if (hotToken.traits.length) {
-      hotToken.traits.forEach(obj => hotReasons.push(`<b>${obj}</b> (0.xx%)`));
+      hotToken.traits.forEach(obj => {
+        if (!obj || obj.length !== 2) {
+          return;
+        }
+        const traitType = obj[0];
+        const traitValue = obj[1];
+
+        const tokenTrait = hotToken.token.traits.find(obj => obj.trait_type === traitType);
+        const freqHtml = tokenTrait ? ` (${normalizePct(tokenTrait.freq * 100)})` : ' (null)';
+        hotReasons.push(`<b>${traitType}: ${traitValue}</b>${freqHtml}`);
+      });
     }
     const ov = normalizeOV(token.scoreOV);
-    const priceHtml = token.price ? `<b>${normalizePrice(token.price)} eth</b>` : 'Not for sale';
+    const priceHtml = token.price ? `<br><b>${normalizePrice(token.price)} eth</b>` : '';
     const rankPctHtml = `${normalizePct(token.scoreRankPct * 100)} (${token.scoreRank})`;
 
 // const reasonHtml = `${hotReasons.join(' + ')}<br>OV: ${ov}<br>Temp OV: ${tempOV}<br>TraitFreq: ${traitCountFreqHtml}<br>Price: ${priceHtml}`;
-    const reasonHtml = `${hotReasons.join('<br>')}<br>OV: ${ov}<br>Pct: ${rankPctHtml}<br>${priceHtml}<br>SortOrder: ${hotToken.sortOrder}`;
+    const reasonHtml = `${hotReasons.join('<br>')}<br>OV: ${ov}<br>Pct: ${rankPctHtml}${priceHtml}<!--<br>SortOrder: ${hotToken.sortOrder}-->`;
 
     html = html + `
   <tr class="${rowClassName}">

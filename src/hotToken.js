@@ -50,10 +50,10 @@ function getHotTokenData(token, rules, config) {
     traits: []
   };
 
-  data.isHotTraitCount = token.traitCount <= rules.hotMaxTraits;
+  // todo data.isHotTraitCount = token.traitCount <= rules.hotTraitCount;
 
   data.ov = token.scoreOV && token.scoreOV !== Infinity ? token.scoreOV : token.temp?.scoreOV;
-  data.isHotOV = rules.hotMinOV && data.ov >= rules.hotMinOV;
+  // todo data.isHotOV = rules.hotOV && data.ov >= rules.hotOV;
 
   rules.hotTraits.forEach(rule => {
     const guiValueList = matchTraitMap(token, rule);

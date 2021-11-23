@@ -14,22 +14,13 @@ require('events').EventEmitter.prototype._maxListeners = 125;
 let numUsers = 0;
 
 const DELAY_NORMAL_RETRY = 1000;
-const DELAY_STATUS_200_RETRY = 5000;
+const DELAY_REVEALED_RETRY = 5000;
 
 // EXPORTED FUNCTIONS
 
 export async function fetchTokenURIs(projectId, inputArray, outputArray, fetchOptions, lastRetryDate, cacheRef = null, statsRef = null) {
   try {
     numUsers++;
-
-    /*
-    if (!take('fetchTokenURIs', log.info, projectId)) {
-      log.info(`(${projectId}) Token fetcher is busy, wait for my turn to fetch tokens...`);
-      while (!take('fetchTokenURIs', log.info, projectId)) {
-        await delay(250);
-      }
-    }
-     */
 
     log.info(`(${projectId}) --------------------------------- Start fetching tokens; numUsers:`, numUsers);
 
@@ -49,7 +40,7 @@ export async function fetchTokenURIs(projectId, inputArray, outputArray, fetchOp
       const items = inputRef.splice(0, maxNumNew);
       const fetchFromCache = items.length ? items[0].fetchFromCache : false;
       const inCache = items.length ? existsInCache(cacheRef, items[0].url) : false;
-      log.debug(`processed: ${numToProcess - inputRef.length}, left: ${inputRef.length}, active: ${activeRef.length}, new: ${items.length}, ok: ${statsRef['200'] ?? 0}, timeout: ${statsRef.timeout ?? 0}, tooMany: ${statsRef['429'] ?? 0}, `);
+      log.info(`(${projectId}) processed: ${numToProcess - inputRef.length}, left: ${inputRef.length}, active: ${activeRef.length}, new: ${items.length}, ok: ${statsRef['200'] ?? 0}, timeout: ${statsRef.timeout ?? 0}, tooMany: ${statsRef['429'] ?? 0}, `);
       for (const item of items) {
         item.lastRetryDate = lastRetryDate;
         getItem(item, activeRef, outputArray, fetchOptions.timeout, cacheRef, statsRef, projectId);
@@ -99,19 +90,14 @@ async function getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, stats
   const itemFromCache = getItemFromCache(item.url, cacheRef, item.fetchFromCache);
   const result = itemFromCache ?? await get(item.url, { timeout: fetchTimeout });
 
-  if (item.ref.tokenId === '4999') {
-    console.log(item, result);
-  }
-
   addToStats(result.status, statsRef);
+
   log.debug(`(${projectId}) result.status`, result.status, item.url);
   if (result.headers) {
-    log.debug(`(${projectId}) result.headers`, result.headers, item.url);
+    // log.debug(`(${projectId}) result.headers`, result.headers, item.url);
   } else {
-    log.debug(`(${projectId}) result.data`, result.data, item.url);
+    // log.debug(`(${projectId}) result.data`, result.data, item.url);
   }
-
-  let finalStatus = result.status;
 
   const now = new Date();
   if (now > item.lastRetryDate) {
@@ -120,6 +106,8 @@ async function getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, stats
     _.remove(activeRef, obj => obj.url === item.url);
     return;
   }
+
+  let finalStatus = result.status;
 
   switch (result.status) {
     case '429':
@@ -143,7 +131,7 @@ async function getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, stats
     case '502': // Bad Gateway
       if (item.hasAsset) {
         // Logic: If token has asset AND collection is revealed, NotFound means that this token metadata is about to be revealed soon!
-        setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, statsRef, projectId, attempt + 1), DELAY_NORMAL_RETRY);
+        setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, statsRef, projectId, attempt + 1), DELAY_REVEALED_RETRY);
         return;
       } else {
         // Do nothing, handle by caller!
@@ -158,7 +146,7 @@ async function getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, stats
         case 'retry':
           // log.info('Retry token, no cache');
           item.fetchFromCache = false;
-          setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, statsRef, projectId, attempt + 1), DELAY_STATUS_200_RETRY);
+          setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, statsRef, projectId, attempt + 1), DELAY_REVEALED_RETRY);
           await delay(100);
           return;
         default:
@@ -171,7 +159,6 @@ async function getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, stats
   }
 
   outputRef.push({ ref: item.ref, ...result, status: finalStatus });
-
   _.remove(activeRef, obj => obj.url === item.url);
 }
 
@@ -185,8 +172,7 @@ function getStatus200RealStatus(item, resultData) {
   }
   if (!item.hasAsset) {
     // Token has JSON but no attributes + has no asset => liklely non-existing token!
-    return 'retry';
-    // return 'skip';
+    return 'skip';
   }
   // Else token is probably valid but has not been revealed yet, we should retry!
   return 'retry';

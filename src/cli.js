@@ -38,6 +38,7 @@ async function runProgram() {
   program.option('--all', 'Output all items instead of only buynow items');
   program.option('--nodb', 'Do not get data from DB');
   program.option('--silent', 'Do not notify events');
+  program.option('--skippagenums', '');
   program.option('--sample', 'Use test samples');
   program.option('--skiptokencache', '');
   program.option('--skipopensea', '');
@@ -60,6 +61,7 @@ async function runProgram() {
         skipOpensea: options.skipopensea,
         silent: options.silent,
         top: options.top,
+        skipPageNums: options.skippagenums
       });
       break;
     case 'foo':
