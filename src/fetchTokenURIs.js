@@ -18,6 +18,43 @@ const DELAY_REVEALED_RETRY = 5000;
 
 // EXPORTED FUNCTIONS
 
+export async function fetchTokenURIs2(projectId, inputArray, outputArray, fetchOptions, lastRetryDate, cacheRef = null, statsRef = null) {
+  numUsers++;
+
+  log.info(`(${projectId}) --------------------------------- Start fetching tokens; numUsers:`, numUsers);
+
+  const inputRef = [...inputArray];
+  const activeRef = [];
+
+  let numToProcess = inputRef.length;
+
+  while (true) {
+    if (inputRef.length === 0 && activeRef.length === 0) {
+      break;
+    }
+
+    const numConcurrentNormalized = fetchOptions.concurrent / numUsers;
+
+    const maxNumNew = activeRef.length < numConcurrentNormalized ? numConcurrentNormalized - activeRef.length : 0;
+    const items = inputRef.splice(0, maxNumNew);
+    const fetchFromCache = items.length ? items[0].fetchFromCache : false;
+    const inCache = items.length ? existsInCache(cacheRef, items[0].url) : false;
+    log.info(`(${projectId}) processed: ${numToProcess - inputRef.length}, left: ${inputRef.length}, active: ${activeRef.length}, new: ${items.length}, ok: ${statsRef['200'] ?? 0}, timeout: ${statsRef.timeout ?? 0}, tooMany: ${statsRef['429'] ?? 0}, `);
+    for (const item of items) {
+      item.lastRetryDate = lastRetryDate;
+      getItem(item, activeRef, outputArray, fetchOptions.timeout, cacheRef, statsRef, projectId);
+    }
+
+    if (!inCache || !fetchFromCache) {
+      await delay(fetchOptions.delayBetweenBatches);
+    }
+  }
+
+  numUsers--;
+
+  log.info(`(${projectId}) End fetching tokens!`);
+}
+
 export async function fetchTokenURIs(projectId, inputArray, outputArray, fetchOptions, lastRetryDate, cacheRef = null, statsRef = null) {
   try {
     numUsers++;
@@ -112,7 +149,8 @@ async function getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, stats
   switch (result.status) {
     case '429':
       const retryAfterSecs = getRetryAfter(result.headers, 2);
-      log.debug('retryAfterSecs', retryAfterSecs);
+      log.debug('(${projectId}) retryAfterSecs', retryAfterSecs);
+      log.debug(`(${projectId}) result`, item.url, result);
       setTimeout(() => getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, statsRef, projectId, attempt + 1), retryAfterSecs * DELAY_NORMAL_RETRY);
       return;
     case 'timeout':

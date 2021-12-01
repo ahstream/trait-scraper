@@ -72,6 +72,29 @@ export function createCollection() {
 
 // INTERNAL FUNCTIONS
 
+async function getOpenseaAssets2(config) {
+  if (config.args.skipOpensea) {
+    log.debug('Skip Opensea');
+    return;
+  }
+
+  if (!take('getOpenseaAssets', log.info, config.projectId)) {
+    log.info(`(${config.projectId}) Asset fetcher is busy, wait for my turn to fetch tokens...`);
+    while (!take('getOpenseaAssets', log.info, config.projectId)) {
+      await delay(1000);
+    }
+  }
+  log.info(`(${config.projectId}) Get Opensea assets...`);
+
+  const myTimer = timer.create();
+  await updateAssets(config);
+  // myTimer.ping(`(${config.projectId}) getOpenseaAssets duration`);
+
+  release('getOpenseaAssets');
+
+  saveCache(config);
+}
+
 async function getOpenseaAssets(config) {
   try {
     if (config.args.skipOpensea) {
@@ -277,6 +300,7 @@ async function createRevealResults(config, lastToken = null, isLastPage = false)
   if (config.args.top && !isLastPage) {
     return;
   }
+  // todo: ersätt skipPageNums med usePageNums!
   if (config.args.skipPageNums) {
     config.collection.runtime.revealPageNum = null;
   } else if (isLastPage) {

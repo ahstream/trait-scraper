@@ -1,19 +1,76 @@
 {
   "projects": {
-    "ninjasquad": {
-      "disabled": true,
-      "supply": [8888],
-      "contractAddress": "0x8C186802b1992f7650Ac865d4CA94D55fF3C0d17"
-    },
-    "galacticmonkes": {
-      "supply": [10150],
-      "contractAddress": "0x7Bb6413C939d9ECC62bdD60D6e23816B1AE9099f"
-    },
     "metatravellers": {
       "supply": [7777],
       "contractAddress": "0x5372f926b34Be60aC1436372107C3eE8c6e056E5"
     },
+    "spacebugs": {
+      "supply": [3333],
+      "contractAddress": "0xfa5aa65c1ea8ca3158d8c8806d947f1364795f4c"
+    },
+    "dominantdragons": {
+      "supply": [5000],
+      "contractAddress": "0xDb3B2e1F699CaF230eE75bfBE7d97d70F81bC945"
+    },
+    "bricktopians": {
+      "disabled": true,
+      "supply": [10000],
+      "contractAddress": "0x9eEeAF684E228C2D5C89435e010acC02c41Dc86B",
+      "rules": {
+        "scoreKey": "rarityCountNorm",
+        "ignoreNumberTraits": true,
+        "maxPrice": 0.4,
+        "maxTokens": 300,
+        "hotTraitCount": 1,
+        "hotOV": 20,
+        "hotTraits": [
+          "gold",
+          "gold teeth",
+          "dots",
+          "goldtopian",
+          "translucetopian",
+          "other/translucetopian pigeon",
+          "other/bananapeel",
+          "other/snakenecklace",
+          "other/bubble-gum blow",
+          "other/octopus",
+          "other/cryingtears",
+          "mask/visorhelmet",
+          "skin/alien.a",
+          "skin/skull",
+          "haircolour/alien",
+          "preposterotopian hat",
+          "preposterotopian",
+          "body/brickhead",
+          "body/trafficcone",
+          "body/decapitated"
+        ]
+      }
+    },
+    "partygrandpa": {
+      "disabled": true,
+      "urls": [
+        "https://discord.com/channels/900373453784350781/900373454581297232",
+        "https://retirementclubnft.com/"
+      ],
+      "supply": [10000],
+      "contractAddress": "0x60d9b4F9d85695274a5777537F204675082Bd745",
+      "rules2222": {
+        "maxPrice": 0.4,
+        "maxTokens": 300,
+        "hotTraitCount": 1,
+        "hotOV": 20,
+        "hotTraits": [
+          "santa", "the prisoner ", "the party guy", "the astronaut ", "the farmer ",
+          "the French DJ ", "the Hippie ", "the Hipster", "the Sheriff", "the Joker", "001",
+          "the Rapper", "the Playboy", "the Superstar", "the Influencer", "the Wrestler", "the MVP",
+          "RC7", "the Pirate", "the GOAT", "the King", "the Visionary",
+          "gold", "dots", "laser eyes"
+        ]
+      }
+    },
     "derivativeapes": {
+      "disabled": true,
       "supply": [9999],
       "contractAddress": "0xB184b9414e7d7c436B7097eD2C774bB56fae392f",
       "unrevealedImage": "ipfs://QmZCG7AJkt2gWzDnwJCRVdD52TW5fswjdF76rJmDDw8YgA",
@@ -32,14 +89,51 @@
         ]
       }
     },
+    "nfteams": {
+      "disabled": true,
+      "supply": [10000],
+      "contractAddress": "0x03f5cee0d698c24a42a396ec6bdaee014057d4c8",
+      "rules": {
+        "scoreKey": "rarity",
+        "ignoreNumberTraits": true,
+        "maxPrice": 11,
+        "maxTokens": 300,
+        "hotTraitCount": 1,
+        "hotOV": 20,
+        "hotTraits": [
+          "body/gold", "skin/gold", "colour/gold", "color/gold", "gold", "boredape", "dots"
+        ]
+      }
+    },
+    "modz": {
+      "disabled": true,
+      "supply": [5555, 1, 5555],
+      "contractAddress": "0x50e712b3a260d7639179e8277836253461418f23"
+    },
+    "pixelnauts": {
+      "disabled": true,
+      "supply": [10000],
+      "contractAddress": "0x27cC171B16FdD2224E1f93eD7DccFcc6790cA4BF"
+    },
+    "apewives": {
+      "disabled": true,
+      "supply": [10000],
+      "contractAddress": "0xf1268733c6fb05ef6be9cf23d24436dcd6e0b35e"
+    },
+    "ninjasquad": {
+      "disabled": true,
+      "supply": [8888],
+      "contractAddress": "0x8C186802b1992f7650Ac865d4CA94D55fF3C0d17"
+    },
+    "galacticmonkes": {
+      "disabled": true,
+      "supply": [10150],
+      "contractAddress": "0x7Bb6413C939d9ECC62bdD60D6e23816B1AE9099f"
+    },
     "merrymodz": {
       "disabled": true,
       "supply": [10000],
       "contractAddress": "0x1dCBc2A155Fc62b8eFA84d2759B23f29B0c7A335"
-    },
-    "spacebugs": {
-      "supply": [3333],
-      "contractAddress": "0xfa5aa65c1ea8ca3158d8c8806d947f1364795f4c"
     },
     "metathugs": {
       "disabled": true,
@@ -78,94 +172,9 @@
       }
     },
     "angryapearmy": {
+      "disabled": true,
       "supply": [3333],
       "contractAddress": "0x77640cf3F89A4F1B5CA3A1e5c87f3F5B12ebf87e"
-    },
-    "bricktopians": {
-      "supply": [10000],
-      "contractAddress": "0x9eEeAF684E228C2D5C89435e010acC02c41Dc86B",
-      "rules": {
-        "scoreKey": "rarityCountNorm",
-        "ignoreNumberTraits": true,
-        "maxPrice": 0.4,
-        "maxTokens": 300,
-        "hotTraitCount": 1,
-        "hotOV": 20,
-        "hotTraits": [
-          "gold",
-          "gold teeth",
-          "dots",
-          "goldtopian",
-          "translucetopian",
-          "other/translucetopian pigeon",
-          "other/bananapeel",
-          "other/snakenecklace",
-          "other/bubble-gum blow",
-          "other/octopus",
-          "other/cryingtears",
-          "mask/visorhelmet",
-          "skin/alien.a",
-          "skin/skull",
-          "haircolour/alien",
-          "preposterotopian hat",
-          "preposterotopian",
-          "body/brickhead",
-          "body/trafficcone",
-          "body/decapitated"
-        ]
-      }
-    },
-    "partygrandpa": {
-      "urls": [
-        "https://discord.com/channels/900373453784350781/900373454581297232",
-        "https://retirementclubnft.com/"
-      ],
-      "supply": [10000],
-      "contractAddress": "0x60d9b4F9d85695274a5777537F204675082Bd745",
-      "rules2222": {
-        "maxPrice": 0.4,
-        "maxTokens": 300,
-        "hotTraitCount": 1,
-        "hotOV": 20,
-        "hotTraits": [
-          "santa", "the prisoner ", "the party guy", "the astronaut ", "the farmer ",
-          "the French DJ ", "the Hippie ", "the Hipster", "the Sheriff", "the Joker", "001",
-          "the Rapper", "the Playboy", "the Superstar", "the Influencer", "the Wrestler", "the MVP",
-          "RC7", "the Pirate", "the GOAT", "the King", "the Visionary",
-          "gold", "dots", "laser eyes"
-        ]
-      }
-    },
-    "nfteams": {
-      "disabled": true,
-      "supply": [10000],
-      "contractAddress": "0x03f5cee0d698c24a42a396ec6bdaee014057d4c8",
-      "rules": {
-        "scoreKey": "rarity",
-        "ignoreNumberTraits": true,
-        "maxPrice": 11,
-        "maxTokens": 300,
-        "hotTraitCount": 1,
-        "hotOV": 20,
-        "hotTraits": [
-          "body/gold", "skin/gold", "colour/gold", "color/gold", "gold", "boredape", "dots"
-        ]
-      }
-    },
-    "modz": {
-      "disabled": true,
-      "supply": [5555, 1, 5555],
-      "contractAddress": "0x50e712b3a260d7639179e8277836253461418f23"
-    },
-    "pixelnauts": {
-      "disabled": true,
-      "supply": [10000],
-      "contractAddress": "0x27cC171B16FdD2224E1f93eD7DccFcc6790cA4BF"
-    },
-    "apewives": {
-      "disabled": true,
-      "supply": [10000],
-      "contractAddress": "0xf1268733c6fb05ef6be9cf23d24436dcd6e0b35e"
     }
   },
   "pollForRevealTokenIds": [10, 296, 452, 526, 789, 1234, 2345, 3456],
@@ -179,8 +188,8 @@
     "hotTraitCount": 1,
     "hotOV": 25,
     "hotTraits": [
-      "body/gold", "skin/gold", "colour/gold", "color/gold", "gold", "boredape", "dots",
-      "laser eyes"
+      "body/gold", "skin/gold", "colour/gold", "color/gold", "gold", "golden", "boredape", "dots",
+      "laser eyes", "laser", "animated", "ethereum"
     ]
   },
   "milestones": {

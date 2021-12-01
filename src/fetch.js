@@ -9,7 +9,7 @@ const httpAgent = new http.Agent({ keepAlive: true });
 const httpsAgent = new https.Agent({ keepAlive: true });
 const agent = (_parsedURL) => _parsedURL.protocol === 'http:' ? httpAgent : httpsAgent;
 
-const DEFAULT_FETCH_TIMEOUT = 3000;
+const DEFAULT_FETCH_TIMEOUT = 10000;
 
 // EXPORTED FUNCTIONS
 

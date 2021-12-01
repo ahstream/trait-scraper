@@ -56,14 +56,18 @@ export async function getAssets(config) {
 }
 
 export async function updateAssets(config) {
-  const fromTokenId = config.collection.firstTokenId;
-  const toTokenId = config.collection.lastTokenId;
-  const assets = await getAssetsByChunks(config.collection.contractAddress, fromTokenId, toTokenId, config);
-  assets.forEach(asset => {
-    const token = convertAsset(asset);
-    addToCache(config.cache.opensea.assets, token.tokenId, token);
-  });
-  return true;
+  try {
+    const fromTokenId = config.collection.firstTokenId;
+    const toTokenId = config.collection.lastTokenId;
+    const assets = await getAssetsByChunks(config.collection.contractAddress, fromTokenId, toTokenId, config);
+    assets.forEach(asset => {
+      const token = convertAsset(asset);
+      addToCache(config.cache.opensea.assets, token.tokenId, token);
+    });
+    return true;
+  } catch (error) {
+    log.error('Error in updateAssets:', error);
+  }
 }
 
 async function getAssetsByChunks(contractAddress, fromTokenId, toTokenId, config, batchSize = Infinity) {
