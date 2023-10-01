@@ -11,5 +11,5 @@ export function notifyNewResults() {
 }
 
 export function notifyHotToken() {
-  // open(toAbsFilepath('./audio/new-results-notification.mp3'), { app: { name: 'firefox' } });
+  open(toAbsFilepath('./audio/new-results-notification.mp3'), { app: { name: 'firefox' } });
 }

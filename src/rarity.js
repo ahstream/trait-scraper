@@ -9,15 +9,10 @@ import { addNoneTraits } from "./trait.js";
 export function calcRarity(collection) {
   const myTimer = timer.create();
   addNoneTraits(collection);
-  // myTimer.ping(`addNoneTraits duration`);
   calcGlobalRarity(collection);
-  // myTimer.ping(`calcGlobalRarity duration`);
   calcTokenRarity(collection);
-  // myTimer.ping(`calcTokenRarity duration`);
   calcRanks(collection);
-  // myTimer.ping(`calcRanks duration`);
   calcOutliers(collection);
-  // myTimer.ping(`calcRarity length ${collection.tokens.length} duration`);
   debugToFile(collection, 'rarity.json');
 }
 
@@ -172,10 +167,6 @@ export function calcTemporaryTokenRarity(token, collection) {
 
 export function calcRanks(collection) {
   calcRank(collection.tokens, 'score', false);
-  // calcRank(collection.tokens, 'rarity', false);
-  // calcRank(collection.tokens, 'rarityNorm', false);
-  // calcRank(collection.tokens, 'rarityCount', false);
-  // calcRank(collection.tokens, 'rarityCountNorm', false);
 }
 
 function calcRank(tokens, scoreKey, ascending) {

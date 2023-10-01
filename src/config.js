@@ -36,12 +36,6 @@ export function getConfig(projectId, args) {
 
   const config = { ...baseConfig, ...projectConfig };
 
-  // config.firstTokenId = config.tokenIdRange[0];
-  // config.lastTokenId = config.tokenIdRange[1];
-  // config.maxSupply = config.lastTokenId - config.firstTokenId + 1;
-
-  // config.freqInfoLog = config.freqInfoLogSecs * 1000 / config.fetchSleepBetween;
-
   const maxSupply = config.supply[0];
 
   config.collection = createCollection();
@@ -67,7 +61,6 @@ function normalizeRules(rules) {
 export function saveCache(config) {
   const myTimer = timer.create();
   writeCache(config.projectId, config.cache);
-  // myTimer.ping(`(${config.projectId}) saveCache duration`);
 }
 
 function createRuntime(config) {

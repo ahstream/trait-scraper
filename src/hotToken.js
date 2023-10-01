@@ -8,7 +8,6 @@ export function addToHotTokens(token, collection, config) {
     hotData.price = token.price;
     hotData.ov = token.scoreOV;
     hotData.token = token;
-    // token.hot = hotTokenData;
     collection.hotTokens.push(hotData);
     collection.runtime.newHotTokens.push(token.tokenId);
     return true;
@@ -26,7 +25,6 @@ export function updateHotOV(collection, config) {
       hotData.token = token;
       if (!collection.hotTokens.find(obj => obj.tokenId === token.tokenId)) {
         log.debug(`token ${token.tokenId} NOT in hotTokens`);
-        // token.hot = hotData;
         collection.hotTokens.push(hotData);
         collection.runtime.newHotTokens.push(token.tokenId);
       }
@@ -50,18 +48,13 @@ function getHotTokenData(token, rules, config) {
     traits: []
   };
 
-  // todo data.isHotTraitCount = token.traitCount <= rules.hotTraitCount;
-
   data.ov = token.scoreOV && token.scoreOV !== Infinity ? token.scoreOV : token.temp?.scoreOV;
-  // todo data.isHotOV = rules.hotOV && data.ov >= rules.hotOV;
 
   rules.hotTraits.forEach(rule => {
     const guiValueList = matchTraitMap(token, rule);
     if (guiValueList) {
       for (const guiValue of guiValueList) {
         if (guiValue && !data.traits.includes(guiValue)) {
-          // if (rules.hotTraits.some(substr => traitValue.toLowerCase().includes(substr))) {
-          // if (rules.hotTraits.some(substr => traitValue.toLowerCase() === substr)) {
           data.traits.push(guiValue);
         }
       }

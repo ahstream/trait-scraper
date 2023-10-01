@@ -1,8 +1,5 @@
-import { debugToFile } from './config.js';
 import {
-  deleteFile,
   fileExists,
-  getFilesInFolder,
   importJSONFile,
   toAbsFilepath,
   writeJSONFile} from "./fileUtils.js";

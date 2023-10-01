@@ -91,8 +91,6 @@ export function createRevealTokenColHtml(collection, config) {
     tokens = sort(collection.tokens.filter(obj => obj.price > 0 && obj.price <= collection.rules.maxPrice), 'score', false).slice(0, collection.rules.maxTokens);
   }
 
-  // const htmlDesc = `<span class="desc-text">Top ${tokens.length} (of ${numWithPrice}) Rare BuyNow tokens (of ${numWithPrice})</span>`;
-  // const htmlDesc = `<span class="desc-text">Top ${tokens.length} (of ${numWithPrice}/${collection.tokens.length}) Rare BuyNow</span>`;
   const htmlDesc = `<span class="desc-text">Top ${tokens.length} Rare BuyNow</span>`;
 
   let html = '';
@@ -102,9 +100,7 @@ export function createRevealTokenColHtml(collection, config) {
     const titleTxt = createImageTitleText(token, 'score', collection.tokens.length);
     const imageHtml = `<a target="_blank" href="${token.assetURI}"><img alt='' title="${titleTxt}" class="thumb" src="${normalizeURI(token.image)}"></a>`;
     const rankHtml = `${token.scoreRank}`;
-    // const rankPctHtml = `<a target="id_${token.tokenId}" href="${token.assetURI}">${normalizePct(rankPct * 100)}</a>`;
     const rankPctHtml = `${normalizePct(rankPct * 100)}&nbsp;`;
-    const traitCountHtml = `${token.traitCount}`;
     const traitCountFreqHtml = `<b>${normalizePct(token.traitCountFreq * 100)}</b> <span class="lolite">(${token.traitCount})</span>`;
     const ovHtml = `<b>${normalizeOV(token.scoreOV)}</b>&nbsp;`;
     const scoreHtml = token.score.toFixed(0);
@@ -135,9 +131,7 @@ export function createRevealTokenColHtml(collection, config) {
 }
 
 export function createRevealHotColHtml(collection) {
-  // const tokensWithRightPrice = sort(collection.hotTokens.filter(obj => obj.price > 0), 'revealOrder', true);
   const hotTokens = sort(collection.hotTokens, 'sortOrder', true, 'revealOrder', true).slice(0, collection.rules.maxTokens);
-  // const tokens = hotTokens.map(obj => obj.token).slice(0, collection.rules.maxTokens);
 
   const htmlDesc = `<span class="desc-text">Top ${hotTokens.length} Hot Tokens</span>`;
 
@@ -157,13 +151,6 @@ export function createRevealHotColHtml(collection) {
     }
     if (hotToken.isHotOV) {
       hotReasons.push(`<b>OV ${normalizeOV(token.scoreOV)}</b> (${normalizeOV(hotToken.ov)})`);
-      /*
-      if (token.temp?.scoreOV) {
-        hotReasons.push(`<b>OV ${normalizeOV(token.temp.scoreOV)}</b> (${normalizeOV(token.scoreOV)})`);
-      } else {
-        hotReasons.push(`<b>OV ${normalizeOV(token.scoreOV)}</b>`);
-      }
-       */
     }
     if (hotToken.traits.length) {
       hotToken.traits.forEach(obj => {
@@ -182,7 +169,6 @@ export function createRevealHotColHtml(collection) {
     const priceHtml = token.price ? `<br><b>${normalizePrice(token.price)} eth</b>` : '';
     const rankPctHtml = `${normalizePct(token.scoreRankPct * 100)} (${token.scoreRank})`;
 
-// const reasonHtml = `${hotReasons.join(' + ')}<br>OV: ${ov}<br>Temp OV: ${tempOV}<br>TraitFreq: ${traitCountFreqHtml}<br>Price: ${priceHtml}`;
     const reasonHtml = `${hotReasons.join('<br>')}<br>OV: ${ov}<br>Pct: ${rankPctHtml}${priceHtml}<!--<br>SortOrder: ${hotToken.sortOrder}-->`;
 
     html = html + `

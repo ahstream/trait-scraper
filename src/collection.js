@@ -52,10 +52,8 @@ export async function revealOneProject(projectId, args) {
   await revealCollection(config);
   await fetchCollection(config);
   saveCache(config);
-  // debugToFile(config, 'config1234.json');
 
   log.info(`(${config.projectId}) Finished fetching collection`);
-  // log.info(`(${config.projectId}) Finished fetching collection: ${countDoneConfig(config)} ok, ${countSkippedConfig(config)} skipped`);
 
   return config;
 }
@@ -88,7 +86,6 @@ async function getOpenseaAssets2(config) {
 
   const myTimer = timer.create();
   await updateAssets(config);
-  // myTimer.ping(`(${config.projectId}) getOpenseaAssets duration`);
 
   release('getOpenseaAssets');
 
@@ -112,7 +109,6 @@ async function getOpenseaAssets(config) {
 
     const myTimer = timer.create();
     await updateAssets(config);
-    // myTimer.ping(`(${config.projectId}) getOpenseaAssets duration`);
 
     release('getOpenseaAssets');
 
@@ -152,8 +148,6 @@ async function revealCollection(config) {
   const token = await waitForReveal(config.collection, config.pollForRevealTokenIds, config.sleepBetween, config.args.silent, config.unrevealedImage);
 
   config.collection.baseTokenURI = tokenURI.convertToBaseTokenURI(token.tokenId, token.tokenURI);
-
-  // myTimer.ping(`(${config.projectId}) revealCollection duration`);
 }
 
 async function fetchCollection(config) {
@@ -166,7 +160,6 @@ async function fetchCollection(config) {
       assetURI: asset?.permalink ?? null,
       price: asset?.price ?? null,
       hasAsset: !_.isEmpty(asset)
-      // traits: asset?.traits ?? null,
     };
   });
 
@@ -300,7 +293,6 @@ async function createRevealResults(config, lastToken = null, isLastPage = false)
   if (config.args.top && !isLastPage) {
     return;
   }
-  // todo: ersätt skipPageNums med usePageNums!
   if (config.args.skipPageNums) {
     config.collection.runtime.revealPageNum = null;
   } else if (isLastPage) {
@@ -314,8 +306,6 @@ async function createRevealResults(config, lastToken = null, isLastPage = false)
   updateHotOV(config.collection, config);
 
   const path = webPage.createRevealWebPage(config, config.collection.runtime.revealPageNum);
-
-  // myTimer.ping(`createResults length ${config.collection.tokens.length} duration`);
 
   const everySecs = lastToken ? config.milestones.createResultEverySecs[0] : config.milestones.createResultEverySecs[1];
   config.collection.runtime.nextTimeCreateResults = addSecondsToDate(new Date(), everySecs);

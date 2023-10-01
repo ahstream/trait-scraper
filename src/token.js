@@ -66,8 +66,6 @@ export async function waitForReveal(collection, tokenIds, sleepBetween, silentFl
 }
 
 export function addToTokenTraitMap(token, traitType, traitValue) {
-  // const myTimer = timer.create();
-
   const normalizedType = normalizeTrait(traitType);
   const normalizedValue = normalizeTrait(traitValue);
   const key1 = `${normalizedType}/${normalizedValue}`;
@@ -92,8 +90,6 @@ export function addToTokenTraitMap(token, traitType, traitValue) {
   if (!token.traitMap[key2].includes(keyValue)) {
     token.traitMap[key2].push(keyValue);
   }
-
-  // myTimer.pingms(`addToTokenTraitMap duration`);
 }
 
 export function normalizeTrait(value) {

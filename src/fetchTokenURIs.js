@@ -102,7 +102,7 @@ function getItemFromCache(key, cacheRef, fetchFromCache) {
     return null;
   }
   const data = getFromCache(cacheRef, key);
-  if (!data || data === {}) {
+  if (!data) {
     return null;
   }
 
@@ -130,11 +130,6 @@ async function getItem(item, activeRef, outputRef, fetchTimeout, cacheRef, stats
   addToStats(result.status, statsRef);
 
   log.debug(`(${projectId}) result.status`, result.status, item.url);
-  if (result.headers) {
-    // log.debug(`(${projectId}) result.headers`, result.headers, item.url);
-  } else {
-    // log.debug(`(${projectId}) result.data`, result.data, item.url);
-  }
 
   const now = new Date();
   if (now > item.lastRetryDate) {
