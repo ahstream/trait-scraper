@@ -167,6 +167,10 @@ export function calcTemporaryTokenRarity(token, collection) {
 
 export function calcRanks(collection) {
   calcRank(collection.tokens, 'score', false);
+  // calcRank(collection.tokens, 'rarity', false);
+  // calcRank(collection.tokens, 'rarityNorm', false);
+  // calcRank(collection.tokens, 'rarityCount', false);
+  // calcRank(collection.tokens, 'rarityCountNorm', false);
 }
 
 function calcRank(tokens, scoreKey, ascending) {
